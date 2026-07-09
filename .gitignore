@@ -1,9 +1,25 @@
+# Dependencies
 node_modules/
+
+# Expo
 .expo/
 dist/
+
+# Logs
 *.log
+npm-debug.*
+
+# Environment
 .env
-.claude/
-CLAUDE.md
-AGENTS.md
-*.bak
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
