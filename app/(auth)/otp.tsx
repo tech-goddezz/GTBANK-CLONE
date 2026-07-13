@@ -18,9 +18,16 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import Button from '../../components/Button';
 import OTPInput from '../../components/ui/OTPInput';
+import { mockUser } from '../../constants/mockData';
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 45;
+
+// The demo's one "existing account" — typing this number on the Hello!
+// screen simulates a returning user instead of a brand-new signup.
+// Swap this whole check for a real "does this phone exist?" API call
+// once there's a backend.
+const RETURNING_USER_PHONE = mockUser.phoneNumber.replace('+', '');
 
 export default function OTPScreen() {
   const router = useRouter();
@@ -41,7 +48,12 @@ export default function OTPScreen() {
   const handleVerify = () => {
     if (!isComplete) return;
     setLoading(true);
-    router.replace('/(auth)/requirements');
+
+    if (phone === RETURNING_USER_PHONE) {
+      router.replace('/(auth)/login-password');
+    } else {
+      router.replace('/(auth)/requirements');
+    }
   };
 
   const handleResend = () => {
