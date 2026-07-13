@@ -1,13 +1,13 @@
 // app/(auth)/otp.tsx
-// OTP verification — 6 individual digit boxes with auto-focus.
+// OTP verification — matches the "6-digit code" screen from the sign-in
+// design: from SMS / Tokens tab toggle, live resend countdown, 6-box code.
 
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -17,46 +17,42 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import Button from '../../components/Button';
+import OTPInput from '../../components/ui/OTPInput';
 
 const OTP_LENGTH = 6;
+const RESEND_SECONDS = 45;
 
 export default function OTPScreen() {
   const router = useRouter();
   const { phone } = useLocalSearchParams<{ phone: string }>();
+  const [tab, setTab] = useState<'sms' | 'tokens'>('sms');
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [loading, setLoading] = useState(false);
-  const inputRefs = useRef<(TextInput | null)[]>([]);
+  const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
 
   const isComplete = otp.every((d) => d !== '');
 
-  const handleChange = (text: string, index: number) => {
-    const digit = text.replace(/[^0-9]/g, '').slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = digit;
-    setOtp(newOtp);
-
-    // Auto-advance to next box
-    if (digit && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyPress = (key: string, index: number) => {
-    // Auto-go-back on delete
-    if (key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const timer = setInterval(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearInterval(timer);
+  }, [secondsLeft]);
 
   const handleVerify = () => {
-  if (!isComplete) return;
-  setLoading(true);
-  router.replace('/(auth)/pin');
-};
+    if (!isComplete) return;
+    setLoading(true);
+    router.replace('/(auth)/requirements');
+  };
 
-  const maskedPhone = phone
-    ? `${phone.slice(0, 4)}****${phone.slice(-3)}`
-    : '***********';
+  const handleResend = () => {
+    if (secondsLeft > 0) return;
+    setSecondsLeft(RESEND_SECONDS);
+    // In production this re-triggers the SMS/token send via the API.
+  };
+
+  const formattedPhone = phone
+    ? `+${phone.slice(0, 3)} ${phone.slice(3, 6)} ${phone.slice(6, 9)} ${phone.slice(9)}`
+    : '+234 800 001 0000';
 
   return (
     <KeyboardAvoidingView
@@ -67,58 +63,58 @@ export default function OTPScreen() {
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Back button */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
           <Ionicons name="arrow-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Enter OTP</Text>
-          <Text style={styles.subtitle}>
-            We sent a 6-digit code to{'\n'}
-            <Text style={styles.phoneHighlight}>{maskedPhone}</Text>
-          </Text>
-        </View>
+        <Text style={styles.title}>6-digit code</Text>
 
-        {/* OTP boxes */}
-        <View style={styles.otpRow}>
-          {otp.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={(ref) => { inputRefs.current[index] = ref; }}
-              style={[
-                styles.otpBox,
-                digit !== '' && styles.otpBoxFilled,
-              ]}
-              value={digit}
-              onChangeText={(text) => handleChange(text, index)}
-              onKeyPress={({ nativeEvent }) =>
-                handleKeyPress(nativeEvent.key, index)
-              }
-              keyboardType="number-pad"
-              maxLength={1}
-              textAlign="center"
-              selectTextOnFocus
-            />
-          ))}
-        </View>
-
-        {/* Resend */}
-        <View style={styles.resendRow}>
-          <Text style={styles.resendText}>Didn't receive the code? </Text>
-          <TouchableOpacity>
-            <Text style={styles.resendLink}>Resend</Text>
+        {/* SMS / Tokens tab toggle */}
+        <View style={styles.tabRow}>
+          <TouchableOpacity
+            style={[styles.tab, tab === 'sms' && styles.tabActive]}
+            onPress={() => setTab('sms')}
+          >
+            <Text style={[styles.tabLabel, tab === 'sms' && styles.tabLabelActive]}>
+              from SMS
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, tab === 'tokens' && styles.tabActive]}
+            onPress={() => setTab('tokens')}
+          >
+            <Text style={[styles.tabLabel, tab === 'tokens' && styles.tabLabelActive]}>
+              Tokens
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Verify button */}
+        <Text style={styles.subtitle}>
+          Enter the 6 digit code sent to{'\n'}
+          <Text style={styles.phoneHighlight}>{formattedPhone}</Text>
+        </Text>
+
+        <View style={styles.otpWrapper}>
+          <OTPInput length={OTP_LENGTH} value={otp} onChange={setOtp} />
+        </View>
+
+        <View style={styles.resendRow}>
+          <Text style={styles.resendText}>Didn't get the code? </Text>
+          <TouchableOpacity onPress={handleResend} disabled={secondsLeft > 0}>
+            <Text style={styles.resendLink}>
+              {secondsLeft > 0 ? `Resend in ${secondsLeft} sec` : 'Resend'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.buttonArea}>
           <Button
-            label="Verify"
+            label="Proceed"
             onPress={handleVerify}
             disabled={!isComplete}
             loading={loading}
@@ -130,10 +126,7 @@ export default function OTPScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
+  container: { flex: 1, backgroundColor: colors.white },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
@@ -146,48 +139,51 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
   },
-  header: {
-    marginBottom: spacing.xxxl,
-  },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    backgroundColor: colors.inputBackground,
+    borderRadius: radius.button,
+    padding: 4,
+    marginBottom: spacing.lg,
+    alignSelf: 'flex-start',
+  },
+  tab: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.button - 4,
+  },
+  tabActive: {
+    backgroundColor: colors.white,
+  },
+  tabLabel: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.medium,
+    color: colors.textGrey,
+  },
+  tabLabelActive: {
+    color: colors.textDark,
+    fontFamily: fontFamily.semibold,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    lineHeight: 24,
+    lineHeight: 22,
+    marginBottom: spacing.xl,
   },
   phoneHighlight: {
     fontFamily: fontFamily.semibold,
     color: colors.textDark,
   },
-  otpRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xl,
-  },
-  otpBox: {
-    width: 48,
-    height: 56,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.borderLight,
-    backgroundColor: colors.inputBackground,
-    fontSize: fontSize.heading2,
-    fontFamily: fontFamily.bold,
-    color: colors.textDark,
-  },
-  otpBoxFilled: {
-    borderColor: colors.orange,
-    backgroundColor: colors.white,
-  },
+  otpWrapper: { marginBottom: spacing.xl },
   resendRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     marginBottom: spacing.xxxl,
   },
   resendText: {
@@ -200,7 +196,5 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semibold,
     color: colors.orange,
   },
-  buttonArea: {
-    marginTop: 'auto',
-  },
+  buttonArea: { marginTop: 'auto' },
 });

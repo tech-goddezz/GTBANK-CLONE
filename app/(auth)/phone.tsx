@@ -1,6 +1,7 @@
 // app/(auth)/phone.tsx
 // Phone number entry — first step of the auth flow.
-// Validates 11-digit Nigerian number before allowing navigation.
+// Matches the "Hello!" screen from the GTCO sign-in design: country-code
+// prefixed input, Need help link, legal disclaimer, Proceed button.
 
 import React, { useState } from 'react';
 import {
@@ -8,15 +9,14 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  TextInput,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing } from '../../constants/typography';
-import InputField from '../../components/InputField';
+import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import Button from '../../components/Button';
 
 export default function PhoneScreen() {
@@ -24,21 +24,20 @@ export default function PhoneScreen() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
-  const isValid = phone.length === 11;
+  // User types the number after +234, e.g. 801 234 5678 (10 digits)
+  const isValid = phone.length === 10;
 
   const handleContinue = () => {
     if (!isValid) {
-      setError('Please enter a valid 11-digit phone number');
+      setError('Please enter a valid phone number');
       return;
     }
     setError('');
-    // Pass phone number to OTP screen as a URL param
-    router.push(`/(auth)/otp?phone=${phone}`);
+    router.push(`/(auth)/otp?phone=234${phone}`);
   };
 
   const handleChangeText = (text: string) => {
-    // Only allow digits, max 11 characters
-    const digits = text.replace(/[^0-9]/g, '').slice(0, 11);
+    const digits = text.replace(/[^0-9]/g, '').slice(0, 10);
     setPhone(digits);
     if (error) setError('');
   };
@@ -52,51 +51,53 @@ export default function PhoneScreen() {
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Back button */}
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-        </TouchableOpacity>
+        {/* Need help link, top right — matches design instead of a back arrow */}
+        <View style={styles.topRow}>
+          <TouchableOpacity>
+            <Text style={styles.needHelp}>Need help?</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Enter your{'\n'}phone number</Text>
+          <Text style={styles.title}>Hello!</Text>
           <Text style={styles.subtitle}>
-            We'll send a verification code to this number
+            Welcome to GT World! Enter your phone number to login or sign in
           </Text>
         </View>
 
-        {/* Input */}
-        <InputField
-          label="Phone number"
-          placeholder="08012345678"
-          value={phone}
-          onChangeText={handleChangeText}
-          keyboardType="phone-pad"
-          error={error}
-          maxLength={11}
-        />
+        {/* Phone input with country code prefix */}
+        <View style={[styles.inputRow, !!error && styles.inputRowError]}>
+          <Text style={styles.flag}>🇳🇬</Text>
+          <Text style={styles.dialCode}>+234</Text>
+          <Text style={styles.chevron}>⌄</Text>
+          <View style={styles.divider} />
+          <TextInput
+            style={styles.input}
+            placeholder="Mobile number"
+            placeholderTextColor={colors.textFaded}
+            value={phone}
+            onChangeText={handleChangeText}
+            keyboardType="number-pad"
+            maxLength={10}
+          />
+        </View>
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
-        {/* Character counter */}
-        <Text style={styles.counter}>{phone.length}/11</Text>
+        {/* Legal disclaimer */}
+        <Text style={styles.disclaimer}>
+          By providing your phone number, you agree to our{' '}
+          <Text style={styles.disclaimerLink}>Privacy policy</Text> and{' '}
+          <Text style={styles.disclaimerLink}>Terms of Use</Text>
+        </Text>
 
-        {/* Continue button */}
+        {/* Proceed button */}
         <View style={styles.buttonArea}>
           <Button
-            label="Continue"
+            label="Proceed"
             onPress={handleContinue}
             disabled={!isValid}
           />
-        </View>
-
-        {/* Login link */}
-        <View style={styles.loginRow}>
-          <Text style={styles.loginText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => router.push('/(auth)/pin')}>
-            <Text style={styles.loginLink}>Log in</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -113,12 +114,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.xxxl,
   },
-  backButton: {
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     marginTop: 56,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  needHelp: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.orange,
   },
   header: {
     marginBottom: spacing.xxxl,
@@ -128,38 +133,69 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     marginBottom: spacing.sm,
-    lineHeight: 40,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    lineHeight: 22,
+    lineHeight: 20,
   },
-  counter: {
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1.5,
+    borderBottomColor: colors.borderLight,
+    paddingBottom: spacing.md,
+  },
+  inputRowError: {
+    borderBottomColor: colors.red,
+  },
+  flag: {
+    fontSize: 20,
+    marginRight: spacing.xs,
+  },
+  dialCode: {
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.medium,
+    color: colors.textDark,
+  },
+  chevron: {
+    fontSize: fontSize.body,
+    color: colors.textGrey,
+    marginLeft: spacing.xs,
+  },
+  divider: {
+    width: 1,
+    height: 24,
+    backgroundColor: colors.borderLight,
+    marginHorizontal: spacing.md,
+  },
+  input: {
+    flex: 1,
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+    padding: 0,
+  },
+  error: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
+    color: colors.red,
+    marginTop: spacing.sm,
+  },
+  disclaimer: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    textAlign: 'right',
-    marginTop: -spacing.md,
-    marginBottom: spacing.lg,
+    lineHeight: 18,
+    marginTop: spacing.lg,
   },
-  buttonArea: {
-    marginTop: spacing.xl,
-  },
-  loginRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: spacing.xl,
-  },
-  loginText: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-  },
-  loginLink: {
-    fontSize: fontSize.body,
+  disclaimerLink: {
     fontFamily: fontFamily.semibold,
     color: colors.orange,
+  },
+  buttonArea: {
+    marginTop: 'auto',
+    paddingTop: spacing.xxxl,
   },
 });

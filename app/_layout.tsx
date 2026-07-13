@@ -3,6 +3,7 @@
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { View, ActivityIndicator } from 'react-native';
 import {
   useFonts,
@@ -30,9 +31,9 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+  <ErrorBoundary>
     <StatusBar style="dark" />
     <Stack screenOptions={{ headerShown: false }} />
-  </>
-  );
+  </ErrorBoundary>
+);
 }

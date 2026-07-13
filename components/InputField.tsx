@@ -23,10 +23,11 @@ interface InputFieldProps extends TextInputProps {
   containerStyle?: ViewStyle;
 }
 
-export default function InputField({
+  export default function InputField({
   label,
   error,
   containerStyle,
+  style,
   ...rest
 }: InputFieldProps) {
   const [focused, setFocused] = useState(false);
@@ -36,11 +37,12 @@ export default function InputField({
       {label && <Text style={styles.label}>{label}</Text>}
 
       <TextInput
-        style={[
-          styles.input,
-          focused && styles.inputFocused,
-          !!error && styles.inputError,
-        ]}
+  style={[
+    styles.input,
+    focused && styles.inputFocused,
+    !!error && styles.inputError,
+    style,
+  ]}
         placeholderTextColor={colors.textFaded}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
