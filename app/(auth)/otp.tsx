@@ -84,7 +84,7 @@ export default function OTPScreen() {
           <Ionicons name="arrow-back" size={24} color={colors.textDark} />
         </TouchableOpacity>
 
-        <Text style={styles.title}>6-digit code</Text>
+        <Text style={styles.title}>6- digit code</Text>
 
         {/* SMS / Tokens tab toggle */}
         <View style={styles.tabRow}>

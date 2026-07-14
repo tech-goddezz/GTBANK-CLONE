@@ -38,11 +38,16 @@ export default function AddressScreen() {
 
   const [stateSheetVisible, setStateSheetVisible] = useState(false);
   const [selectedState, setSelectedState] = useState('');
+  const [lga, setLga] = useState('');
   const [city, setCity] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
   const [error, setError] = useState('');
 
-  const isValid = !!selectedState && city.trim().length > 1 && streetAddress.trim().length > 3;
+  const isValid =
+    !!selectedState &&
+    lga.trim().length > 1 &&
+    city.trim().length > 1 &&
+    streetAddress.trim().length > 3;
 
   const handleStart = () => {
     if (!isValid) {
@@ -51,7 +56,7 @@ export default function AddressScreen() {
     }
     setError('');
     router.push(
-      `/(auth)/identity?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${selectedState}&city=${city}`
+      `/(auth)/identity?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${selectedState}&lga=${lga}&city=${city}`
     );
   };
 
@@ -72,7 +77,7 @@ export default function AddressScreen() {
 
         <View style={styles.header}>
           <Text style={styles.title}>Provide Address</Text>
-          <Text style={styles.subtitle}>Where do you currently live?</Text>
+          <Text style={styles.subtitle}>To proceed, kindly provide your address</Text>
         </View>
 
         {/* State picker — looks like a text input but opens a sheet instead
@@ -90,6 +95,15 @@ export default function AddressScreen() {
           <Ionicons name="chevron-down" size={18} color={colors.textGrey} />
         </TouchableOpacity>
 
+        {/* Local Government Area — present in the design between State and
+            City, and was missing from this screen entirely before. */}
+        <InputField
+          label="Local Government Area"
+          placeholder="e.g. Ikeja"
+          value={lga}
+          onChangeText={setLga}
+        />
+
         <InputField
           label="City"
           placeholder="e.g. Ikeja"
@@ -98,7 +112,7 @@ export default function AddressScreen() {
         />
 
         <InputField
-          label="Street Address"
+          label="Address"
           placeholder="House number and street name"
           value={streetAddress}
           onChangeText={setStreetAddress}
@@ -109,7 +123,7 @@ export default function AddressScreen() {
         {!!error && <Text style={styles.errorText}>{error}</Text>}
 
         <View style={styles.buttonArea}>
-          <Button label="Start" onPress={handleStart} disabled={!isValid} />
+          <Button label="Proceed" onPress={handleStart} disabled={!isValid} />
         </View>
       </ScrollView>
 

@@ -48,17 +48,9 @@ export default function LoginBiometricScreen() {
           </View>
         </TouchableOpacity>
 
-        <Text style={styles.helperText}>Click to log in with Fingerprint</Text>
-
-        <TouchableOpacity
-          style={[styles.authButton, authenticating && styles.authButtonActive]}
-          onPress={handleFingerprintTap}
-          disabled={authenticating}
-        >
-          <Text style={styles.authButtonText}>
-            {authenticating ? 'Authenticating fingerprint...' : 'Tap to authenticate'}
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.helperText}>
+          {authenticating ? 'Authenticating fingerprint' : 'Click to log in with Fingerprint'}
+        </Text>
       </View>
 
       <View style={styles.linkRow}>
@@ -110,20 +102,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.textDark,
     marginBottom: spacing.xl,
-  },
-  authButton: {
-    backgroundColor: colors.orange,
-    borderRadius: radius.button,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xxl,
-  },
-  authButtonActive: {
-    opacity: 0.85,
-  },
-  authButtonText: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
   },
   linkRow: {
     flexDirection: 'row',

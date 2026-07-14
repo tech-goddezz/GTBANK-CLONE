@@ -2,6 +2,12 @@
 // Verification number entry — user picks BVN or NIN, then enters the
 // 11-digit number. Both are real Nigerian identity verification numbers,
 // so we validate length only (not authenticity — that needs a real backend).
+//
+// Matches the Figma "Your verification number" frame: no back arrow, no
+// "Need help?" link on this screen — just the two tabs, a heading that
+// changes with the active tab, the dial-code instructions, the input, and
+// a compact right-aligned Proceed button (not full-width, unlike most
+// other screens in this flow).
 
 import React, { useState } from 'react';
 import {
@@ -14,13 +20,25 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import InputField from '../../components/InputField';
 import Button from '../../components/Button';
 
 type VerificationType = 'bvn' | 'nin';
+
+const COPY: Record<VerificationType, { heading: string; instructions: string }> = {
+  bvn: {
+    heading: 'Bank verification number (BVN)',
+    instructions:
+      'Dial *565*0# on your mobile number to view your unique 11 digit bank verification number (BVN)',
+  },
+  nin: {
+    heading: 'National Identification number (NIN)',
+    instructions:
+      'To retrieve your NIN, dial *346# on your mobile number to view your unique 11 digit National Identification number (NIN)',
+  },
+};
 
 export default function BvnNinScreen() {
   const router = useRouter();
@@ -61,45 +79,34 @@ export default function BvnNinScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-        </TouchableOpacity>
-
         <View style={styles.header}>
           <Text style={styles.title}>Your verification{'\n'}number</Text>
-          <Text style={styles.subtitle}>
-            We use this to confirm your identity with the government registry
-          </Text>
+          <Text style={styles.subtitle}>This will help you complete the process faster.</Text>
         </View>
 
-        {/* Tab toggle: BVN / NIN */}
+        {/* Tab toggle: BVN / NIN — two independent pills, not a shared
+            segmented-control bar. Active tab gets a light grey background;
+            inactive tab is transparent. Both use dark text. */}
         <View style={styles.tabRow}>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'bvn' && styles.tabActive]}
             onPress={() => handleTabChange('bvn')}
           >
-            <Text style={[styles.tabLabel, activeTab === 'bvn' && styles.tabLabelActive]}>
-              BVN
-            </Text>
+            <Text style={styles.tabLabel}>BVN</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'nin' && styles.tabActive]}
             onPress={() => handleTabChange('nin')}
           >
-            <Text style={[styles.tabLabel, activeTab === 'nin' && styles.tabLabelActive]}>
-              NIN
-            </Text>
+            <Text style={styles.tabLabel}>NIN</Text>
           </TouchableOpacity>
         </View>
 
+        <Text style={styles.fieldHeading}>{COPY[activeTab].heading}</Text>
+        <Text style={styles.instructions}>{COPY[activeTab].instructions}</Text>
+
         <InputField
-          label={activeTab === 'bvn' ? 'Bank Verification Number' : 'National Identity Number'}
-          placeholder="Enter 11-digit number"
+          placeholder="Your number"
           keyboardType="number-pad"
           value={number}
           onChangeText={handleChangeNumber}
@@ -107,19 +114,15 @@ export default function BvnNinScreen() {
           maxLength={11}
         />
 
-        {/* Small educational banner — explains what these numbers are,
-            since not every user filling this out knows the acronyms. */}
-        <View style={styles.infoBanner}>
-          <Ionicons name="information-circle-outline" size={18} color={colors.orange} />
-          <Text style={styles.infoText}>
-            {activeTab === 'bvn'
-              ? 'Your BVN is linked to your fingerprint and issued by any Nigerian bank.'
-              : 'Your NIN is issued by NIMC and printed on your national ID slip.'}
-          </Text>
-        </View>
-
+        {/* Compact, right-aligned button — matches the design's "Proceed"
+            sizing on this screen (content-width, not full-width). */}
         <View style={styles.buttonArea}>
-          <Button label="Proceed" onPress={handleProceed} disabled={!isValid} />
+          <Button
+            label="Proceed"
+            onPress={handleProceed}
+            disabled={!isValid}
+            style={styles.compactButton}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -131,16 +134,10 @@ const styles = StyleSheet.create({
   scroll: {
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
+    paddingTop: 64,
     paddingBottom: spacing.xxxl,
   },
-  backButton: {
-    marginTop: 56,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  header: { marginBottom: spacing.xxl },
+  header: { marginBottom: spacing.xl },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
@@ -156,48 +153,40 @@ const styles = StyleSheet.create({
   },
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: colors.pageBackground,
-    borderRadius: radius.button,
-    padding: 4,
-    marginBottom: spacing.lg,
+    gap: spacing.xl,
+    marginBottom: spacing.xl,
   },
   tab: {
-    flex: 1,
     paddingVertical: spacing.sm,
-    borderRadius: radius.button - 4,
-    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.button,
   },
   tabActive: {
-    backgroundColor: colors.white,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: colors.pageBackground,
   },
   tabLabel: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.textDark,
   },
-  tabLabelActive: {
-    color: colors.orange,
+  fieldHeading: {
+    fontSize: fontSize.heading3,
     fontFamily: fontFamily.semibold,
+    color: colors.textDark,
+    marginBottom: spacing.sm,
   },
-  infoBanner: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    backgroundColor: colors.orangeFaint,
-    borderRadius: radius.card,
-    padding: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: fontSize.small,
+  instructions: {
+    fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    lineHeight: 18,
+    lineHeight: 20,
+    marginBottom: spacing.xl,
   },
-  buttonArea: { marginTop: spacing.md },
+  buttonArea: {
+    marginTop: spacing.xxl,
+    alignItems: 'flex-end',
+  },
+  compactButton: {
+    paddingHorizontal: spacing.xxl,
+  },
 });

@@ -151,6 +151,12 @@ export default function DateOfBirthScreen() {
     router.push(`/(auth)/bvn-nin?dob=${dobString}`);
   };
 
+  const [calendarSheetVisible, setCalendarSheetVisible] = useState(false);
+  const displayValue =
+    selectedDay != null
+      ? `${String(selectedDay).padStart(2, "0")} ${MONTH_NAMES[viewMonth]} ${viewYear}`
+      : "";
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
       <TouchableOpacity
@@ -163,98 +169,127 @@ export default function DateOfBirthScreen() {
       </TouchableOpacity>
 
       <View style={styles.header}>
-        <Text style={styles.title}>Date of Birth</Text>
+        <Text style={styles.title}>Your date of birth</Text>
         <Text style={styles.subtitle}>
-          Select your date of birth to continue
+          To proceed kindly provide your date of birth
         </Text>
       </View>
 
-      <View style={styles.calendarCard}>
-        {/* Month navigation row */}
-        <View style={styles.monthRow}>
-          <TouchableOpacity
-            onPress={goToPreviousMonth}
-            accessibilityRole="button"
-            accessibilityLabel="Previous month"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="chevron-back" size={22} color={colors.textDark} />
-          </TouchableOpacity>
-
-          {/* Tapping the month/year label opens the fast year-picker sheet */}
-          <TouchableOpacity
-            style={styles.monthYearLabel}
-            onPress={() => setYearSheetVisible(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Jump to a different year"
-          >
-            <Text style={styles.monthYearText}>
-              {MONTH_NAMES[viewMonth]} {viewYear}
-            </Text>
-            <Ionicons name="chevron-down" size={16} color={colors.orange} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={goToNextMonth}
-            accessibilityRole="button"
-            accessibilityLabel="Next month"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons
-              name="chevron-forward"
-              size={22}
-              color={colors.textDark}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Weekday labels */}
-        <View style={styles.weekdayRow}>
-          {WEEKDAY_LABELS.map((label) => (
-            <Text key={label} style={styles.weekdayLabel}>
-              {label}
-            </Text>
-          ))}
-        </View>
-
-        {/* Day grid */}
-        <View style={styles.dayGrid}>
-          {gridDays.map((day, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.dayCell}
-              disabled={day === null}
-              onPress={() => day && setSelectedDay(day)}
-              accessibilityRole={day ? "button" : undefined}
-              accessibilityLabel={day ? `Select day ${day}` : undefined}
-            >
-              {day !== null && (
-                <View
-                  style={[
-                    styles.dayCircle,
-                    selectedDay === day && styles.dayCircleSelected,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      selectedDay === day && styles.dayTextSelected,
-                    ]}
-                  >
-                    {day}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+      {/* Design shows a single field with a calendar icon, not an inline
+          calendar grid sitting on the page — tapping it opens the picker
+          in a sheet instead. */}
+      <TouchableOpacity
+        style={styles.dateField}
+        onPress={() => setCalendarSheetVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Select your date of birth"
+      >
+        <Text style={displayValue ? styles.dateValue : styles.datePlaceholder}>
+          {displayValue || "Date of birth"}
+        </Text>
+        <Ionicons name="calendar-outline" size={20} color={colors.textGrey} />
+      </TouchableOpacity>
 
       {!!error && <Text style={styles.errorText}>{error}</Text>}
 
       <View style={styles.buttonArea}>
-        <Button label="Continue" onPress={handleContinue} />
+        <Button label="Proceed" onPress={handleContinue} />
       </View>
+
+      {/* Calendar picker sheet - same month/day-grid logic as before, just
+          moved off the main screen and into a sheet so the base screen
+          matches the design's simple single-field layout. */}
+      <BottomSheet
+        visible={calendarSheetVisible}
+        onClose={() => setCalendarSheetVisible(false)}
+        title="Select Date of Birth"
+      >
+        <View style={styles.calendarCard}>
+          {/* Month navigation row */}
+          <View style={styles.monthRow}>
+            <TouchableOpacity
+              onPress={goToPreviousMonth}
+              accessibilityRole="button"
+              accessibilityLabel="Previous month"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="chevron-back" size={22} color={colors.textDark} />
+            </TouchableOpacity>
+
+            {/* Tapping the month/year label opens the fast year-picker sheet */}
+            <TouchableOpacity
+              style={styles.monthYearLabel}
+              onPress={() => setYearSheetVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Jump to a different year"
+            >
+              <Text style={styles.monthYearText}>
+                {MONTH_NAMES[viewMonth]} {viewYear}
+              </Text>
+              <Ionicons name="chevron-down" size={16} color={colors.orange} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={goToNextMonth}
+              accessibilityRole="button"
+              accessibilityLabel="Next month"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name="chevron-forward"
+                size={22}
+                color={colors.textDark}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Weekday labels */}
+          <View style={styles.weekdayRow}>
+            {WEEKDAY_LABELS.map((label) => (
+              <Text key={label} style={styles.weekdayLabel}>
+                {label}
+              </Text>
+            ))}
+          </View>
+
+          {/* Day grid */}
+          <View style={styles.dayGrid}>
+            {gridDays.map((day, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.dayCell}
+                disabled={day === null}
+                onPress={() => {
+                  if (day) {
+                    setSelectedDay(day);
+                    setCalendarSheetVisible(false);
+                  }
+                }}
+                accessibilityRole={day ? "button" : undefined}
+                accessibilityLabel={day ? `Select day ${day}` : undefined}
+              >
+                {day !== null && (
+                  <View
+                    style={[
+                      styles.dayCircle,
+                      selectedDay === day && styles.dayCircleSelected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.dayText,
+                        selectedDay === day && styles.dayTextSelected,
+                      ]}
+                    >
+                      {day}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </BottomSheet>
 
       {/* Fast year-jump sheet — reusing the BottomSheet we built earlier */}
       <BottomSheet
@@ -321,6 +356,27 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     padding: spacing.lg,
     marginBottom: spacing.lg,
+  },
+  dateField: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: 52,
+    borderWidth: 1.5,
+    borderColor: colors.borderLight,
+    borderRadius: radius.input,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  dateValue: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+  },
+  datePlaceholder: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textFaded,
   },
   monthRow: {
     flexDirection: "row",

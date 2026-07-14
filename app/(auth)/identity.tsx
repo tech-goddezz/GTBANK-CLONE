@@ -1,24 +1,27 @@
 // app/(auth)/identity.tsx
 // Selfie/identity verification step. SIMULATED capture — no real camera
-// wired in yet (that needs the expo-camera package + device permissions,
-// which is a bigger, separate step). Visually matches the Figma flow:
-// frame → "Wait a moment" → detected/confirmed.
+// wired in yet (that needs the expo-camera package + device permissions).
+//
+// Matches the Figma "Identity Verification" frames:
+//   1. Intro screen — camera illustration, consent line, "Start" button.
+//   2. Capture screen — circular face frame with a dashed border, a
+//      two-segment progress bar, a single instruction line, "Next" button.
+// From there it hands off to success.tsx ("Wait a moment" processing screen).
+// Both screens share "Need help?" top-right and no back arrow (per design).
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import Button from '../../components/Button';
 
-type CaptureState = 'idle' | 'processing' | 'done';
+type Step = 'intro' | 'capturing';
+
+// The dashed ring color around the face frame — a dark maroon in the
+// design, distinct from the app's usual orange accent.
+const RING_COLOR = '#8B0A0A';
 
 export default function IdentityScreen() {
   const router = useRouter();
@@ -30,17 +33,7 @@ export default function IdentityScreen() {
     city: string;
   }>();
 
-  const [captureState, setCaptureState] = useState<CaptureState>('idle');
-
-  const handleCapture = () => {
-    setCaptureState('processing');
-    // Simulates the time a real face-match API call would take.
-    // Replace this timeout with an actual expo-camera capture + API
-    // call when you're ready to wire up the real thing.
-    setTimeout(() => {
-      setCaptureState('done');
-    }, 1800);
-  };
+  const [step, setStep] = useState<Step>('intro');
 
   const handleContinue = () => {
     router.push(
@@ -50,104 +43,172 @@ export default function IdentityScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-      </TouchableOpacity>
+      <View style={styles.topRow}>
+        <TouchableOpacity>
+          <Text style={styles.needHelp}>Need help?</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.header}>
         <Text style={styles.title}>Identity Verification</Text>
         <Text style={styles.subtitle}>
-          {captureState === 'idle' && 'Position your face within the frame and tap capture'}
-          {captureState === 'processing' && 'Wait a moment while we verify your identity'}
-          {captureState === 'done' && 'Identity confirmed successfully'}
+          {step === 'intro'
+            ? 'Now find a well lit spot and take a photo of your face so we know its really you. To proceed, click "Start" or select another method if you are unable to take a photo'
+            : 'Please follow all the instructions given below'}
         </Text>
       </View>
 
-      {/* The circular frame — dashed border while idle, solid green once
-          "confirmed" so the state change is obvious at a glance. */}
-      <View style={styles.frameWrapper}>
-        <View
-          style={[
-            styles.frame,
-            captureState === 'done' && styles.frameConfirmed,
-          ]}
-        >
-          {captureState === 'idle' && (
-            <Ionicons name="person-outline" size={64} color={colors.textFaded} />
-          )}
-          {captureState === 'processing' && (
-            <ActivityIndicator color={colors.orange} size="large" />
-          )}
-          {captureState === 'done' && (
-            <Ionicons name="checkmark" size={64} color={colors.green} />
-          )}
-        </View>
-      </View>
+      {step === 'intro' ? (
+        <>
+          {/* Camera illustration — a stand-in for the design's 3D camera
+              render, since there's no exported asset for it yet. */}
+          <View style={styles.illustrationWrap}>
+            <Ionicons name="camera" size={130} color={colors.textDark} style={{ transform: [{ rotate: '-6deg' }] }} />
+          </View>
 
-      <View style={styles.buttonArea}>
-        {captureState !== 'done' ? (
-          <Button
-            label="Take Selfie"
-            onPress={handleCapture}
-            loading={captureState === 'processing'}
-            disabled={captureState === 'processing'}
-          />
-        ) : (
-          <Button label="Continue" onPress={handleContinue} />
-        )}
-      </View>
+          <Text style={styles.consent}>
+            By pressing start, I give my consent to the collection and processing of my personal data
+          </Text>
+
+          <View style={styles.buttonArea}>
+            <Button
+              label="Start"
+              onPress={() => setStep('capturing')}
+              style={styles.compactButton}
+            />
+          </View>
+        </>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setStep('intro')}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel capture"
+          >
+            <Ionicons name="close" size={22} color={colors.textDark} />
+          </TouchableOpacity>
+
+          <View style={styles.frameWrapper}>
+            <View style={styles.frame}>
+              <Ionicons name="person" size={110} color="#4A4A4A" />
+            </View>
+          </View>
+
+          {/* Two-segment progress bar — matches the design's capture
+              progress indicator (mostly filled, small remainder). */}
+          <View style={styles.progressRow}>
+            <View style={styles.progressFilled} />
+            <View style={styles.progressRemaining} />
+          </View>
+
+          <Text style={styles.captureInstruction}>
+            Don&apos;t blink your eyes while on the camera. Camera automatically captures
+          </Text>
+
+          <View style={styles.buttonArea}>
+            <Button
+              label="Next"
+              onPress={handleContinue}
+              style={styles.compactButton}
+            />
+          </View>
+        </>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
-  backButton: {
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     marginTop: 56,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
+    marginBottom: spacing.lg,
   },
-  header: { marginBottom: spacing.xxxl, alignItems: 'center' },
+  needHelp: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.orange,
+  },
+  header: { marginBottom: spacing.xl },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     marginBottom: spacing.sm,
-    textAlign: 'center',
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    textAlign: 'center',
     lineHeight: 22,
+  },
+  illustrationWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 220,
+    marginBottom: spacing.xl,
+  },
+  consent: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    lineHeight: 20,
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
   },
   frameWrapper: {
     alignItems: 'center',
-    marginBottom: spacing.xxxl,
+    marginBottom: spacing.lg,
   },
   frame: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
     borderWidth: 3,
-    borderColor: colors.borderLight,
     borderStyle: 'dashed',
+    borderColor: RING_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.pageBackground,
+    backgroundColor: '#161616',
   },
-  frameConfirmed: {
-    borderStyle: 'solid',
-    borderColor: colors.green,
-    backgroundColor: colors.greenFaint,
+  progressRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginBottom: spacing.lg,
   },
-  buttonArea: { marginTop: 'auto', marginBottom: spacing.xxxl },
+  progressFilled: {
+    flex: 4,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.orange,
+  },
+  progressRemaining: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.orangePressed,
+  },
+  captureInstruction: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    lineHeight: 20,
+  },
+  buttonArea: {
+    marginTop: 'auto',
+    marginBottom: spacing.xxxl,
+    alignItems: 'flex-end',
+  },
+  compactButton: {
+    paddingHorizontal: spacing.xxl,
+  },
 });

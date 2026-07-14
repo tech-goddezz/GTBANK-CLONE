@@ -1,9 +1,13 @@
 // app/index.tsx
-// Entry point — checks login state and redirects. User never sees this screen.
+//
+// Entry point / splash screen — matches the design's first onboarding-flow
+// frame exactly: just the GTCO logo centered on white, nothing else (no
+// spinner, no text). Checks login state in the background and redirects
+// once the short splash delay is up.
 
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
 import colors from '../constants/colors';
 
@@ -12,20 +16,24 @@ export default function Index() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   useEffect(() => {
+    // 📚 Quick concept: why a timer at all?
+    // Without it, the redirect can fire before the router is ready, and the
+    // logo would flash for one frame then vanish — this guarantees the
+    // splash is visible for a beat, like the design intends.
     const timer = setTimeout(() => {
       if (isLoggedIn) {
         router.replace('/(tabs)/home');
       } else {
         router.replace('/onboarding');
       }
-    }, 300);
+    }, 900);
 
     return () => clearTimeout(timer);
   }, [isLoggedIn]);
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator color={colors.orange} size="large" />
+      <Image source={require('../assets/icon.png')} style={styles.logo} resizeMode="contain" />
     </View>
   );
 }
@@ -37,4 +45,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 28,
+  },
+})

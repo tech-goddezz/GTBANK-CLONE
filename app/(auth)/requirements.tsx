@@ -26,6 +26,11 @@ const requirements = [
     subtitle: 'Confirm you meet the minimum age requirement',
   },
   {
+    icon: 'card-outline' as const,
+    title: 'BVN/NIN',
+    subtitle: 'Your bank verification or national ID number',
+  },
+  {
     icon: 'location-outline' as const,
     title: 'Residential address',
     subtitle: 'Where you currently live',
@@ -63,8 +68,15 @@ export default function RequirementsScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Open a GTBank{'\n'}Account</Text>
         <Text style={styles.subtitle}>
-          We just need a few more details to get you fully set up
+          Please verify the list of requirements before proceeding
         </Text>
+      </View>
+
+      {/* "Requirements" section label with its "0/4 ready" counter - present
+          in the design just above the checklist, was missing entirely before. */}
+      <View style={styles.sectionRow}>
+        <Text style={styles.sectionLabel}>Requirements</Text>
+        <Text style={styles.sectionCounter}>0/{requirements.length} ready</Text>
       </View>
 
       {/* Checklist */}
@@ -89,7 +101,7 @@ export default function RequirementsScreen() {
 
       {/* CTA */}
       <View style={styles.buttonArea}>
-        <Button label="Add Account" onPress={handleContinue} />
+        <Button label="Get Account" onPress={handleContinue} />
       </View>
     </ScrollView>
   );
@@ -127,6 +139,22 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
     lineHeight: 22,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  sectionLabel: {
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.semibold,
+    color: colors.textDark,
+  },
+  sectionCounter: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.medium,
+    color: colors.textGrey,
   },
   list: {
     gap: spacing.lg,
