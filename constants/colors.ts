@@ -42,7 +42,12 @@ const colors = {
   cardBackground: '#FFFFFF',
 
   // The dark charcoal card on the home screen that shows the balance.
-  darkCard: '#242424',
+  // Sampled directly from the Figma export: flat #444444, no gradient.
+  darkCard: '#444444',
+
+  // Neutral light-grey circle background used behind the Send/Pay/Top up/More
+  // icons on the home screen. Design does NOT tint these orange.
+  iconGrey: '#F2F2F2',
 
   // Slightly off-white for input fields — subtle separation from a white card.
   inputBackground: '#F9F9F9',

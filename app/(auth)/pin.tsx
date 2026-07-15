@@ -118,7 +118,14 @@ export default function PinScreen() {
               <Text style={styles.keyText}>{key}</Text>
             )}
           </TouchableOpacity>
+          
         ))}
+        <TouchableOpacity onPress={() => router.push('/(forgot-password)/requirements')}>
+      
+      <Text style={{ color: colors.orange, fontSize: fontSize.body, fontFamily: fontFamily.medium }}>
+      Forget password?
+      </Text>
+    </TouchableOpacity>
       </View>
     </View>
   );

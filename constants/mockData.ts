@@ -118,13 +118,12 @@ export const mockTransactions: Transaction[] = [
   },
 ];
 
-// Formats a number as a dollar amount: 42950 → "$42,950.00"
+// Formats a number as Naira: 42950 → "₦42,950.00"
+// NOTE: this used to format as USD ($), which didn't match the design
+// (GTBank/NIBSS/BVN — this is a Nigerian banking app) and was inconsistent
+// with app/(tabs)/transfer.tsx, which already formats amounts as ₦.
 export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(amount);
+  return `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 // Turns an ISO date string into something readable.

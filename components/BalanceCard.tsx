@@ -34,18 +34,16 @@ export default function BalanceCard() {
 
       {/* The balance itself — hidden or shown */}
       <Text style={styles.balance}>
-        {balanceHidden ? '$ *****' : formatCurrency(account.balance)}
+        {balanceHidden ? '₦ *****' : formatCurrency(account.balance)}
       </Text>
 
-      {/* Account number */}
-      <Text style={styles.accountNumber}>
-        {account.accountNumber}
-      </Text>
-
-      {/* Bottom row: account name + bank */}
+      {/* Bottom row: account type on the left, masked account number on the right —
+          matches the "Savings Account ... •••• 6487" row in the design */}
       <View style={styles.bottomRow}>
         <Text style={styles.accountName}>{account.accountName}</Text>
-        <Text style={styles.bankName}>{account.bankName}</Text>
+        <Text style={styles.maskedNumber}>
+          •••• {account.accountNumber.slice(-4)}
+        </Text>
       </View>
     </View>
   );
@@ -75,14 +73,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: fontFamily.bold,
     color: colors.white,
-    marginBottom: spacing.xs,
-  },
-  accountNumber: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.textFaded,
     marginBottom: spacing.lg,
-    letterSpacing: 1,
   },
   bottomRow: {
     flexDirection: 'row',
@@ -94,9 +85,10 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semibold,
     color: colors.white,
   },
-  bankName: {
+  maskedNumber: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
     color: colors.textFaded,
+    letterSpacing: 1,
   },
 });

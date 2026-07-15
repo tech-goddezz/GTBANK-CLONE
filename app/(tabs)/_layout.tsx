@@ -12,9 +12,8 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="home" />
       <Tabs.Screen name="transactions" />
-      <Tabs.Screen name="transfer" />
+      <Tabs.Screen name="transfer-flow" />
       <Tabs.Screen name="settings" />
-      <Tabs.Screen name="cards" />
     </Tabs>
   );
 }

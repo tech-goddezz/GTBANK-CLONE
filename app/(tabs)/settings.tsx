@@ -71,17 +71,31 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
-        <SettingsRow icon="lock-closed-outline" label="Change PIN" />
-        <SettingsRow icon="flag-outline" label="Report Transaction" />
+        <SettingsRow
+          icon="lock-closed-outline"
+          label="Change PIN"
+          onPress={() => router.push('/(settings)/change-mpin')}
+        />
+        <SettingsRow
+          icon="keypad-outline"
+          label="Change Transaction Pin"
+          onPress={() => router.push('/(settings)/change-transaction-pin')}
+        />
+        <SettingsRow
+          icon="flag-outline"
+          label="Report Transaction"
+        />
         <SettingsRow
           icon="card-outline"
           label="Card Management"
           onPress={() => router.push('/(tabs)/cards')}
         />
-        <SettingsRow icon="person-circle-outline" label="Account Settings" />
+        <SettingsRow
+          icon="person-circle-outline"
+          label="Account Settings"
+        />
       </View>
 
-      {/* Toggles get their own row style since they don't navigate anywhere */}
       <View style={styles.section}>
         <View style={styles.row}>
           <View style={styles.rowLeft}>
@@ -110,10 +124,21 @@ export default function SettingsScreen() {
             thumbColor={colors.white}
           />
         </View>
+
+        <SettingsRow
+          icon="help-circle-outline"
+          label="Get Help"
+          onPress={() => router.push('/(settings)/get-help')}
+        />
       </View>
 
       <View style={styles.section}>
-        <SettingsRow icon="log-out-outline" label="Log Out" onPress={handleLogout} danger />
+        <SettingsRow
+          icon="log-out-outline"
+          label="Log Out"
+          onPress={handleLogout}
+          danger
+        />
       </View>
     </ScrollView>
   );

@@ -26,6 +26,16 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
       ? colors.green
       : colors.textDark;
 
+  // The subtitle line shows the status word (in its status color) instead of
+  // the category whenever the transaction isn't a plain completed one —
+  // matches "Pending" / "Declined" appearing in place of the category in the design.
+  const statusColor =
+    transaction.status === 'declined'
+      ? colors.red
+      : transaction.status === 'pending'
+      ? colors.amber
+      : colors.textGrey;
+
   const amountPrefix = isCredit ? '+' : '-';
 
   return (
@@ -53,7 +63,13 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
         <Text style={styles.merchantName} numberOfLines={1}>
           {transaction.merchantName}
         </Text>
-        <Text style={styles.category} numberOfLines={1}>
+        <Text
+          style={[
+            styles.category,
+            transaction.status !== 'completed' && { color: statusColor },
+          ]}
+          numberOfLines={1}
+        >
           {transaction.status !== 'completed'
             ? transaction.status.charAt(0).toUpperCase() +
               transaction.status.slice(1)
@@ -88,13 +104,13 @@ const styles = StyleSheet.create({
   logo: {
     width: 42,
     height: 42,
-    borderRadius: radius.pill,
+    borderRadius: radius.button,
     backgroundColor: colors.borderLight,
   },
   logoFallback: {
     width: 42,
     height: 42,
-    borderRadius: radius.pill,
+    borderRadius: radius.button,
     backgroundColor: colors.orangeFaint,
     alignItems: 'center',
     justifyContent: 'center',

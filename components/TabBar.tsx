@@ -27,11 +27,11 @@ const TAB_CONFIG: Record<string, { label: string; icon: string; activeIcon: stri
     icon: 'list-outline',
     activeIcon: 'list',
   },
-  transfer: {
-    label: 'Transfer',
-    icon: 'swap-horizontal-outline',
-    activeIcon: 'swap-horizontal',
-  },
+  'transfer-flow': {
+  label: 'Transfer',
+  icon: 'swap-horizontal-outline',
+  activeIcon: 'swap-horizontal',
+},
   settings: {
     label: 'Settings',
     icon: 'settings-outline',
