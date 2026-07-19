@@ -1,8 +1,3 @@
-// app/(auth)/phone.tsx
-// Phone number entry — first step of the auth flow.
-// Matches the "Hello!" screen from the GTCO sign-in design: country-code
-// prefixed input, Need help link, legal disclaimer, Proceed button.
-
 import React, { useState } from 'react';
 import {
   View,
@@ -17,17 +12,15 @@ import {
 import { useRouter } from 'expo-router';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
-import Button from '../../components/Button';
 
 export default function PhoneScreen() {
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
-  // User types the number after +234, e.g. 801 234 5678 (10 digits)
   const isValid = phone.length === 10;
 
-  const handleContinue = () => {
+  const handleProceed = () => {
     if (!isValid) {
       setError('Please enter a valid phone number');
       return;
@@ -50,27 +43,25 @@ export default function PhoneScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        {/* Need help link, top right — matches design instead of a back arrow */}
+        {/* Need help — top right, orange, no back arrow on this screen */}
         <View style={styles.topRow}>
-          <TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Need help">
             <Text style={styles.needHelp}>Need help?</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Hello!</Text>
-          <Text style={styles.subtitle}>
-            Welcome to GT World! Enter your phone number to login or sign in
-          </Text>
-        </View>
+        <Text style={styles.title}>Hello!</Text>
+        <Text style={styles.subtitle}>
+          Welcome to GT World! Enter your phone number to login or sign in
+        </Text>
 
-        {/* Phone input with country code prefix */}
+        {/* Country code + number input — underline style, no card border */}
         <View style={[styles.inputRow, !!error && styles.inputRowError]}>
           <Text style={styles.flag}>🇳🇬</Text>
           <Text style={styles.dialCode}>+234</Text>
-          <Text style={styles.chevron}>⌄</Text>
+          <Text style={styles.chevron}>›</Text>
           <View style={styles.divider} />
           <TextInput
             style={styles.input}
@@ -80,24 +71,32 @@ export default function PhoneScreen() {
             onChangeText={handleChangeText}
             keyboardType="number-pad"
             maxLength={10}
+            accessibilityLabel="Mobile number input"
           />
         </View>
-        {!!error && <Text style={styles.error}>{error}</Text>}
 
-        {/* Legal disclaimer */}
+        {!!error && <Text style={styles.errorText}>{error}</Text>}
+
+        {/* Legal disclaimer with orange links */}
         <Text style={styles.disclaimer}>
-          By providing your phone number, you agree to our{' '}
-          <Text style={styles.disclaimerLink}>Privacy policy</Text> and{' '}
-          <Text style={styles.disclaimerLink}>Terms of Use</Text>
+          By providing your phone number , you agree to our{' '}
+          <Text style={styles.link}>Privacy policy</Text>
+          {' '}and{' '}
+          <Text style={styles.link}>Terms of Use</Text>
         </Text>
 
-        {/* Proceed button */}
-        <View style={styles.buttonArea}>
-          <Button
-            label="Proceed"
-            onPress={handleContinue}
+        {/* Proceed button — compact, right-aligned, matching the design */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.proceedButton, !isValid && styles.proceedButtonDisabled]}
+            onPress={handleProceed}
             disabled={!isValid}
-          />
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Proceed"
+          >
+            <Text style={styles.proceedText}>Proceed</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -115,18 +114,15 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl,
   },
   topRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
     marginTop: 56,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xxl,
   },
   needHelp: {
-    fontSize: fontSize.body,
+    fontSize: fontSize.body + 3,
     fontFamily: fontFamily.semibold,
     color: colors.orange,
-  },
-  header: {
-    marginBottom: spacing.xxxl,
+    paddingTop: spacing.xxl,
   },
   title: {
     fontSize: fontSize.heading1,
@@ -139,6 +135,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
     lineHeight: 20,
+    marginBottom: spacing.xxxl,
   },
   inputRow: {
     flexDirection: 'row',
@@ -163,10 +160,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body,
     color: colors.textGrey,
     marginLeft: spacing.xs,
+    transform: [{ rotate: '90deg' }],
   },
   divider: {
     width: 1,
-    height: 24,
+    height: 20,
     backgroundColor: colors.borderLight,
     marginHorizontal: spacing.md,
   },
@@ -177,7 +175,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
     padding: 0,
   },
-  error: {
+  errorText: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
     color: colors.red,
@@ -190,12 +188,29 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: spacing.lg,
   },
-  disclaimerLink: {
+  link: {
     fontFamily: fontFamily.semibold,
     color: colors.orange,
   },
-  buttonArea: {
+  buttonRow: {
+    alignItems: 'flex-end',
     marginTop: 'auto',
     paddingTop: spacing.xxxl,
+  },
+  proceedButton: {
+    backgroundColor: colors.orange,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.md,
+    borderRadius: radius.button - 10,
+    marginBottom: 250,
+    height: 44,
+  },
+  proceedButtonDisabled: {
+    opacity: 0.5,
+  },
+  proceedText: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.white,
   },
 });

@@ -20,6 +20,7 @@ import { fontSize, fontFamily, spacing, radius } from '../../constants/typograph
 import InputField from '../../components/InputField';
 import Button from '../../components/Button';
 import BottomSheet from '../../components/ui/BottomSheet';
+import { useKycStore } from '../../store/useKycStore';
 
 // A representative set of Nigerian states — enough to make the picker feel
 // real for a demo. Swap for the full 36 + FCT list if this goes to production.
@@ -35,6 +36,7 @@ export default function AddressScreen() {
     verificationType: string;
     verificationNumber: string;
   }>();
+  const markAddressDone = useKycStore((state) => state.markAddressDone);
 
   const [stateSheetVisible, setStateSheetVisible] = useState(false);
   const [selectedState, setSelectedState] = useState('');
@@ -55,6 +57,7 @@ export default function AddressScreen() {
       return;
     }
     setError('');
+    markAddressDone();
     router.push(
       `/(auth)/identity?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${selectedState}&lga=${lga}&city=${city}`
     );
@@ -82,7 +85,7 @@ export default function AddressScreen() {
 
         {/* State picker — looks like a text input but opens a sheet instead
             of a keyboard, since state is a fixed list, not free text. */}
-        <Text style={styles.fieldLabel}>State</Text>
+
         <TouchableOpacity
           style={styles.dropdownField}
           onPress={() => setStateSheetVisible(true)}
@@ -90,7 +93,7 @@ export default function AddressScreen() {
           accessibilityLabel="Select your state"
         >
           <Text style={selectedState ? styles.dropdownValue : styles.dropdownPlaceholder}>
-            {selectedState || 'Select your state'}
+            {selectedState || 'State'}
           </Text>
           <Ionicons name="chevron-down" size={18} color={colors.textGrey} />
         </TouchableOpacity>
@@ -98,26 +101,28 @@ export default function AddressScreen() {
         {/* Local Government Area — present in the design between State and
             City, and was missing from this screen entirely before. */}
         <InputField
-          label="Local Government Area"
-          placeholder="e.g. Ikeja"
+          label=""
+          placeholder="Local Government Area"
           value={lga}
           onChangeText={setLga}
+          style={{ borderColor: colors.lighter, }}
         />
 
         <InputField
-          label="City"
-          placeholder="e.g. Ikeja"
+          label=""
+          placeholder="City"
           value={city}
           onChangeText={setCity}
+          style={{ borderColor: colors.lighter, }}
         />
 
         <InputField
-          label="Address"
-          placeholder="House number and street name"
+          label=""
+          placeholder="Address"
           value={streetAddress}
           onChangeText={setStreetAddress}
           multiline
-          style={{ height: 80, textAlignVertical: 'top', paddingTop: spacing.md }}
+          style={{ textAlignVertical: 'top', paddingTop: spacing.md, borderColor: colors.lighter, }}
         />
 
         {!!error && <Text style={styles.errorText}>{error}</Text>}
@@ -171,8 +176,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.xxxl,
   },
+  
   backButton: {
-    marginTop: 56,
+    marginTop: 70,
     marginBottom: spacing.xl,
     width: 40,
     height: 40,
@@ -183,8 +189,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xl,
   },
+
+
+
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
@@ -193,7 +202,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.white,
     marginBottom: spacing.xs,
   },
   dropdownField: {
@@ -204,19 +213,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.inputBackground,
     borderRadius: radius.input,
     borderWidth: 1.5,
-    borderColor: colors.borderLight,
+    borderColor: colors.lighter,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.lg,
   },
   dropdownValue: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.dark,
   },
   dropdownPlaceholder: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textFaded,
+    color: colors.dark,
   },
   errorText: {
     fontSize: fontSize.small,
@@ -224,7 +233,11 @@ const styles = StyleSheet.create({
     color: colors.red,
     marginBottom: spacing.md,
   },
-  buttonArea: { marginTop: spacing.md },
+  buttonArea: { 
+    marginTop: spacing.large + 40,
+    alignItems: 'flex-end',
+   },
+
   stateRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -45,6 +45,18 @@ const colors = {
   // Sampled directly from the Figma export: flat #444444, no gradient.
   darkCard: '#444444',
 
+  lightest: '#F7F9FA',
+
+  lighter: '#F2F4F5',
+
+  light: '#E3E5E5',
+
+  base: '#CDCFD0',
+
+  dark: '#979C9E',
+
+
+
   // Neutral light-grey circle background used behind the Send/Pay/Top up/More
   // icons on the home screen. Design does NOT tint these orange.
   iconGrey: '#F2F2F2',

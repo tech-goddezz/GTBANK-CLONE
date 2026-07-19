@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   boxFilled: {
-    borderColor: colors.orange,
-    backgroundColor: colors.white,
+    borderColor: colors.base,
+    backgroundColor: '#eef1fd',
   },
 });

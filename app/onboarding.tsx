@@ -1,9 +1,7 @@
 // app/onboarding.tsx
 //
-// The 5-slide intro carousel — wording, layout, and order copied exactly
-// from "On boarding flow.pdf" in the design file. Same cube graphic on
-// every slide, only the heading changes. Last slide has no "Skip" and its
-// button says "Let's start" instead of "Next".
+// 5-slide intro carousel. The splash frame from Figma lives at app/index.tsx
+// (logo, 900ms, redirect) — this screen starts straight at slide 1.
 
 import React, { useRef, useState } from 'react';
 import {
@@ -18,21 +16,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { fontSize, fontFamily, spacing } from '../constants/typography';
 import CubeIllustration from '../components/CubeIllustration';
 
 const { width } = Dimensions.get('window');
 
-// 📚 Quick concept: why titles are an array of strings, not objects
-// Every slide shares the exact same layout — only these words change. Storing
-// them as a flat array (instead of one JSX block copy-pasted 5 times) means if
-// the copy changes again, you edit one line here instead of hunting through
-// five near-identical components.
 const slides = [
-  { id: '1', title: 'GT World\nAll fresh and clean' },
-  { id: '2', title: 'All inclusive\nfinancial platform' },
+  { id: '1', title: 'GT World\nAll fresh and\nclean' },
+  { id: '2', title: 'All inclusive\nfinancial\nplatform' },
   { id: '3', title: 'More\nefficient\nways to pay' },
   { id: '4', title: 'Save for\nretirement with\npensions' },
   { id: '5', title: 'A friendly\nfinancial\nservices app' },
@@ -81,42 +73,27 @@ export default function Onboarding() {
           <View style={styles.slide}>
             <CubeIllustration />
             <Text style={styles.title}>{item.title}</Text>
+
+            <View style={styles.controlsRow}>
+              <View style={styles.dotsRow}>
+                {slides.map((_, i) => (
+                  <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={isLastSlide ? styles.letsStartButton : styles.nextButton}
+                onPress={handleNext}
+                activeOpacity={0.8}
+              >
+                <Text style={isLastSlide ? styles.letsStartButtonLabel : styles.nextButtonLabel}>
+                  {isLastSlide ? "Let's start" : 'Next'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
-
-      {/* Design has two distinct bottom layouts, not one shared pattern:
-          - Slides 1-4: dots on the left, a circular orange button with a
-            white arrow icon on the right (no "Next" text anywhere).
-          - Slide 5 (last): no dots, no skip - just a full-width orange
-            "Let's start" button. */}
-      {isLastSlide ? (
-        <View style={styles.bottomRowFinal}>
-          <TouchableOpacity
-            style={styles.buttonFull}
-            onPress={handleNext}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.buttonFullLabel}>Let's start</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.bottomRow}>
-          <View style={styles.dotsRow}>
-            {slides.map((_, i) => (
-              <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={styles.buttonCircle}
-            onPress={handleNext}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="arrow-forward" size={22} color={colors.white} />
-          </TouchableOpacity>
-        </View>
-      )}
     </SafeAreaView>
   );
 }
@@ -128,9 +105,11 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: spacing.xl,
+    top: spacing.xxl + 30,
     right: spacing.xl,
     zIndex: 10,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.xs,
   },
   skipText: {
     fontSize: fontSize.large,
@@ -140,22 +119,21 @@ const styles = StyleSheet.create({
   slide: {
     width,
     paddingTop: 64,
-    paddingHorizontal: spacing.xl,
   },
-  // Heading is left-aligned in the design, not centered.
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     lineHeight: 34,
-    marginTop: spacing.xl,
+    marginTop: spacing.xxxl + 50,
+    paddingHorizontal: spacing.xl,
   },
-  bottomRow: {
+  controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    marginTop: spacing.xxxl,
   },
   dotsRow: {
     flexDirection: 'row',
@@ -165,36 +143,36 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-    borderRadius: radius.pill,
+    borderRadius: 999,
     backgroundColor: colors.borderLight,
   },
   dotActive: {
     width: 24,
     backgroundColor: colors.orange,
   },
-  // Circular "Next" button, slides 1-4 — solid orange, white arrow icon.
-  buttonCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: radius.pill,
+  nextButton: {
+    height: 44,
+    paddingHorizontal: spacing.xxl + 20,
+    borderRadius: 3,
+    backgroundColor: colors.borderLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextButtonLabel: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.textDark,
+  },
+  letsStartButton: {
+    height: 44,
+    paddingHorizontal: spacing.xxl,
+    borderRadius: 3,
     backgroundColor: colors.orange,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Full-width "Let's start" button, slide 5 only — no dots alongside it.
-  bottomRowFinal: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
-  },
-  buttonFull: {
-    height: 54,
-    borderRadius: radius.button,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonFullLabel: {
-    fontSize: fontSize.large,
+  letsStartButtonLabel: {
+    fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
     color: colors.white,
   },

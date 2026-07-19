@@ -1,7 +1,9 @@
 // app/(auth)/requirements.tsx
-// Shown right after OTP verification. Tells the user what's coming next
-// (DOB, address, identity check) before we ask for any of it — reduces
-// the "why are you asking me this" friction of a cold form.
+// Shown right after login. Matches the Figma frame: a single bordered
+// list box holding all 4 requirements (no separate cards, no subtitles,
+// no colored icons) — each row shows an outlined "not done" icon until
+// that step is completed, then a filled green checkmark. Tapping a row
+// jumps into that step. "Get Account" only proceeds once all 4 are done.
 
 import React from 'react';
 import {
@@ -16,37 +18,48 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import Button from '../../components/Button';
-
-// Each requirement item is intentionally just data — if the bank ever adds
-// or removes a KYC step, this array is the only thing that needs editing.
-const requirements = [
-  {
-    icon: 'calendar-outline' as const,
-    title: 'Date of birth',
-    subtitle: 'Confirm you meet the minimum age requirement',
-  },
-  {
-    icon: 'card-outline' as const,
-    title: 'BVN/NIN',
-    subtitle: 'Your bank verification or national ID number',
-  },
-  {
-    icon: 'location-outline' as const,
-    title: 'Residential address',
-    subtitle: 'Where you currently live',
-  },
-  {
-    icon: 'finger-print-outline' as const,
-    title: 'Identity verification',
-    subtitle: 'A quick selfie to confirm it\'s really you',
-  },
-];
+import { useKycStore } from '../../store/useKycStore';
 
 export default function RequirementsScreen() {
   const router = useRouter();
+  const { dateOfBirthDone, bvnNinDone, addressDone, identityDone } = useKycStore();
 
-  const handleContinue = () => {
-    router.push('/(auth)/date-of-birth');
+  // Each requirement is data — title, whether it's done, and where tapping
+  // it should go. If the bank ever adds/removes a KYC step, this array is
+  // the only thing that needs editing.
+  const requirements = [
+    {
+      key: 'dob',
+      title: 'Date of birth',
+      done: dateOfBirthDone,
+      route: '/(auth)/date-of-birth' as const,
+    },
+    {
+      key: 'bvn',
+      title: 'BVN/NIN',
+      done: bvnNinDone,
+      route: '/(auth)/bvn-nin' as const,
+    },
+    {
+      key: 'address',
+      title: 'Residential address',
+      done: addressDone,
+      route: '/(auth)/address' as const,
+    },
+    {
+      key: 'identity',
+      title: 'Identity verification',
+      done: identityDone,
+      route: '/(auth)/identity' as const,
+    },
+  ];
+
+  const readyCount = requirements.filter((r) => r.done).length;
+  const allDone = readyCount === requirements.length;
+
+  const handleGetAccount = () => {
+    if (!allDone) return;
+    router.push('/(auth)/success');
   };
 
   return (
@@ -66,42 +79,52 @@ export default function RequirementsScreen() {
 
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Open a GTBank{'\n'}Account</Text>
+        <Text style={styles.title}>Open a GTBank Account</Text>
         <Text style={styles.subtitle}>
           Please verify the list of requirements before proceeding
         </Text>
       </View>
 
-      {/* "Requirements" section label with its "0/4 ready" counter - present
-          in the design just above the checklist, was missing entirely before. */}
       <View style={styles.sectionRow}>
         <Text style={styles.sectionLabel}>Requirements</Text>
-        <Text style={styles.sectionCounter}>0/{requirements.length} ready</Text>
+        <Text style={styles.sectionCounter}>
+          {readyCount}/{requirements.length} ready
+        </Text>
       </View>
 
-      {/* Checklist */}
-      <View style={styles.list}>
-        {requirements.map((item) => (
-          <View key={item.title} style={styles.listItem}>
-            <View style={styles.iconCircle}>
-              <Ionicons name={item.icon} size={20} color={colors.orange} />
-            </View>
-            <View style={styles.listItemText}>
-              <Text style={styles.listItemTitle}>{item.title}</Text>
-              <Text style={styles.listItemSubtitle}>{item.subtitle}</Text>
-            </View>
-            {/* Green checkmark signals "this is required", not "already done" —
-                a first-time user hasn't completed any of these yet. We're using
-                it here to match the Figma design, which uses it as a bullet
-                marker rather than a completion indicator. */}
-            <Ionicons name="checkmark-circle" size={22} color={colors.green} />
-          </View>
+      {/* Single bordered list box — one rectangle holding all 4 rows,
+          per the Figma frame, not separate cards. */}
+      <View style={styles.listBox}>
+        {requirements.map((item, index) => (
+          <TouchableOpacity
+            key={item.key}
+            style={[
+              styles.listRow,
+              index < requirements.length - 1 && styles.listRowDivider,
+            ]}
+            onPress={() => router.push(item.route)}
+            activeOpacity={0.6}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.title}, ${item.done ? 'completed' : 'not completed'}`}
+          >
+            <Text style={styles.listRowText}>{item.title}</Text>
+            <Ionicons
+              name={item.done ? 'checkmark-circle' : 'close-circle-outline'}
+              size={20}
+              color={item.done ? colors.green : colors.textFaded}
+            />
+          </TouchableOpacity>
         ))}
       </View>
 
-      {/* CTA */}
+      {/* CTA — compact, right-aligned; disabled until every step is done */}
       <View style={styles.buttonArea}>
-        <Button label="Get Account" onPress={handleContinue} />
+        <Button
+          label="Get Account"
+          onPress={handleGetAccount}
+          disabled={!allDone}
+          style={styles.compactButton}
+        />
       </View>
     </ScrollView>
   );
@@ -118,8 +141,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl,
   },
   backButton: {
-    marginTop: 56,
-    marginBottom: spacing.xl,
+    marginTop: 70,
+    marginBottom: spacing.xxl,
     width: 40,
     height: 40,
     justifyContent: 'center',
@@ -128,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxxl,
   },
   title: {
-    fontSize: fontSize.heading1,
+    fontSize: 26,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     marginBottom: spacing.sm,
@@ -144,10 +167,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   sectionLabel: {
-    fontSize: fontSize.large,
+    fontSize: fontSize.heading2,
     fontFamily: fontFamily.semibold,
     color: colors.textDark,
   },
@@ -156,40 +179,36 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     color: colors.textGrey,
   },
-  list: {
-    gap: spacing.lg,
+  listBox: {
+    borderWidth: 1,
+    borderColor: colors.dark,
+    borderRadius: 7,
+    overflow: 'hidden',
   },
-  listItem: {
+  listRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: colors.pageBackground,
-    borderRadius: radius.card,
-    padding: spacing.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.pill,
-    backgroundColor: colors.orangeFaint,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
+  listRowDivider: {
+    borderBottomWidth: 0,
+    borderBottomColor: colors.borderLight,
   },
-  listItemText: {
-    flex: 1,
-  },
-  listItemTitle: {
-    fontSize: fontSize.large,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
-    marginBottom: 2,
-  },
-  listItemSubtitle: {
-    fontSize: fontSize.small,
+  listRowText: {
+    fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.textDark,
   },
   buttonArea: {
-    marginTop: spacing.xxxl,
+    marginTop: spacing.xxxl + 170,
+    alignItems: 'flex-end',
+  },
+  compactButton: {
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.sm - 5,
+    borderRadius: spacing.xl - 20,
+    height: 44,
   },
 });

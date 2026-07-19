@@ -1,12 +1,11 @@
-// app/(auth)/login-biometric.tsx
-//
-// The fingerprint version of the returning-user login screen. Same avatar
-// placeholder up top as login-password.tsx, but instead of a keypad, this
-// screen shows a fingerprint icon the user taps, then a button that reads
-// "Authenticating fingerprint" while the (mocked, for now) check runs.
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,41 +22,58 @@ export default function LoginBiometricScreen() {
   const handleFingerprintTap = () => {
     if (authenticating) return;
     setAuthenticating(true);
-
-    // 📚 Quick concept: this is a MOCK biometric check. Real Face ID /
-    // fingerprint auth would use the expo-local-authentication package,
-    // which isn't installed yet — flagging that below. For now we just
-    // simulate the short delay a real scan would have, so the flow feels
-    // real when you demo it.
     setTimeout(() => {
       login(mockUser, 'mock-token-abc123');
-      router.replace('/(tabs)/home');
+      router.replace('/(auth)/requirements');
     }, 1200);
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Avatar at top */}
       <View style={styles.avatarCircle}>
         <Ionicons name="person-outline" size={28} color={colors.textGrey} />
       </View>
 
+      {/* Center: fingerprint icon + helper text */}
       <View style={styles.center}>
-        <TouchableOpacity onPress={handleFingerprintTap} activeOpacity={0.7}>
-          <View style={styles.fingerprintCircle}>
-            <Ionicons name="finger-print" size={48} color={colors.orange} />
+        <TouchableOpacity
+          onPress={handleFingerprintTap}
+          activeOpacity={0.7}
+          disabled={authenticating}
+          accessibilityRole="button"
+          accessibilityLabel="Tap to authenticate with fingerprint"
+        >
+          {/* Red/orange fingerprint — matches design's reddish-orange tint */}
+          <View style={styles.fingerprintWrap}>
+            <Ionicons name="finger-print" size={64} color="#D94F2B" />
           </View>
         </TouchableOpacity>
 
         <Text style={styles.helperText}>
-          {authenticating ? 'Authenticating fingerprint' : 'Click to log in with Fingerprint'}
+          Click to log in with Fingerprint
         </Text>
+
+        {/* Orange button only appears while authenticating */}
+        {authenticating && (
+          <View style={styles.authenticatingButton}>
+            <Text style={styles.authenticatingText}>Authenticating fingerprint</Text>
+          </View>
+        )}
       </View>
 
+      {/* Bottom links */}
       <View style={styles.linkRow}>
-        <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
+        <TouchableOpacity
+          onPress={() => router.push('/(forgot-password)/requirements')}
+          accessibilityRole="button"
+        >
           <Text style={styles.linkOrange}>Forget password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.replace('/(auth)/login-password')}>
+        <TouchableOpacity
+          onPress={() => router.replace('/(auth)/login-password')}
+          accessibilityRole="button"
+        >
           <Text style={styles.linkGrey}>Login with Password</Text>
         </TouchableOpacity>
       </View>
@@ -78,36 +94,52 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1.5,
     borderColor: colors.borderLight,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing.xxxl,
-    backgroundColor: colors.cardBackground,
+    marginTop: spacing.xxxl + 50,
+    marginBottom: spacing.xxxl - 180,
   },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.lg,
   },
-  fingerprintCircle: {
-    width: 88,
-    height: 88,
+  fingerprintWrap: {
+    width: 100,
+    height: 100,
     borderRadius: radius.pill,
-    backgroundColor: colors.orangeFaint,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm - 20,
   },
   helperText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textDark,
-    marginBottom: spacing.xl,
+    textAlign: 'center',
+    marginBottom: spacing.xxxl,
+  },
+  authenticatingButton: {
+    backgroundColor: colors.orange,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xxl,
+    borderRadius: 4,
+    marginTop: spacing.md - 40,
+  },
+  authenticatingText: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.white,
   },
   linkRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    paddingVertical: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
+    marginBottom: spacing.xxxl + 35,
   },
   linkOrange: {
     fontSize: fontSize.body,

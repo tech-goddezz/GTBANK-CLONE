@@ -34,8 +34,8 @@ export const fontFamily = {
 // Border radius values from the design. Consistent rounding across the whole app.
 export const radius = {
   card: 16,     // All cards and large containers
-  button: 12,   // Buttons and input fields
-  input: 12,
+  button: 4,   // Buttons and input fields
+  input: 3,
   pill: 999,    // Badges, avatar circles — fully round
 };
 
@@ -49,4 +49,6 @@ export const spacing = {
   xl: 20,
   xxl: 24,
   xxxl: 32,
+  large: 100,
+  bottom: 370,
 };

@@ -10,12 +10,14 @@
 // Both screens share "Need help?" top-right and no back arrow (per design).
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import Button from '../../components/Button';
+import { useKycStore } from '../../store/useKycStore';
+import Svg, { Circle } from 'react-native-svg';
 
 type Step = 'intro' | 'capturing';
 
@@ -34,16 +36,28 @@ export default function IdentityScreen() {
   }>();
 
   const [step, setStep] = useState<Step>('intro');
+  const markIdentityDone = useKycStore((state) => state.markIdentityDone);
 
   const handleContinue = () => {
-    router.push(
-      `/(auth)/success?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${params.state}&city=${params.city}`
-    );
+    // Last step in the chain — mark this requirement done and go back to
+    // the requirements screen so the user sees all four checked off,
+    // instead of skipping straight to the "Wait a moment" screen.
+    markIdentityDone();
+    router.replace('/(auth)/requirements');
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
+        </TouchableOpacity>
       <View style={styles.topRow}>
+
         <TouchableOpacity>
           <Text style={styles.needHelp}>Need help?</Text>
         </TouchableOpacity>
@@ -60,10 +74,13 @@ export default function IdentityScreen() {
 
       {step === 'intro' ? (
         <>
-          {/* Camera illustration — a stand-in for the design's 3D camera
-              render, since there's no exported asset for it yet. */}
+          {/* Camera illustration — real asset exported from Figma */}
           <View style={styles.illustrationWrap}>
-            <Ionicons name="camera" size={130} color={colors.textDark} style={{ transform: [{ rotate: '-6deg' }] }} />
+            <Image
+              source={require('../../assets/images/camera-illustration.png')}
+              style={styles.cameraImage}
+              resizeMode="contain"
+            />
           </View>
 
           <Text style={styles.consent}>
@@ -89,9 +106,42 @@ export default function IdentityScreen() {
             <Ionicons name="close" size={22} color={colors.textDark} />
           </TouchableOpacity>
 
+          {/* Small red dot with a lighter ring around it — indicates the
+              camera is "live" during capture */}
+          <View style={styles.activeDotRing}>
+            <View style={styles.activeDotCenter} />
+          </View>
+
           <View style={styles.frameWrapper}>
-            <View style={styles.frame}>
-              <Ionicons name="person" size={110} color="#4A4A4A" />
+            <View style={styles.dashedRingWrapper}>
+              {/* SVG circle instead of a plain View border — this is the
+                  only way to control dash LENGTH (not just width) in
+                  React Native. strokeDasharray="14 10" means: draw a
+                  14px dash, then leave a 10px gap, repeat. Bump the first
+                  number up for longer dashes, the second for bigger gaps. */}
+              <Svg
+                width={300}
+                height={300}
+                style={StyleSheet.absoluteFill}
+              >
+                <Circle
+                  cx={150}
+                  cy={150}
+                  r={148}
+                  stroke={RING_COLOR}
+                  strokeWidth={3}
+                  strokeDasharray="14 10"
+                  fill="none"
+                />
+              </Svg>
+
+              <View style={styles.frame}>
+                <Image
+                  source={require('../../assets/images/verification-face.png')}
+                  style={styles.faceImage}
+                  resizeMode="cover"
+                />
+              </View>
             </View>
           </View>
 
@@ -124,14 +174,23 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 56,
-    marginBottom: spacing.lg,
+    marginTop: spacing.sm - 50,
+    marginBottom: spacing.lg  + 10,
+  },
+
+  backButton: {
+    marginTop: 70,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
   },
   needHelp: {
-    fontSize: fontSize.body,
+    fontSize: fontSize.body + 3,
     fontFamily: fontFamily.semibold,
     color: colors.orange,
+    paddingTop: spacing.sm, 
   },
+
   header: { marginBottom: spacing.xl },
   title: {
     fontSize: fontSize.heading1,
@@ -145,17 +204,22 @@ const styles = StyleSheet.create({
     color: colors.textGrey,
     lineHeight: 22,
   },
-  illustrationWrap: {
+ illustrationWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 220,
+    height: 300,
     marginBottom: spacing.xl,
+  },
+  cameraImage: {
+    width: 400,
+    height: 400,
   },
   consent: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
     lineHeight: 20,
+    marginTop: spacing.sm - 30,
   },
   closeButton: {
     alignSelf: 'flex-end',
@@ -165,38 +229,71 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.md,
   },
+
+ activeDotRing: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: '#FFBBB2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: spacing.lg,
+  },
+  activeDotCenter: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF7866',
+  },
+
   frameWrapper: {
     alignItems: 'center',
     marginBottom: spacing.lg,
+  },
+ dashedRingWrapper: {
+    width: 300,
+    height: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   frame: {
     width: 260,
     height: 260,
     borderRadius: 130,
-    borderWidth: 3,
-    borderStyle: 'dashed',
-    borderColor: RING_COLOR,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#161616',
+    overflow: 'hidden',
   },
+  faceImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 130,
+  },
+
   progressRow: {
     flexDirection: 'row',
     gap: spacing.xs,
     marginBottom: spacing.lg,
   },
+
+
   progressFilled: {
     flex: 4,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.orange,
+    backgroundColor: '#FF9D3A',
   },
   progressRemaining: {
     flex: 1,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.orangePressed,
+    backgroundColor: '#CC6600',
   },
+
+
   captureInstruction: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
@@ -205,10 +302,22 @@ const styles = StyleSheet.create({
   },
   buttonArea: {
     marginTop: 'auto',
-    marginBottom: spacing.xxxl,
+    marginBottom: spacing.xxxl + 70,
     alignItems: 'flex-end',
   },
   compactButton: {
-    paddingHorizontal: spacing.xxl,
+    paddingHorizontal: spacing.xxxl,
+    height: 44,
   },
 });
+
+
+// buttonArea: {
+//     marginTop: 'auto',
+//     marginBottom: spacing.xxxl + 70,
+//     alignItems: 'flex-end',
+//   },
+//   compactButton: {
+//     paddingHorizontal: spacing.xxxl,
+//     height: 45,
+//   },

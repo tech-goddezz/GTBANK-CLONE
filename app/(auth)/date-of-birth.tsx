@@ -23,6 +23,7 @@ import {
 } from "../../constants/typography";
 import Button from "../../components/Button";
 import BottomSheet from "../../components/ui/BottomSheet";
+import { useKycStore } from "../../store/useKycStore";
 
 const MONTH_NAMES = [
   "January",
@@ -71,6 +72,7 @@ const getFirstWeekday = (month: number, year: number): number => {
 
 export default function DateOfBirthScreen() {
   const router = useRouter();
+  const markDateOfBirthDone = useKycStore((state) => state.markDateOfBirthDone);
 
   // Default view starts at a reasonable adult birth year so the user
   // isn't stuck scrolling from the current month on first open.
@@ -145,9 +147,8 @@ export default function DateOfBirthScreen() {
       return;
     }
     setError("");
-    // Pass the picked date forward as a param — the account-created
-    // screen or a future profile screen could read it back if needed.
     const dobString = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`;
+    markDateOfBirthDone(dobString);
     router.push(`/(auth)/bvn-nin?dob=${dobString}`);
   };
 
@@ -333,12 +334,13 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl,
   },
   backButton: {
-    marginTop: 56,
+    marginTop: 70,
     marginBottom: spacing.xl,
     width: 40,
     height: 40,
     justifyContent: "center",
   },
+
   header: { marginBottom: spacing.xxl },
   title: {
     fontSize: fontSize.heading1,
@@ -363,7 +365,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 52,
     borderWidth: 1.5,
-    borderColor: colors.borderLight,
+    borderColor: colors.dark,
     borderRadius: radius.input,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.lg,
@@ -376,7 +378,7 @@ const styles = StyleSheet.create({
   datePlaceholder: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textFaded,
+    color: colors.dark,
   },
   monthRow: {
     flexDirection: "row",
@@ -442,9 +444,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     textAlign: "center",
   },
+
   buttonArea: {
-    marginTop: spacing.md,
+    marginTop: 370,
+    alignItems: 'flex-end',
+    height: 44,
+    
   },
+
   yearList: {
     maxHeight: 400,
   },

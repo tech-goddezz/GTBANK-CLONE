@@ -73,11 +73,11 @@ export default function Button({
 
 const styles = StyleSheet.create({
   base: {
-    height: 54,
+    height: 44,
     borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xxl,
   },
   primaryContainer: {
     backgroundColor: colors.orange,
