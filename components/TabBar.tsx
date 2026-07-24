@@ -28,7 +28,7 @@ const TAB_CONFIG: Record<string, { label: string; icon: string; activeIcon: stri
     activeIcon: 'list',
   },
   'transfer-flow': {
-    label: 'Transfers',
+    label: 'Transfer',
     icon: 'swap-horizontal-outline',
     activeIcon: 'swap-horizontal',
   },
