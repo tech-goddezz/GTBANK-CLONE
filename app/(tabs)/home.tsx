@@ -17,7 +17,6 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAccountStore } from '../../store/useAccountStore';
-import { formatCurrency, formatDate } from '../../constants/mockData';
 import BalanceCard from '../../components/BalanceCard';
 import TransactionItem from '../../components/TransactionItem';
 
@@ -34,20 +33,6 @@ export default function HomeScreen() {
   const { transactions } = useAccountStore();
 
   const recentTransactions = transactions.slice(0, 5);
-
-  // Group transactions under TODAY / YESTERDAY / date labels
-  const sections = recentTransactions.reduce
-    <{ label: string; items: typeof recentTransactions }[]
-  >((acc, txn) => {
-    const label = formatDate(txn.date).toUpperCase();
-    const existing = acc.find((s) => s.label === label);
-    if (existing) {
-      existing.items.push(txn);
-    } else {
-      acc.push({ label, items: [txn] });
-    }
-    return acc;
-  }, []);
 
   const handleQuickAction = (id: string) => {
     if (id === 'send') router.push('/(tabs)/transfer-flow/');
@@ -83,6 +68,19 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* History entry point — sits between the top bar and the balance
+            card, matching the design. Opens the History screen. */}
+        <View style={styles.historyRow}>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() => router.push('/(tabs)/history')}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="time-outline" size={16} color={colors.textDark} />
+            <Text style={styles.historyLabel}>History</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Balance card */}
         <BalanceCard />
 
@@ -107,24 +105,19 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/transactions')}>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/history')}>
               <Text style={styles.seeAll}>See All</Text>
             </TouchableOpacity>
           </View>
 
-          {sections.length === 0 ? (
+          {recentTransactions.length === 0 ? (
             <Text style={styles.emptyText}>No transactions yet</Text>
           ) : (
-            sections.map((section) => (
-              <View key={section.label}>
-                <Text style={styles.dateLabel}>{section.label}</Text>
-                <View style={styles.transactionsList}>
-                  {section.items.map((t) => (
-                    <TransactionItem key={t.id} transaction={t} />
-                  ))}
-                </View>
-              </View>
-            ))
+            <View style={styles.transactionsList}>
+              {recentTransactions.map((t) => (
+                <TransactionItem key={t.id} transaction={t} />
+              ))}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -143,6 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xl,
     paddingBottom: spacing.sm,
+    marginTop: spacing.xxxl + 10,
   },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   avatar: { width: 40, height: 40, borderRadius: radius.pill },
@@ -187,6 +181,22 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.white,
   },
+  historyRow: {
+    alignItems: 'flex-end',
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  historyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  historyLabel: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.medium,
+    color: colors.textDark,
+  },
   quickActionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -199,7 +209,9 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: radius.pill,
-    backgroundColor: colors.iconGrey,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -225,15 +237,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
     color: colors.orange,
-  },
-  dateLabel: {
-    fontSize: fontSize.tiny ?? 10,
-    fontFamily: fontFamily.medium,
-    color: colors.textFaded,
-    letterSpacing: 0.5,
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
   },
   transactionsList: {
     backgroundColor: colors.white,

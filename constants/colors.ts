@@ -66,6 +66,11 @@ const colors = {
 
   // ── Status colors ──────────────────────────────────────────────
 
+  pink: '#F4B4C8',
+
+  
+  pinkFaint: '#FDF0F4',
+
   // Green for successful transactions and completed states.
   green: '#22C55E',
   greenFaint: '#DCFCE7',

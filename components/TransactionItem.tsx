@@ -1,24 +1,29 @@
 // components/TransactionItem.tsx
 //
 // A single row in the transaction list.
-// Shows merchant logo (or a colored initial if no logo),
-// merchant name, category, amount, and a status badge if pending/declined.
+// Two visual variants, matching the two places this appears in the Figma:
+//   - 'home' (default): merchant + category on the left, amount only on the
+//      right — used in Home's "Recent Transactions" preview.
+//   - 'history': merchant + "category • time" on the left, amount plus a
+//      colored status word (plain text, not a pill) stacked on the right —
+//      used on the History screen.
 
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
 import { Transaction } from '../types';
-import { formatCurrency, formatDate } from '../constants/mockData';
+import { formatCurrency, formatTime } from '../constants/mockData';
 
 interface TransactionItemProps {
   transaction: Transaction;
+  variant?: 'home' | 'history';
 }
 
-export default function TransactionItem({ transaction }: TransactionItemProps) {
+export default function TransactionItem({ transaction, variant = 'home' }: TransactionItemProps) {
   const isCredit = transaction.type === 'credit';
+  const isHistory = variant === 'history';
 
-  // Figure out what color the amount should be
   const amountColor =
     transaction.status === 'declined'
       ? colors.red
@@ -26,30 +31,22 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
       ? colors.green
       : colors.textDark;
 
-  // The subtitle line shows the status word (in its status color) instead of
-  // the category whenever the transaction isn't a plain completed one —
-  // matches "Pending" / "Declined" appearing in place of the category in the design.
   const statusColor =
     transaction.status === 'declined'
       ? colors.red
       : transaction.status === 'pending'
       ? colors.amber
-      : colors.textGrey;
+      : colors.green;
 
   const amountPrefix = isCredit ? '+' : '-';
+  const statusLabel = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1);
 
   return (
     <View style={styles.row}>
-      {/* Left: logo or initial avatar */}
       <View style={styles.logoContainer}>
         {transaction.logoUrl ? (
-          <Image
-            source={{ uri: transaction.logoUrl }}
-            style={styles.logo}
-            // If the image fails to load, it just shows nothing — no crash
-          />
+          <Image source={{ uri: transaction.logoUrl }} style={styles.logo} />
         ) : (
-          // No logo? Show the first letter of the merchant name on a colored circle
           <View style={styles.logoFallback}>
             <Text style={styles.logoInitial}>
               {transaction.merchantName.charAt(0).toUpperCase()}
@@ -58,33 +55,25 @@ export default function TransactionItem({ transaction }: TransactionItemProps) {
         )}
       </View>
 
-      {/* Middle: merchant name + category */}
       <View style={styles.details}>
         <Text style={styles.merchantName} numberOfLines={1}>
           {transaction.merchantName}
         </Text>
-        <Text
-          style={[
-            styles.category,
-            transaction.status !== 'completed' && { color: statusColor },
-          ]}
-          numberOfLines={1}
-        >
-          {transaction.status !== 'completed'
-            ? transaction.status.charAt(0).toUpperCase() +
-              transaction.status.slice(1)
+        <Text style={styles.category} numberOfLines={1}>
+          {isHistory
+            ? `${transaction.category} • ${formatTime(transaction.date)}`
             : transaction.category}
         </Text>
       </View>
 
-      {/* Right: amount + date */}
       <View style={styles.right}>
         <Text style={[styles.amount, { color: amountColor }]}>
-          {transaction.status === 'declined'
-            ? formatCurrency(transaction.amount)
-            : `${amountPrefix}${formatCurrency(transaction.amount)}`}
+          {amountPrefix}
+          {formatCurrency(transaction.amount)}
         </Text>
-        <Text style={styles.date}>{formatDate(transaction.date)}</Text>
+        {isHistory && (
+          <Text style={[styles.status, { color: statusColor }]}>{statusLabel}</Text>
+        )}
       </View>
     </View>
   );
@@ -98,9 +87,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.cardBackground,
   },
-  logoContainer: {
-    marginRight: spacing.md,
-  },
+  logoContainer: { marginRight: spacing.md },
   logo: {
     width: 42,
     height: 42,
@@ -120,10 +107,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bold,
     color: colors.orange,
   },
-  details: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
+  details: { flex: 1, marginRight: spacing.sm },
   merchantName: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
@@ -135,17 +119,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
   },
-  right: {
-    alignItems: 'flex-end',
-  },
+  right: { alignItems: 'flex-end' },
   amount: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
     marginBottom: 2,
   },
-  date: {
+  status: {
     fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    fontFamily: fontFamily.medium,
   },
 });
