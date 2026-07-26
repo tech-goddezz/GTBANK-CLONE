@@ -28,10 +28,10 @@ const TAB_CONFIG: Record<string, { label: string; icon: string; activeIcon: stri
     activeIcon: 'list',
   },
   'transfer-flow': {
-  label: 'Transfer',
-  icon: 'swap-horizontal-outline',
-  activeIcon: 'swap-horizontal',
-},
+    label: 'Transfer',
+    icon: 'swap-horizontal-outline',
+    activeIcon: 'swap-horizontal',
+  },
   settings: {
     label: 'Settings',
     icon: 'settings-outline',
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
     borderTopColor: colors.borderLight,
     paddingBottom: Platform.OS === 'ios' ? 24 : spacing.md,
     paddingTop: spacing.sm,
-    // Subtle shadow so the tab bar lifts off the screen
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.06,

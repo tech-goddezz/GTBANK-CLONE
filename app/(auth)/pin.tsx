@@ -122,7 +122,7 @@ export default function PinScreen() {
         ))}
         <TouchableOpacity onPress={() => router.push('/(forgot-password)/requirements')}>
       
-      <Text style={{ color: colors.orange, fontSize: fontSize.body, fontFamily: fontFamily.medium }}>
+      <Text style={{ color: colors.orange, fontSize: fontSize.body, fontFamily: fontFamily.medium, marginTop: spacing.large, }}>
       Forget password?
       </Text>
     </TouchableOpacity>
@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   backButton: {
-    marginTop: 56,
-    marginBottom: spacing.xl,
+    marginTop: 70,
+    marginBottom: spacing.xxl,
     width: 40,
     height: 40,
     justifyContent: 'center',
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     marginBottom: spacing.sm,
+    marginTop: spacing.md,
   },
   subtitle: {
     fontSize: fontSize.body,
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.xl,
     marginBottom: spacing.lg,
+    marginTop: spacing.xl,
   },
   dot: {
     width: 18,

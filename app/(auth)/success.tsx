@@ -1,13 +1,10 @@
 // app/(auth)/success.tsx
-// "Wait a moment" processing screen — shown right after identity capture
-// while the (simulated) account-opening request is submitted. This is
-// what the Figma frame actually shows at this point in the flow: a
-// pulsing clock icon, a status message, and a tier/limits card — not a
-// "Congrats, here's your account number" screen. It auto-advances to PIN
-// setup after a short delay, same as a real loading screen would.
+// "Wait a moment" processing screen — shown right after identity capture.
+// Pulsing rings + real clock illustration, a status message, and a
+// tier/limits card. Auto-advances to PIN setup after a short delay.
 
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
@@ -18,8 +15,6 @@ export default function SuccessScreen() {
   const pulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Gentle looping pulse on the outer rings, echoing the design's
-    // concentric-circle "processing" motif.
     Animated.loop(
       Animated.timing(pulse, {
         toValue: 1,
@@ -29,8 +24,6 @@ export default function SuccessScreen() {
       })
     ).start();
 
-    // Next step is setting up a transaction PIN before landing on the
-    // dashboard — a real bank wouldn't drop you into the app with no PIN set.
     const timer = setTimeout(() => {
       router.replace('/(auth)/pin');
     }, 2200);
@@ -49,7 +42,11 @@ export default function SuccessScreen() {
         />
         <View style={styles.ringStatic} />
         <View style={styles.clockCircle}>
-          <Ionicons name="time-outline" size={36} color={colors.textGrey} />
+          <Image
+            source={require('../../assets/images/processing-clock.png')}
+            style={styles.clockImage}
+            resizeMode="contain"
+          />
         </View>
       </View>
 
@@ -68,8 +65,6 @@ export default function SuccessScreen() {
           </View>
         </View>
 
-        {/* Small tier icon — a simplified stand-in for the design's 3D
-            orange gem graphic, since there's no exported asset for it yet. */}
         <View style={styles.tierIconBox}>
           <View style={styles.tierGemTop} />
           <View style={styles.tierGemBottom} />
@@ -100,6 +95,13 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     borderWidth: 1,
     borderColor: colors.borderLight,
+    // iconWrap is 120x120 — centering a 90x90 circle inside it means
+    // 15px of space on every side ((120-90)/2 = 15). Pinning it with
+    // exact top/left like this guarantees it's centered no matter what,
+    // instead of relying on the parent's alignItems/justifyContent,
+    // which doesn't reliably center absolutely-positioned elements.
+    top: 15,
+    left: 15,
   },
   ringStatic: {
     position: 'absolute',
@@ -108,20 +110,30 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     borderWidth: 1,
     borderColor: colors.borderLight,
+    // Same idea: (120-110)/2 = 5px on every side.
+    top: 5,
+    left: 0,
   },
+
   clockCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: colors.pageBackground,
+    width: 50,
+    height: 50,
+    borderRadius: 40,
+    backgroundColor: '#D9DCE3',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  clockImage: {
+    width: 250,
+    height: 250,
+    left: 20,
   },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
     marginBottom: spacing.sm,
+    marginTop: spacing.large,
   },
   subtitle: {
     fontSize: fontSize.body,
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: colors.pageBackground,
+    backgroundColor: '#F9F4F4',
     borderRadius: radius.card,
     padding: spacing.lg,
   },
@@ -158,7 +170,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.button,
-    backgroundColor: colors.white,
+    backgroundColor: '#D9DCE3',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -167,7 +179,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 22,
     height: 22,
-    backgroundColor: colors.orange,
+    backgroundColor: '#F0744A',
     borderRadius: 4,
     transform: [{ rotate: '45deg' }],
     top: 6,
@@ -176,7 +188,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 22,
     height: 12,
-    backgroundColor: colors.orangePressed,
+    backgroundColor: '#AB3510',
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
     top: 20,

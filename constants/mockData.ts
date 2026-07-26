@@ -8,7 +8,7 @@ import { Transaction, User, BankAccount, DebitCard } from '../types';
 
 export const mockUser: User = {
   id: 'user-001',
-  firstName: 'Emmanuel',
+  firstName: 'Aisha',
   lastName: 'Adeyemi',
   phoneNumber: '+2348051234567',
   accountNumber: '1030737923',
@@ -18,9 +18,9 @@ export const mockUser: User = {
 
 export const mockAccount: BankAccount = {
   accountNumber: '1030737923',
-  accountName: 'Emmanuel Adeyemi',
+  accountName: 'Aisha Adeyemi',
   bankName: 'GTBank',
-  balance: 42950.00,
+  balance: 50000.00,
 };
 
 export const mockCard: DebitCard = {
@@ -142,4 +142,11 @@ export const formatDate = (dateString: string): string => {
     day: 'numeric',
     year: 'numeric',
   });
+};
+
+// Turns an ISO date string into a clock time: "2024-05-15T10:30:00Z" → "10:30 AM"
+// Used on History, where each row shows "Category • Time".
+export const formatTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 };

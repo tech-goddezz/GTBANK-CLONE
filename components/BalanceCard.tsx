@@ -1,8 +1,8 @@
 // components/BalanceCard.tsx
 //
 // The dark card at the top of the home screen.
-// Shows the account balance (or hides it behind asterisks),
-// account number, and the eye icon to toggle visibility.
+// Shows the account balance (or hides it behind asterisks)
+// and the eye icon to toggle visibility.
 // Pulls its data directly from the global account store.
 
 import React from 'react';
@@ -11,7 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
 import { useAccountStore } from '../store/useAccountStore';
-import { formatCurrency } from '../constants/mockData';
 
 export default function BalanceCard() {
   const { account, balanceHidden, toggleBalance } = useAccountStore();
@@ -32,19 +31,18 @@ export default function BalanceCard() {
         </TouchableOpacity>
       </View>
 
-      {/* The balance itself — hidden or shown */}
+      {/* The balance itself — hidden or shown. The ₦ symbol is deliberately
+          much smaller than the digits, matching the design (it's easy to
+          miss this if you just use one Text with one fontSize). */}
       <Text style={styles.balance}>
-        {balanceHidden ? '₦ *****' : formatCurrency(account.balance)}
+        <Text style={styles.currencySymbol}>₦ </Text>
+        {balanceHidden
+          ? '*****'
+          : account.balance.toLocaleString('en-NG', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
       </Text>
-
-      {/* Bottom row: account type on the left, masked account number on the right —
-          matches the "Savings Account ... •••• 6487" row in the design */}
-      <View style={styles.bottomRow}>
-        <Text style={styles.accountName}>{account.accountName}</Text>
-        <Text style={styles.maskedNumber}>
-          •••• {account.accountNumber.slice(-4)}
-        </Text>
-      </View>
     </View>
   );
 }
@@ -73,22 +71,9 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: fontFamily.bold,
     color: colors.white,
-    marginBottom: spacing.lg,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  accountName: {
+  currencySymbol: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.white,
-  },
-  maskedNumber: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.textFaded,
-    letterSpacing: 1,
   },
 });

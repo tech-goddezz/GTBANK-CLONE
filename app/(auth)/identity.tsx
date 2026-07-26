@@ -130,7 +130,7 @@ export default function IdentityScreen() {
                   r={148}
                   stroke={RING_COLOR}
                   strokeWidth={3}
-                  strokeDasharray="14 10"
+                  strokeDasharray="40 30"
                   fill="none"
                 />
               </Svg>
@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-start',
     marginBottom: spacing.lg,
+    marginTop: spacing.sm - 60,
   },
   activeDotCenter: {
     width: 8,
