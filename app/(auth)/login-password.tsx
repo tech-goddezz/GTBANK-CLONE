@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -12,6 +13,7 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { mockUser } from '../../constants/mockData';
+import { signIn } from '../../services/auth';
 
 const PASSWORD_LENGTH = 4;
 
@@ -25,35 +27,25 @@ const KEYPAD_ROWS = [
 export default function LoginPasswordScreen() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
-  const [digits, setDigits] = useState<string[]>([]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleKey = (key: string) => {
-    if (!key) return;
+  const handleLogin = async () => {
+    setError('');
+    setLoading(true);
 
-    if (key === 'del') {
-      setDigits((prev) => prev.slice(0, -1));
-      setError('');
-      return;
-    }
+    const result = await signIn(email, password);
 
-    if (digits.length >= PASSWORD_LENGTH) return;
+    setLoading(false);
 
-    const next = [...digits, key];
-    setDigits(next);
-
-    if (next.length === PASSWORD_LENGTH) {
-      handleSubmit(next.join(''));
-    }
-  };
-
-  const handleSubmit = (entered: string) => {
-    if (entered === '1234') {
+    if (result.success) {
       login(mockUser, 'mock-token-abc123');
       router.replace('/(auth)/requirements');
     } else {
-      setError('Incorrect password. Try 1234.');
-      setDigits([]);
+      setError(result.message);
     }
   };
 
@@ -64,45 +56,45 @@ export default function LoginPasswordScreen() {
         <Ionicons name="person-outline" size={26} color={colors.textGrey} />
       </View>
 
-      {/* Password display pill */}
-      <View style={styles.passwordPill}>
-        <Text style={styles.passwordPillText}>
-          {digits.length > 0 ? '•'.repeat(digits.length) : 'Enter password'}
-        </Text>
+<TextInput
+        style={styles.inputBox}
+        placeholder="Email"
+        placeholderTextColor={colors.textFaded}
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <View style={styles.passwordRow}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Password"
+          placeholderTextColor={colors.textFaded}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+            size={22}
+            color={colors.textGrey}
+          />
+        </TouchableOpacity>
       </View>
 
       {!!error && <Text style={styles.error}>{error}</Text>}
 
-      {/* Keypad — plain white background, large numbers, no key backgrounds */}
-      <View style={styles.keypad}>
-        {KEYPAD_ROWS.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.keyRow}>
-            {row.map((key, keyIndex) => (
-              <TouchableOpacity
-                key={keyIndex}
-                style={styles.key}
-                onPress={() => handleKey(key)}
-                disabled={!key}
-                activeOpacity={key ? 0.5 : 1}
-                accessibilityRole={key ? 'button' : undefined}
-                accessibilityLabel={key === 'del' ? 'Delete' : key}
-              >
-                {key === 'del' ? (
-                  <Ionicons
-                    name="backspace-outline"
-                    size={26}
-                    color={colors.textDark}
-                  />
-                ) : (
-                  <Text style={[styles.keyText, !key && styles.keyTextHidden]}>
-                    {key}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))}
-      </View>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        <Text style={styles.loginButtonText}>
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Text>
+      </TouchableOpacity> 
 
       {/* Bottom links */}
       <View style={styles.bottomLinks}>
@@ -141,51 +133,57 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: spacing.xxxl + 50,
   },
-  passwordPill: {
-    marginTop: spacing.xxl + 30,
-    marginBottom: spacing.xl + 40, 
-    backgroundColor: '#f4f6fd',
-    borderRadius: 4,
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.xxl,
-    minWidth: 180,
-    alignItems: 'center',
-  },
-  passwordPillText: {
+
+inputBox: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 6,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-    letterSpacing: 2,
+    color: colors.textDark,
+    marginTop: spacing.lg,
   },
+  passwordRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 6,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.lg,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+  },
+  loginButton: {
+    width: '100%',
+    backgroundColor: colors.orange,
+    borderRadius: 6,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    marginTop: spacing.xl,
+  },
+  loginButtonText: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.white,
+  },
+
   error: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
     color: colors.red,
     marginTop: spacing.sm,
   },
-  keypad: {
-    width: '100%',
-    marginTop: 'auto',
-    paddingBottom: spacing.xxxl,
-  },
-  keyRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  key: {
-    width: '33.33%',
-    height: 72,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  keyText: {
-    fontSize: 28,
-    fontFamily: fontFamily.regular,
-    color: colors.textDark,
-  },
-  keyTextHidden: {
-    opacity: 0,
-  },
+
   bottomLinks: {
     flexDirection: 'row',
     justifyContent: 'space-between',
