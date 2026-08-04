@@ -12,8 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
-import { mockUser } from '../../constants/mockData';
-import { signUp } from '../../services/auth';
+import { signUp, fetchProfile } from '../../services/auth';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -33,11 +32,20 @@ export default function SignupScreen() {
     setLoading(false);
 
     if (result.success) {
-      login(mockUser, 'mock-token-abc123');
-      router.replace('/(auth)/requirements');
-    } else {
-      setError(result.message);
-    }
+  const profileResult = await fetchProfile(result.userId ?? '');
+  const realUser = {
+    id: result.userId ?? '',
+    firstName: profileResult.profile?.first_name ?? '',
+    lastName: profileResult.profile?.last_name ?? '',
+    phoneNumber: profileResult.profile?.phone_number ?? '',
+    accountNumber: profileResult.profile?.account_number ?? '',
+    tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
+  };
+  login(realUser, 'mock-token-abc123');
+  router.replace('/(auth)/requirements');
+} else {
+  setError(result.message);
+}
   };
 
   return (

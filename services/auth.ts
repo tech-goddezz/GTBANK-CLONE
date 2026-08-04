@@ -15,7 +15,7 @@ export async function signUp(email: string, password: string) {
   console.log('Profile creation:', profileResult.message);
 
   console.log('Signup successful:', data.user?.email);
-  return { success: true, message: 'Account created!' };
+  return { success: true, message: 'Account created!', userId: data.user?.id };
 }
 
 export async function signIn(email: string, password: string) {
@@ -30,7 +30,7 @@ export async function signIn(email: string, password: string) {
   }
 
   console.log('signIn successful:', data.user?.email);
-  return { success: true, message: 'login successful' };
+  return { success: true, message: 'login successful', userId: data.user?.id };
 }
 
 export async function createProfile(id: string) {
