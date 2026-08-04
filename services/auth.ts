@@ -11,8 +11,11 @@ export async function signUp(email: string, password: string) {
     return { success: false, message: error.message };
   }
 
+  const profileResult = await createProfile(data.user?.id ?? '');
+  console.log('Profile creation:', profileResult.message);
+
   console.log('Signup successful:', data.user?.email);
-  return { success: true, message: 'Account created!' };
+  return { success: true, message: 'Account created!', userId: data.user?.id };
 }
 
 export async function signIn(email: string, password: string) {
@@ -27,5 +30,29 @@ export async function signIn(email: string, password: string) {
   }
 
   console.log('signIn successful:', data.user?.email);
-  return { success: true, message: 'login successful' };
+  return { success: true, message: 'login successful', userId: data.user?.id };
+}
+
+export async function createProfile(id: string) {
+  const { data, error } = await supabase.from('profiles').insert({ id: id }).select();
+
+  if (error) {
+    console.log('profiles failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('profiles created:', data[0].id);
+  return { success: true, message: 'create profile successful' };
+}
+
+export async function fetchProfile(id: string) {
+  const { data, error } = await supabase.from('profiles').select().eq('id', id).single();
+
+  if (error) {
+    console.log('fetchProfile failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('fetchProfile successful:', data);
+  return { success: true, profile: data };
 }

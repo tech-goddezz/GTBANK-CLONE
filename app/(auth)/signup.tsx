@@ -12,18 +12,9 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
-import { signIn, fetchProfile } from '../../services/auth';
+import { signUp, fetchProfile } from '../../services/auth';
 
-const PASSWORD_LENGTH = 4;
-
-const KEYPAD_ROWS = [
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  ['', '0', 'del'],
-];
-
-export default function LoginPasswordScreen() {
+export default function SignupScreen() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('');
@@ -32,11 +23,11 @@ export default function LoginPasswordScreen() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     setError('');
     setLoading(true);
 
-    const result = await signIn(email, password);
+    const result = await signUp(email, password);
 
     setLoading(false);
 
@@ -59,12 +50,13 @@ export default function LoginPasswordScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Avatar */}
       <View style={styles.avatarCircle}>
-        <Ionicons name="person-outline" size={26} color={colors.textGrey} />
+        <Ionicons name="person-add-outline" size={26} color={colors.textGrey} />
       </View>
 
-<TextInput
+      <Text style={styles.title}>Create your account</Text>
+
+      <TextInput
         style={styles.inputBox}
         placeholder="Email"
         placeholderTextColor={colors.textFaded}
@@ -95,30 +87,14 @@ export default function LoginPasswordScreen() {
       {!!error && <Text style={styles.error}>{error}</Text>}
 
       <TouchableOpacity
-        style={styles.loginButton}
-        onPress={handleLogin}
+        style={styles.signupButton}
+        onPress={handleSignup}
         disabled={loading}
       >
-        <Text style={styles.loginButtonText}>
-          {loading ? 'Signing in...' : 'Sign In'}
+        <Text style={styles.signupButtonText}>
+          {loading ? 'Creating account...' : 'Sign Up'}
         </Text>
-      </TouchableOpacity> 
-
-      {/* Bottom links */}
-      <View style={styles.bottomLinks}>
-        <TouchableOpacity
-          onPress={() => router.push('/(forgot-password)/requirements')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.linkOrange}>Forget password?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.replace('/(auth)/login-biometric')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.linkGrey}>Login with Fingerprint</Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -141,8 +117,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: spacing.xxxl + 50,
   },
-
-inputBox: {
+  title: {
+    fontSize: fontSize.heading1,
+    fontFamily: fontFamily.bold,
+    color: colors.textDark,
+    marginTop: spacing.xl,
+  },
+  inputBox: {
     width: '100%',
     borderWidth: 1,
     borderColor: colors.borderLight,
@@ -171,7 +152,7 @@ inputBox: {
     fontFamily: fontFamily.regular,
     color: colors.textDark,
   },
-  loginButton: {
+  signupButton: {
     width: '100%',
     backgroundColor: colors.orange,
     borderRadius: 6,
@@ -179,34 +160,15 @@ inputBox: {
     alignItems: 'center',
     marginTop: spacing.xl,
   },
-  loginButtonText: {
+  signupButtonText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
     color: colors.white,
   },
-
   error: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
     color: colors.red,
     marginTop: spacing.sm,
-  },
-
-  bottomLinks: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: spacing.lg,
-    marginBottom: spacing.xxxl + 60,
-  },
-  linkOrange: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.orange,
-  },
-  linkGrey: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
   },
 });
