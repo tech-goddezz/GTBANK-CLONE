@@ -44,3 +44,15 @@ export async function createProfile(id: string) {
   console.log('profiles created:', data[0].id);
   return { success: true, message: 'create profile successful' };
 }
+
+export async function fetchProfile(id: string) {
+  const { data, error } = await supabase.from('profiles').select().eq('id', id).single();
+
+  if (error) {
+    console.log('fetchProfile failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('fetchProfile successful:', data);
+  return { success: true, profile: data };
+}
