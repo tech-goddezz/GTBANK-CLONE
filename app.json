@@ -19,9 +19,11 @@
       },
       "predictiveBackGestureEnabled": false
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+  "web": {
+  "favicon": "./assets/favicon.png",
+  "bundler": "metro",
+  "output": "static"
+},
     "plugins": [
       "expo-router",
       "expo-font",

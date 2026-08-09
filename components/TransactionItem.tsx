@@ -11,7 +11,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
 import { Transaction } from '../types';
 import { formatCurrency, formatTime } from '../constants/mockData';
 
@@ -86,14 +86,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.cardBackground,
+    borderRadius: radius.card,
   },
+
   logoContainer: { marginRight: spacing.md },
+
   logo: {
     width: 42,
     height: 42,
-    borderRadius: radius.button,
+    borderRadius: radius.buttonTrans,
     backgroundColor: colors.borderLight,
   },
+
   logoFallback: {
     width: 42,
     height: 42,
@@ -108,10 +112,12 @@ const styles = StyleSheet.create({
     color: colors.orange,
   },
   details: { flex: 1, marginRight: spacing.sm },
-  merchantName: {
+
+ merchantName: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    fontFamily: fontFamily.bold,
+    fontWeight: fontWeight.bold, 
+    color: colors.textLightDark,
     marginBottom: 2,
   },
   category: {
@@ -119,12 +125,17 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
   },
+
   right: { alignItems: 'flex-end' },
+
   amount: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
+    fontFamily: fontFamily.bold,
     marginBottom: 2,
+    fontWeight: fontWeight.bold,
+    color: colors.textLightDark, 
   },
+
   status: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,

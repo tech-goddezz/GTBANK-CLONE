@@ -9,7 +9,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
 import { useAccountStore } from '../store/useAccountStore';
 
 export default function BalanceCard() {
@@ -50,7 +50,7 @@ export default function BalanceCard() {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.darkCard,
-    borderRadius: radius.card,
+    borderRadius: radius.balanceCard,
     padding: spacing.xl,
     marginHorizontal: spacing.lg,
     marginTop: spacing.lg,
@@ -64,13 +64,17 @@ const styles = StyleSheet.create({
   accountLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textFaded,
+    color: '#bbbbbb',
     letterSpacing: 0.5,
+    marginTop: spacing.md,
   },
   balance: {
     fontSize: 32,
     fontFamily: fontFamily.bold,
     color: colors.white,
+    marginTop: spacing.xl - 20,
+    marginBottom: spacing.md,
+    fontWeight: fontWeight.bold,
   },
   currencySymbol: {
     fontSize: fontSize.body,

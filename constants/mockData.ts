@@ -12,7 +12,7 @@ export const mockUser: User = {
   lastName: 'Adeyemi',
   phoneNumber: '+2348051234567',
   accountNumber: '1030737923',
-  avatarUrl: 'https://i.pravatar.cc/150?img=12',
+  avatarUrl: 'profile-photo',
   tier: 1,
 };
 

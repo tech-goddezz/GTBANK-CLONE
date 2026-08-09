@@ -14,11 +14,12 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import BalanceCard from '../../components/BalanceCard';
 import TransactionItem from '../../components/TransactionItem';
+import profilePhoto from '../../assets/images/profilePhoto.png'; 
 
 const QUICK_ACTIONS = [
   { id: 'send', label: 'Send', icon: 'paper-plane-outline' },
@@ -50,14 +51,11 @@ export default function HomeScreen() {
         {/* Top bar: avatar + greeting + notification bell */}
         <View style={styles.topBar}>
           <View style={styles.identity}>
-            {user?.avatarUrl ? (
-              <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarFallback}>
-                <Ionicons name="person-outline" size={18} color={colors.textGrey} />
-              </View>
-            )}
+
+            <Image source={profilePhoto} style={styles.avatar} />
             <View>
+
+
               <Text style={styles.greeting}>Hi,</Text>
               <Text style={styles.userName}>{firstName}</Text>
             </View>
@@ -68,16 +66,23 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* History entry point — sits between the top bar and the balance
-            card, matching the design. Opens the History screen. */}
-        <View style={styles.historyRow}>
+       {/* Thin divider, then Settings (left) / History (right) below it */}
+        <View style={styles.divider} />
+        <View style={styles.controlsRow}>
           <TouchableOpacity
-            style={styles.historyButton}
+            style={styles.controlButton}
+            onPress={() => router.push('/(tabs)/settings')}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="settings-outline" size={16} color={colors.textDark} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.controlButton}
             onPress={() => router.push('/(tabs)/history')}
             activeOpacity={0.7}
           >
-            <Ionicons name="time-outline" size={16} color={colors.textDark} />
-            <Text style={styles.historyLabel}>History</Text>
+            
+            <Text style={styles.controlLabel}>History</Text>
           </TouchableOpacity>
         </View>
 
@@ -126,9 +131,13 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  
   safeArea: { flex: 1, backgroundColor: colors.pageBackground },
-  scroll: { flex: 1 },
-  scrollContent: { paddingBottom: spacing.xxxl },
+
+  scroll: { flex: 1, backgroundColor: colors.pageBackground },
+
+  scrollContent: { paddingBottom: spacing.xxxl, backgroundColor: colors.pageBackground },
+  
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -136,9 +145,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xl,
     paddingBottom: spacing.sm,
-    marginTop: spacing.xxxl + 10,
+    marginTop: spacing.xxxl + 20,
   },
-  identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingLeft: spacing.lg, },
+  
   avatar: { width: 40, height: 40, borderRadius: radius.pill },
   avatarFallback: {
     width: 40,
@@ -156,15 +166,15 @@ const styles = StyleSheet.create({
     color: colors.textGrey,
   },
   userName: {
-    fontSize: fontSize.heading3,
+    fontSize: fontSize.heading2,
     fontFamily: fontFamily.bold,
+    fontWeight: fontWeight.bold,
     color: colors.textDark,
   },
   bellButton: {
-    width: 42,
-    height: 42,
+    width: 30,
+    height: 30,
     borderRadius: radius.pill,
-    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -172,8 +182,8 @@ const styles = StyleSheet.create({
   },
   bellDot: {
     position: 'absolute',
-    top: 9,
-    right: 9,
+    top: 4,
+    right: 4,
     width: 8,
     height: 8,
     borderRadius: 4,
@@ -181,18 +191,26 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.white,
   },
-  historyRow: {
-    alignItems: 'flex-end',
+divider: {
+    height: 1,
+    backgroundColor: colors.borderLight,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.sm,
+  },
+  controlsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.xl,
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
     marginBottom: spacing.xs,
   },
-  historyButton: {
+  controlButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    marginTop: spacing.sm,
   },
-  historyLabel: {
+  controlLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
     color: colors.textDark,
@@ -201,10 +219,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.xxl,
-    marginTop: spacing.xl,
-    marginBottom: spacing.xs,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.xl,
   },
+
   quickAction: { alignItems: 'center', gap: spacing.xs },
+
   quickActionIcon: {
     width: 52,
     height: 52,
@@ -214,6 +234,11 @@ const styles = StyleSheet.create({
     borderColor: colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
   quickActionLabel: {
     fontSize: fontSize.small,
@@ -229,20 +254,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sectionTitle: {
-    fontSize: fontSize.body,
+    fontSize: fontSize.large,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.textLightDark,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.md, 
   },
   seeAll: {
-    fontSize: fontSize.small,
+    fontSize: fontSize.large,
     fontFamily: fontFamily.medium,
     color: colors.orange,
+    fontWeight: fontWeight.medium,
   },
   transactionsList: {
-    backgroundColor: colors.white,
     marginHorizontal: spacing.lg,
-    borderRadius: radius.card,
-    overflow: 'hidden',
+    gap: spacing.sm,
   },
   emptyText: {
     fontSize: fontSize.body,

@@ -21,6 +21,7 @@ const colors = {
 
   // Near-black. Used for headings and body text — easier on the eyes than pure black.
   textDark: '#1A1A1A',
+  textLightDark: '#353535',
 
   // Medium grey. For subtitles, labels, and anything that supports the main text.
   textGrey: '#6B6B6B',
@@ -43,7 +44,7 @@ const colors = {
 
   // The dark charcoal card on the home screen that shows the balance.
   // Sampled directly from the Figma export: flat #444444, no gradient.
-  darkCard: '#444444',
+  darkCard: '#302f2f',
 
   lightest: '#F7F9FA',
 

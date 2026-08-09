@@ -25,7 +25,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
 import { useAccountStore } from '../../store/useAccountStore';
 import { formatDate } from '../../constants/mockData';
 import TransactionItem from '../../components/TransactionItem';
@@ -61,14 +61,14 @@ export default function HistoryScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="chevron-back" size={24} color={colors.textDark} />
+           
           </TouchableOpacity>
           <View style={styles.headerTitleBlock}>
             <Text style={styles.title}>History</Text>
             <Text style={styles.subtitle}>Review and manage your financial activity</Text>
           </View>
           <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={22} color={colors.textDark} />
+            <Ionicons name="notifications-outline" size={22} color={colors.textDark}/>
           </TouchableOpacity>
         </View>
 
@@ -124,16 +124,23 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     backgroundColor: colors.pageBackground,
   },
+
   headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
   },
-  headerTitleBlock: { flex: 1 },
+
+  headerTitleBlock: { 
+    flex: 1,
+    marginLeft: -10,
+   },
+
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
+    marginTop: spacing.xxxl + 10,
   },
   subtitle: {
     fontSize: fontSize.small,
@@ -159,6 +166,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
   },
+
   searchInput: {
     flex: 1,
     fontSize: fontSize.body,
