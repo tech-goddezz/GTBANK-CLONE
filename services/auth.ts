@@ -56,3 +56,18 @@ export async function fetchProfile(id: string) {
   console.log('fetchProfile successful:', data);
   return { success: true, profile: data };
 }
+
+export async function updateDateOfBirth(id: string, dateOfBirth: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ date_of_birth: dateOfBirth })
+    .eq('id', id);
+
+  if (error) {
+    console.log('updateDateOfBirth failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('updateDateOfBirth successful');
+  return { success: true, message: 'Date of birth saved' };
+}
