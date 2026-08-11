@@ -71,3 +71,55 @@ export async function updateDateOfBirth(id: string, dateOfBirth: string) {
   console.log('updateDateOfBirth successful');
   return { success: true, message: 'Date of birth saved' };
 }
+
+export async function updateBvnNin(id: string, type: 'bvn' | 'nin', number: string) {
+  const columnToUpdate = type === 'bvn' ? { bvn: number } : { nin: number };
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(columnToUpdate)
+    .eq('id', id);
+
+  if (error) {
+    console.log('updateBvnNin failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('updateBvnNin successful');
+  return { success: true, message: 'BVN/NIN saved' };
+}
+
+export async function updateAddress(id: string, state: string, lga: string, city: string, streetAddress: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({
+      state: state,
+      lga: lga,
+      city: city,
+      street_address: streetAddress,
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.log('updateAddress failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('updateAddress successful');
+  return { success: true, message: 'Address saved' };
+}
+
+export async function updateIdentityVerified(id: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ identity_verified: true })
+    .eq('id', id);
+
+  if (error) {
+    console.log('updateIdentityVerified failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('updateIdentityVerified successful');
+  return { success: true, message: 'Identity verified' };
+}
