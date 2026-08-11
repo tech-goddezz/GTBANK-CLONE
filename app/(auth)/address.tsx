@@ -21,6 +21,8 @@ import InputField from '../../components/InputField';
 import Button from '../../components/Button';
 import BottomSheet from '../../components/ui/BottomSheet';
 import { useKycStore } from '../../store/useKycStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { updateAddress } from '../../services/auth';
 
 // A representative set of Nigerian states — enough to make the picker feel
 // real for a demo. Swap for the full 36 + FCT list if this goes to production.
@@ -37,6 +39,7 @@ export default function AddressScreen() {
     verificationNumber: string;
   }>();
   const markAddressDone = useKycStore((state) => state.markAddressDone);
+  const userId = useAuthStore((state) => state.user?.id);
 
   const [stateSheetVisible, setStateSheetVisible] = useState(false);
   const [selectedState, setSelectedState] = useState('');
@@ -51,16 +54,17 @@ export default function AddressScreen() {
     city.trim().length > 1 &&
     streetAddress.trim().length > 3;
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (!isValid) {
       setError('Please fill in all address fields');
       return;
     }
     setError('');
+    await updateAddress(userId ?? '', selectedState, lga, city, streetAddress);
     markAddressDone();
     router.push(
-      `/(auth)/identity?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${selectedState}&lga=${lga}&city=${city}`
-    );
+  `/(auth)/identity?dob=${params.dob}&verificationType=${params.verificationType}&verificationNumber=${params.verificationNumber}&state=${selectedState}&lga=${lga}&city=${city}`
+);
   };
 
   return (

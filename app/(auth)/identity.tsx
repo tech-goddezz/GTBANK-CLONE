@@ -17,6 +17,8 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { updateIdentityVerified } from '../../services/auth';
 import Svg, { Circle } from 'react-native-svg';
 
 type Step = 'intro' | 'capturing';
@@ -37,14 +39,16 @@ export default function IdentityScreen() {
 
   const [step, setStep] = useState<Step>('intro');
   const markIdentityDone = useKycStore((state) => state.markIdentityDone);
+  const userId = useAuthStore((state) => state.user?.id);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+  await updateIdentityVerified(userId ?? '');
+  markIdentityDone();
+  router.replace('/(auth)/requirements');
+};
     // Last step in the chain — mark this requirement done and go back to
     // the requirements screen so the user sees all four checked off,
     // instead of skipping straight to the "Wait a moment" screen.
-    markIdentityDone();
-    router.replace('/(auth)/requirements');
-  };
 
   return (
     <View style={styles.container}>

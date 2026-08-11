@@ -25,6 +25,8 @@ import { fontSize, fontFamily, spacing, radius } from '../../constants/typograph
 import InputField from '../../components/InputField';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { updateBvnNin } from '../../services/auth';
 import { Ionicons } from "@expo/vector-icons";
 
 type VerificationType = 'bvn' | 'nin';
@@ -46,6 +48,7 @@ export default function BvnNinScreen() {
   const router = useRouter();
   const { dob } = useLocalSearchParams<{ dob: string }>();
   const markBvnNinDone = useKycStore((state) => state.markBvnNinDone);
+  const userId = useAuthStore((state) => state.user?.id);
   const [activeTab, setActiveTab] = useState<VerificationType>('bvn');
   const [number, setNumber] = useState('');
   const [error, setError] = useState('');
@@ -67,15 +70,16 @@ export default function BvnNinScreen() {
   };
   
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (!isValid) {
       setError(`Please enter a valid 11-digit ${activeTab.toUpperCase()}`);
       return;
     }
-    markBvnNinDone();
-    router.push(
-      `/(auth)/address?dob=${dob}&verificationType=${activeTab}&verificationNumber=${number}`
-    );
+    await updateBvnNin(userId ?? '', activeTab, number);
+markBvnNinDone();
+router.push(
+  `/(auth)/address?dob=${dob}&verificationType=${activeTab}&verificationNumber=${number}`
+);
   };
 
   return (

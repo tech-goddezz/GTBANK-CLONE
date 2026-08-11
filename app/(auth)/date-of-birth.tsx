@@ -24,6 +24,8 @@ import {
 import Button from "../../components/Button";
 import BottomSheet from "../../components/ui/BottomSheet";
 import { useKycStore } from "../../store/useKycStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import { updateDateOfBirth } from "../../services/auth";
 
 const MONTH_NAMES = [
   "January",
@@ -73,7 +75,7 @@ const getFirstWeekday = (month: number, year: number): number => {
 export default function DateOfBirthScreen() {
   const router = useRouter();
   const markDateOfBirthDone = useKycStore((state) => state.markDateOfBirthDone);
-
+  const userId = useAuthStore((state) => state.user?.id);
   // Default view starts at a reasonable adult birth year so the user
   // isn't stuck scrolling from the current month on first open.
   const defaultYear = new Date().getFullYear() - MINIMUM_AGE - 5;
@@ -137,7 +139,7 @@ export default function DateOfBirthScreen() {
     return age >= MINIMUM_AGE;
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedDay) {
       setError("Please select your date of birth");
       return;
@@ -148,6 +150,7 @@ export default function DateOfBirthScreen() {
     }
     setError("");
     const dobString = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`;
+    await updateDateOfBirth(userId ?? '', dobString);
     markDateOfBirthDone(dobString);
     router.push(`/(auth)/bvn-nin?dob=${dobString}`);
   };
