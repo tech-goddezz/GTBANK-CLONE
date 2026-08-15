@@ -19,40 +19,65 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { fetchProfile, getCurrentUserId } from '../../services/auth';
+import { useEffect, useState } from 'react';
 
 export default function RequirementsScreen() {
   const router = useRouter();
   const { dateOfBirthDone, bvnNinDone, addressDone, identityDone } = useKycStore();
+  const authStoreUserId = useAuthStore((state) => state.user?.id);
+  const [userId, setUserId] = useState(authStoreUserId ?? '');
+
+  useEffect(() => {
+  const resolveUserId = async () => {
+    const realId = await getCurrentUserId();
+    setUserId(realId);
+  };
+  resolveUserId();
+}, []);
+  
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const result = await fetchProfile(userId ?? '');
+      if (result.success) {
+        setProfile(result.profile);
+      }
+    };
+    loadProfile();
+  }, [userId]);
 
   // Each requirement is data — title, whether it's done, and where tapping
   // it should go. If the bank ever adds/removes a KYC step, this array is
   // the only thing that needs editing.
   const requirements = [
-    {
-      key: 'dob',
-      title: 'Date of birth',
-      done: dateOfBirthDone,
-      route: '/(auth)/date-of-birth' as const,
-    },
-    {
-      key: 'bvn',
-      title: 'BVN/NIN',
-      done: bvnNinDone,
-      route: '/(auth)/bvn-nin' as const,
-    },
-    {
-      key: 'address',
-      title: 'Residential address',
-      done: addressDone,
-      route: '/(auth)/address' as const,
-    },
-    {
-      key: 'identity',
-      title: 'Identity verification',
-      done: identityDone,
-      route: '/(auth)/identity' as const,
-    },
-  ];
+  {
+    key: 'dob',
+    title: 'Date of birth',
+    done: dateOfBirthDone || !!profile?.date_of_birth,
+    route: '/(auth)/date-of-birth' as const,
+  },
+  {
+    key: 'bvn',
+    title: 'BVN/NIN',
+    done: bvnNinDone || !!profile?.bvn || !!profile?.nin,
+    route: '/(auth)/bvn-nin' as const,
+  },
+  {
+    key: 'address',
+    title: 'Residential address',
+    done: addressDone || !!profile?.state,
+    route: '/(auth)/address' as const,
+  },
+  {
+    key: 'identity',
+    title: 'Identity verification',
+    done: identityDone || !!profile?.identity_verified,
+    route: '/(auth)/identity' as const,
+  },
+];
 
   const readyCount = requirements.filter((r) => r.done).length;
   const allDone = readyCount === requirements.length;

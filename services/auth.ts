@@ -123,3 +123,8 @@ export async function updateIdentityVerified(id: string) {
   console.log('updateIdentityVerified successful');
   return { success: true, message: 'Identity verified' };
 }
+
+export async function getCurrentUserId() {
+  const { data } = await supabase.auth.getUser();
+  return data.user?.id ?? '';
+}
