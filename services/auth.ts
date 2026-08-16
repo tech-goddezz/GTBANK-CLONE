@@ -34,7 +34,8 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function createProfile(id: string) {
-  const { data, error } = await supabase.from('profiles').insert({ id: id }).select();
+  const randomAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  const { data, error } = await supabase.from('profiles').insert({ id: id, account_number: randomAccountNumber }).select();
 
   if (error) {
     console.log('profiles failed:', error.message);

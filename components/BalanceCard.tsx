@@ -10,12 +10,25 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
-import { useAccountStore } from '../store/useAccountStore';
+import { useState, useEffect } from 'react';
+import { fetchProfile, getCurrentUserId } from '../services/auth';
 
 export default function BalanceCard() {
-  const { account, balanceHidden, toggleBalance } = useAccountStore();
+  const [balance, setBalance] = useState(0);
+  const [balanceHidden, setBalanceHidden] = useState(false);
 
-  if (!account) return null;
+  useEffect(() => {
+    const loadBalance = async () => {
+      const realId = await getCurrentUserId();
+      const result = await fetchProfile(realId);
+      if (result.success && result.profile) {
+        setBalance(result.profile.balance ?? 0);
+      }
+    };
+    loadBalance();
+  }, []);
+
+  const toggleBalance = () => setBalanceHidden((prev) => !prev);
 
   return (
     <View style={styles.card}>
@@ -38,7 +51,7 @@ export default function BalanceCard() {
         <Text style={styles.currencySymbol}>₦ </Text>
         {balanceHidden
           ? '*****'
-          : account.balance.toLocaleString('en-NG', {
+          : balance.toLocaleString('en-NG', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
