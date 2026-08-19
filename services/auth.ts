@@ -129,3 +129,18 @@ export async function getCurrentUserId() {
   const { data } = await supabase.auth.getUser();
   return data.user?.id ?? '';
 }
+
+export async function updateName(id: string, firstName: string, lastName: string) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ first_name: firstName, last_name: lastName })
+    .eq('id', id);
+
+  if (error) {
+    console.log('updateName failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  console.log('updateName successful');
+  return { success: true, message: 'Name saved' };
+}

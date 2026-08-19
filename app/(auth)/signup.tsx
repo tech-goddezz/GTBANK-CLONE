@@ -42,7 +42,7 @@ export default function SignupScreen() {
     tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
   };
   login(realUser, 'mock-token-abc123');
-  router.replace('/(auth)/requirements');
+  router.replace('/(auth)/personal-info');
 } else {
   setError(result.message);
 }
