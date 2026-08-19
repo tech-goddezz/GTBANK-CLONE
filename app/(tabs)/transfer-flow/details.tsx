@@ -1,7 +1,7 @@
 // app/(tabs)/transfer-flow/details.tsx
 // Account number + amount entry. Reads bank type from URL param.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,8 @@ import { fontSize, fontFamily, spacing, radius } from '../../../constants/typogr
 import InputField from '../../../components/InputField';
 import { useAccountStore } from '../../../store/useAccountStore';
 
+import { fetchProfile, getCurrentUserId, lookupAccountName } from '../../../services/auth';
+
 const BANKS = [
   'Access Bank', 'First Bank', 'GTBank', 'UBA', 'Zenith Bank',
   'Fidelity Bank', 'FCMB', 'Sterling Bank', 'Union Bank', 'Stanbic IBTC',
@@ -31,6 +33,18 @@ export default function TransferDetailsScreen() {
   const router = useRouter();
   const { bank } = useLocalSearchParams<{ bank: string }>();
   const { account } = useAccountStore();
+const [realBalance, setRealBalance] = useState(0);
+
+useEffect(() => {
+  const loadBalance = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchProfile(id);
+    if (result.success && result.profile) {
+      setRealBalance(result.profile.balance ?? 0);
+    }
+  };
+  loadBalance();
+}, []);
 
   const [accountNumber, setAccountNumber] = useState('');
   const [selectedBank, setSelectedBank] = useState(bank === 'gtbank' ? 'GTBank' : '');
@@ -39,14 +53,26 @@ export default function TransferDetailsScreen() {
   const [showBankPicker, setShowBankPicker] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const resolvedName = accountNumber.length === 10 ? 'John Adewale' : '';
+  const [resolvedName, setResolvedName] = useState('');
+
+useEffect(() => {
+  const resolveAccountName = async () => {
+    if (accountNumber.length === 10) {
+      const result = await lookupAccountName(accountNumber);
+      setResolvedName(result.success ? result.name : '');
+    } else {
+      setResolvedName('');
+    }
+  };
+  resolveAccountName();
+}, [accountNumber]);
 
   const handleContinue = () => {
     const newErrors: Record<string, string> = {};
     if (accountNumber.length !== 10) newErrors.account = 'Enter a valid 10-digit account number';
     if (!selectedBank) newErrors.bank = 'Please select a bank';
     if (!amount || parseFloat(amount) <= 0) newErrors.amount = 'Enter a valid amount';
-    if (parseFloat(amount) > (account?.balance ?? 0)) newErrors.amount = 'Insufficient balance';
+    if (parseFloat(amount) > realBalance) newErrors.amount = 'Insufficient balance';
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -119,11 +145,9 @@ export default function TransferDetailsScreen() {
             error={errors.amount}
           />
 
-          {account && (
-            <Text style={styles.balanceHint}>
-              Available balance: ₦{account.balance.toLocaleString()}
-            </Text>
-          )}
+          <Text style={styles.balanceHint}>
+           Available balance: ₦{realBalance.toLocaleString()}
+          </Text>
 
           <InputField
             label="Narration (optional)"

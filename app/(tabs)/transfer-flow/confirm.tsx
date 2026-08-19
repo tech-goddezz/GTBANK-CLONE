@@ -1,13 +1,14 @@
 // app/(tabs)/transfer-flow/confirm.tsx
 // Shows full transfer summary before the user commits.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
 import { useAccountStore } from '../../../store/useAccountStore';
+import { sendMoney, getCurrentUserId, fetchProfile } from '../../../services/auth';
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
@@ -25,7 +26,19 @@ export default function ConfirmTransferScreen() {
     bank: string; amount: string; narration: string;
   }>();
   const { account, addTransaction, deductBalance } = useAccountStore();
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(false);
+const [senderName, setSenderName] = useState('');
+
+useEffect(() => {
+  const loadSenderName = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchProfile(id);
+    if (result.success && result.profile) {
+      setSenderName(`${result.profile.first_name ?? ''} ${result.profile.last_name ?? ''}`.trim());
+    }
+  };
+  loadSenderName();
+}, []);
 
   const amountNum = parseFloat(params.amount ?? '0');
   const fee = 0;
@@ -33,23 +46,18 @@ export default function ConfirmTransferScreen() {
 
   const formatAmt = (n: number) => `₦${n.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`;
 
-  const handleProceed = () => {
-    setLoading(true);
-    setTimeout(() => {
-      deductBalance(amountNum);
-      addTransaction({
-        id: Date.now().toString(),
-        merchantName: params.accountName ?? 'Unknown',
-        category: 'Bank transfer',
-        amount: amountNum,
-        type: 'debit',
-        status: 'completed',
-        date: new Date().toISOString(),
-      });
-      setLoading(false);
-      router.replace('/(tabs)/transfer-flow/processing');
-    }, 500);
-  };
+  const handleProceed = async () => {
+  setLoading(true);
+  const senderId = await getCurrentUserId();
+  const result = await sendMoney(senderId, params.accountNumber ?? '', amountNum, params.narration ?? '');
+  setLoading(false);
+
+  if (result.success) {
+    router.replace('/(tabs)/transfer-flow/processing');
+  } else {
+    console.log('Transfer failed:', result.message);
+  }
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,7 +77,7 @@ export default function ConfirmTransferScreen() {
 
         {/* Details */}
         <View style={styles.detailsCard}>
-          <Row label="From" value={account?.accountName ?? ''} />
+          <Row label="From" value={senderName} />
           <Row label="To" value={params.accountName ?? ''} />
           <Row label="Account Number" value={params.accountNumber ?? ''} />
           <Row label="Bank" value={params.bank ?? ''} />
