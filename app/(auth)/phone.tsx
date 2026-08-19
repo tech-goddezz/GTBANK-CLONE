@@ -77,6 +77,9 @@ export default function PhoneScreen() {
 
         {!!error && <Text style={styles.errorText}>{error}</Text>}
 
+        <TouchableOpacity onPress={() => router.push('/signup')}>
+        <Text style={styles.link}>New here? Sign up</Text>
+        </TouchableOpacity>
         {/* Legal disclaimer with orange links */}
         <Text style={styles.disclaimer}>
           By providing your phone number , you agree to our{' '}
