@@ -199,3 +199,26 @@ export async function fetchTransactions(userId: string) {
 
   return { success: true, transactions: data };
 }
+
+export async function payBill(userId: string, billType: string, amount: number) {
+  const { data: profile } = await supabase.from('profiles').select('balance').eq('id', userId).single();
+
+  if (!profile || profile.balance < amount) {
+    return { success: false, message: 'Insufficient balance' };
+  }
+
+  await supabase.from('profiles').update({ balance: profile.balance - amount }).eq('id', userId);
+
+  const { error } = await supabase.from('transactions').insert({
+    sender_id: userId,
+    receiver_account_number: `BILL-${billType.toUpperCase()}`,
+    amount: amount,
+    narration: `${billType} payment`,
+  });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Payment successful' };
+}
