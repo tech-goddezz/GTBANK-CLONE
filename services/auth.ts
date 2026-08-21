@@ -184,3 +184,18 @@ export async function lookupAccountName(accountNumber: string) {
 
   return { success: true, name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() };
 }
+
+export async function fetchTransactions(userId: string) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('sender_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.log('fetchTransactions failed:', error.message);
+    return { success: false, transactions: [] };
+  }
+
+  return { success: true, transactions: data };
+}
