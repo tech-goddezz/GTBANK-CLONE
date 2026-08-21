@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../../../constants/colors";
 import {
@@ -24,6 +24,9 @@ type Stage = "sent" | "transit" | "credited";
 
 export default function ProcessingScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    amount: string; accountName: string; accountNumber: string; bank: string; narration: string;
+  }>();
   const [stage, setStage] = useState<Stage>("sent");
 
   useEffect(() => {
@@ -113,7 +116,9 @@ export default function ProcessingScreen() {
         <View style={styles.buttonArea}>
           <TouchableOpacity
             style={styles.doneButton}
-            onPress={() => router.replace("/(tabs)/transfer-flow/receipt")}
+            onPress={() => router.replace(
+  `/(tabs)/transfer-flow/receipt?amount=${params.amount}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}`
+)}
           >
             <Text style={styles.doneText}>Done</Text>
           </TouchableOpacity>
