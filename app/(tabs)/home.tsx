@@ -17,6 +17,8 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAccountStore } from '../../store/useAccountStore';
+import { useState, useEffect } from 'react';
+import { fetchTransactions, getCurrentUserId } from '../../services/auth';
 import BalanceCard from '../../components/BalanceCard';
 import TransactionItem from '../../components/TransactionItem';
 import profilePhoto from '../../assets/images/profilePhoto.png'; 
@@ -31,9 +33,31 @@ const QUICK_ACTIONS = [
 export default function HomeScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const { transactions } = useAccountStore();
+  const [transactions, setTransactions] = useState<any[]>([]);
 
-  const recentTransactions = transactions.slice(0, 5);
+useEffect(() => {
+  const loadTransactions = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchTransactions(id);
+    if (result.success) {
+      const formatted = result.transactions.map((t: any) => ({
+        id: t.id,
+        merchantName: t.receiver_account_number,
+        category: t.narration || 'Transfer',
+        amount: t.amount,
+        type: 'debit',
+        status: 'completed',
+        date: t.created_at,
+      }));
+      setTransactions(formatted);
+    }
+  };
+  loadTransactions();
+}, []);
+
+const recentTransactions = transactions.slice(0, 5);
+
+  
 
   const handleQuickAction = (id: string) => {
     if (id === 'send') router.push('/(tabs)/transfer-flow/');
