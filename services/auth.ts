@@ -222,3 +222,26 @@ export async function payBill(userId: string, billType: string, amount: number) 
 
   return { success: true, message: 'Payment successful' };
 }
+
+export async function topUpBalance(userId: string, amount: number) {
+  const { data: profile } = await supabase.from('profiles').select('balance').eq('id', userId).single();
+
+  if (!profile) {
+    return { success: false, message: 'Profile not found' };
+  }
+
+  await supabase.from('profiles').update({ balance: profile.balance + amount }).eq('id', userId);
+
+  const { error } = await supabase.from('transactions').insert({
+    sender_id: userId,
+    receiver_account_number: 'TOPUP',
+    amount: amount,
+    narration: 'Wallet top up',
+  });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Top up successful' };
+}
