@@ -26,14 +26,35 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
-import { useAccountStore } from '../../store/useAccountStore';
+import { useEffect } from 'react';
+import { fetchTransactions, getCurrentUserId } from '../../services/auth';
 import { formatDate } from '../../constants/mockData';
 import TransactionItem from '../../components/TransactionItem';
 
 export default function HistoryScreen() {
   const router = useRouter();
-  const { transactions } = useAccountStore();
-  const [query, setQuery] = useState('');
+  const [transactions, setTransactions] = useState<any[]>([]);
+const [query, setQuery] = useState('');
+
+useEffect(() => {
+  const loadTransactions = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchTransactions(id);
+    if (result.success) {
+      const formatted = result.transactions.map((t: any) => ({
+        id: t.id,
+        merchantName: t.receiver_account_number,
+        category: t.narration || 'Transfer',
+        amount: t.amount,
+        type: 'debit',
+        status: 'completed',
+        date: t.created_at,
+      }));
+      setTransactions(formatted);
+    }
+  };
+  loadTransactions();
+}, []);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return transactions;
