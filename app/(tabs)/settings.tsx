@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
+import { signOutUser } from '../../services/auth';
 
 interface SettingsRowProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -57,11 +58,11 @@ export default function SettingsScreen() {
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
   const [showProgress, setShowProgress] = useState(true);
 
-  const handleLogout = () => {
-    logout();
-    // replace (not push) so Back can't return to a logged-in screen
-    router.replace('/onboarding');
-  };
+  const handleLogout = async () => {
+  await signOutUser();
+  logout();
+  router.replace('/onboarding');
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
