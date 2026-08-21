@@ -74,6 +74,7 @@ const recentTransactions = transactions.slice(0, 5);
   if (id === 'send') router.push('/(tabs)/transfer-flow/');
   if (id === 'pay') router.push('/(tabs)/pay');
   if (id === 'topup') router.push('/(tabs)/topup');
+  if (id === 'more') router.push('/(tabs)/more');
 };
 
   
