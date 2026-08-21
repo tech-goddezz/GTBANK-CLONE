@@ -52,8 +52,10 @@ useEffect(() => {
   const result = await sendMoney(senderId, params.accountNumber ?? '', amountNum, params.narration ?? '');
   setLoading(false);
 
-  if (result.success) {
-    router.replace('/(tabs)/transfer-flow/processing');
+    if (result.success) {
+    router.replace(
+      `/(tabs)/transfer-flow/processing?amount=${amountNum}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}`
+    );
   } else {
     console.log('Transfer failed:', result.message);
   }

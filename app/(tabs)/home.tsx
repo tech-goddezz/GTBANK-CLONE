@@ -18,7 +18,7 @@ import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constan
 import { useAuthStore } from '../../store/useAuthStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useState, useEffect } from 'react';
-import { fetchTransactions, getCurrentUserId } from '../../services/auth';
+import { fetchTransactions, getCurrentUserId, fetchProfile } from '../../services/auth';
 import BalanceCard from '../../components/BalanceCard';
 import TransactionItem from '../../components/TransactionItem';
 import profilePhoto from '../../assets/images/profilePhoto.png'; 
@@ -32,7 +32,18 @@ const QUICK_ACTIONS = [
 
 export default function HomeScreen() {
   const router = useRouter();
-  const user = useAuthStore((state) => state.user);
+  const [firstName, setFirstName] = useState('there');
+
+useEffect(() => {
+  const loadName = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchProfile(id);
+    if (result.success && result.profile?.first_name) {
+      setFirstName(result.profile.first_name);
+    }
+  };
+  loadName();
+}, []);
   const [transactions, setTransactions] = useState<any[]>([]);
 
 useEffect(() => {
@@ -63,7 +74,7 @@ const recentTransactions = transactions.slice(0, 5);
     if (id === 'send') router.push('/(tabs)/transfer-flow/');
   };
 
-  const firstName = user?.firstName ?? 'there';
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
