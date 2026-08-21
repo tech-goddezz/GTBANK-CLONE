@@ -245,3 +245,7 @@ export async function topUpBalance(userId: string, amount: number) {
 
   return { success: true, message: 'Top up successful' };
 }
+
+export async function signOutUser() {
+  await supabase.auth.signOut();
+}
