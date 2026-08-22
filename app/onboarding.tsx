@@ -9,7 +9,7 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
   TouchableOpacity,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -20,7 +20,6 @@ import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing } from '../constants/typography';
 import CubeIllustration from '../components/CubeIllustration';
 
-const { width } = Dimensions.get('window');
 
 const slides = [
   { id: '1', title: 'GT World\nAll fresh and\nclean' },
@@ -32,6 +31,7 @@ const slides = [
 
 export default function Onboarding() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -70,7 +70,7 @@ export default function Onboarding() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         renderItem={({ item }) => (
-          <View style={styles.slide}>
+          <View style={[styles.slide, { width }]}>
             <CubeIllustration />
             <Text style={styles.title}>{item.title}</Text>
 
@@ -116,8 +116,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.orange,
   },
-  slide: {
-    width,
+    slide: {
     paddingTop: 64,
   },
   title: {
