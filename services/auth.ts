@@ -254,10 +254,17 @@ export async function signOutUser() {
 }
 
 export async function createCard(userId: string) {
-  const randomCardNumber = `**** **** **** ${Math.floor(1000 + Math.random() * 9000)}`;
+  const randomCardNumber = Array.from({ length: 4 }, () => Math.floor(1000 + Math.random() * 9000)).join('');
+  const currentYear = new Date().getFullYear();
+  const expiryYear = (currentYear + 4).toString().slice(-2);
+  const randomExpiry = `${String(Math.floor(1 + Math.random() * 12)).padStart(2, '0')}/${expiryYear}`;
+  const randomCvv = Math.floor(100 + Math.random() * 900).toString();
+
   const { error } = await supabase.from('cards').insert({
     user_id: userId,
     masked_number: randomCardNumber,
+    expiry_date: randomExpiry,
+    cvv: randomCvv,
   });
 
   if (error) {

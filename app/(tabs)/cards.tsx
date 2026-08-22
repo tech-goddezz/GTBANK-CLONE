@@ -11,20 +11,25 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useState, useEffect } from 'react';
-import { fetchCard, toggleCardFreeze, getCurrentUserId } from '../../services/auth';
+import { fetchCard, toggleCardFreeze, getCurrentUserId, fetchProfile } from '../../services/auth';
 import { formatCurrency } from '../../constants/mockData';
 import DebitCard from '../../components/DebitCard';
 
 export default function CardsScreen() {
   const router = useRouter();
   const [card, setCard] = useState<any>(null);
+const [balance, setBalance] = useState(0);
 
 useEffect(() => {
   const loadCard = async () => {
     const id = await getCurrentUserId();
-    const result = await fetchCard(id);
-    if (result.success) {
-      setCard(result.card);
+    const cardResult = await fetchCard(id);
+    if (cardResult.success) {
+      setCard(cardResult.card);
+    }
+    const profileResult = await fetchProfile(id);
+    if (profileResult.success && profileResult.profile) {
+      setBalance(profileResult.profile.balance ?? 0);
     }
   };
   loadCard();
@@ -67,7 +72,7 @@ const remaining = card.monthly_limit - card.monthly_spent;
         <Ionicons name="notifications-outline" size={22} color={colors.textDark} />
       </View>
 
-      <DebitCard />
+      <DebitCard card={card} balance={balance} />
 
       {/* Freeze toggle */}
       <View style={styles.row}>

@@ -9,8 +9,12 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
-import { useAccountStore } from '../store/useAccountStore';
 import { formatCurrency } from '../constants/mockData';
+
+interface DebitCardProps {
+  card: any;
+  balance: number;
+}
 
 // Splits a raw digit string into groups of 4 for readable display —
 // "2342456487654782" becomes "2342 4564 8765 4782".
@@ -28,15 +32,14 @@ const maskCardNumber = (raw: string): string => {
   return `•••• •••• •••• ${last4}`;
 };
 
-export default function DebitCard() {
-  const { card } = useAccountStore();
+export default function DebitCard({ card, balance }: DebitCardProps) {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [copied, setCopied] = useState(false);
 
   if (!card) return null;
 
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(card.maskedNumber.replace(/\s/g, ''));
+    await Clipboard.setStringAsync(card.masked_number.replace(/\s/g, ''));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -52,34 +55,36 @@ export default function DebitCard() {
 
         {/* Balance is only shown once details are revealed — matches
             the Figma's masked ($ *****) vs revealed ($147,000.00) states */}
+        
+
         <Text style={styles.balanceLabel}>Card Balance</Text>
-        <Text style={styles.balance}>
-          {detailsVisible ? formatCurrency(card.balance) : '$ *****'}
-        </Text>
+<Text style={styles.balance}>
+  {detailsVisible ? formatCurrency(balance) : '₦ *****'}
+</Text>
 
-        <Text style={styles.cardNumber}>
-          {detailsVisible
-            ? formatCardNumber(card.maskedNumber)
-            : maskCardNumber(card.maskedNumber)}
-        </Text>
+<Text style={styles.cardNumber}>
+  {detailsVisible
+    ? formatCardNumber(card.masked_number)
+    : maskCardNumber(card.masked_number)}
+</Text>
 
-        <View style={styles.bottomRow}>
-          <View>
-            <Text style={styles.fieldLabel}>Expires</Text>
-            <Text style={styles.fieldValue}>{card.expiryDate}</Text>
-          </View>
-          <View>
-            <Text style={styles.fieldLabel}>CVV</Text>
-            <Text style={styles.fieldValue}>
-              {detailsVisible ? card.cvv : '•••'}
-            </Text>
-          </View>
-        </View>
+<View style={styles.bottomRow}>
+  <View>
+    <Text style={styles.fieldLabel}>Expires</Text>
+    <Text style={styles.fieldValue}>{card.expiry_date}</Text>
+  </View>
+  <View>
+    <Text style={styles.fieldLabel}>CVV</Text>
+    <Text style={styles.fieldValue}>
+      {detailsVisible ? card.cvv : '•••'}
+    </Text>
+  </View>
+</View>
 
         {/* Frozen overlay — a real visual cue, not just a toggle changing
             color elsewhere. Makes "this card can't be used right now"
             unmistakable at a glance. */}
-        {card.isFrozen && (
+        {card.is_frozen && (
           <View style={styles.frozenOverlay}>
             <Ionicons name="snow-outline" size={28} color={colors.white} />
             <Text style={styles.frozenText}>Card Frozen</Text>
