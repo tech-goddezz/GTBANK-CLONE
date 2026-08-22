@@ -10,14 +10,16 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { fetchProfile, getCurrentUserId } from '../services/auth';
 
 export default function BalanceCard() {
   const [balance, setBalance] = useState(0);
   const [balanceHidden, setBalanceHidden] = useState(false);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const loadBalance = async () => {
       const realId = await getCurrentUserId();
       const result = await fetchProfile(realId);
@@ -26,7 +28,8 @@ export default function BalanceCard() {
       }
     };
     loadBalance();
-  }, []);
+  }, [])
+);
 
   const toggleBalance = () => setBalanceHidden((prev) => !prev);
 
