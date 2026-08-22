@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
@@ -26,12 +27,9 @@ export default function PayScreen() {
     }
     setError('');
     setLoading(true);
-
     const id = await getCurrentUserId();
     const result = await payBill(id, selectedBill, parseFloat(amount));
-
     setLoading(false);
-
     if (result.success) {
       router.replace('/(tabs)/home');
     } else {
@@ -40,17 +38,21 @@ export default function PayScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-      </TouchableOpacity>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
+          <Ionicons name="arrow-back" size={22} color={colors.textDark} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Pay a Bill</Text>
+        <View style={{ width: 22 }} />
+      </View>
 
-      <Text style={styles.title}>Pay a Bill</Text>
-
+      <Text style={styles.sectionLabel}>Select bill type</Text>
       <FlatList
         data={BILL_TYPES}
         keyExtractor={(item) => item}
         horizontal
+        showsHorizontalScrollIndicator={false}
         style={styles.billList}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -62,13 +64,18 @@ export default function PayScreen() {
         )}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Amount"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="decimal-pad"
-      />
+      <Text style={styles.sectionLabel}>Amount</Text>
+      <View style={styles.inputRow}>
+        <Text style={styles.currencyPrefix}>₦</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="0.00"
+          placeholderTextColor={colors.textFaded}
+          value={amount}
+          onChangeText={setAmount}
+          keyboardType="decimal-pad"
+        />
+      </View>
 
       {!!error && <Text style={styles.error}>{error}</Text>}
 
@@ -81,15 +88,74 @@ export default function PayScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
-  backButton: { marginTop: 70, marginBottom: spacing.xl, width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginBottom: spacing.xl },
-  billList: { marginBottom: spacing.lg },
-  billOption: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderWidth: 1, borderColor: colors.borderLight, borderRadius: radius.button, marginRight: spacing.sm },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  backButton: { width: 40, height: 40, justifyContent: 'center' },
+  headerTitle: {
+    fontSize: fontSize.heading2,
+    fontFamily: fontFamily.bold,
+    color: colors.textDark,
+  },
+  sectionLabel: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.medium,
+    color: colors.textGrey,
+    marginBottom: spacing.sm,
+  },
+  billList: { marginBottom: spacing.xl },
+  billOption: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: radius.button,
+    marginRight: spacing.sm,
+  },
   billOptionActive: { backgroundColor: colors.orange, borderColor: colors.orange },
   billText: { fontFamily: fontFamily.medium, color: colors.textDark },
   billTextActive: { color: colors.white },
-  input: { borderWidth: 1, borderColor: colors.borderLight, borderRadius: 6, padding: spacing.lg, fontSize: fontSize.body, marginBottom: spacing.lg },
-  error: { color: colors.red, marginBottom: spacing.md },
-  payButton: { backgroundColor: colors.orange, borderRadius: 6, paddingVertical: spacing.md, alignItems: 'center' },
-  payButtonText: { color: colors.white, fontFamily: fontFamily.semibold, fontSize: fontSize.body },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 6,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  currencyPrefix: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.textDark,
+    marginRight: spacing.sm,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+  },
+  error: {
+    fontSize: fontSize.small,
+    color: colors.red,
+    marginBottom: spacing.md,
+  },
+  payButton: {
+    backgroundColor: colors.orange,
+    borderRadius: 6,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    marginTop: spacing.lg,
+  },
+  payButtonText: {
+    color: colors.white,
+    fontFamily: fontFamily.semibold,
+    fontSize: fontSize.body,
+  },
 });
