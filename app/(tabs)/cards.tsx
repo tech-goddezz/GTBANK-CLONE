@@ -10,24 +10,42 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
-import { useAccountStore } from '../../store/useAccountStore';
+import { useState, useEffect } from 'react';
+import { fetchCard, toggleCardFreeze, getCurrentUserId } from '../../services/auth';
 import { formatCurrency } from '../../constants/mockData';
 import DebitCard from '../../components/DebitCard';
 
 export default function CardsScreen() {
   const router = useRouter();
-  const { card, toggleCardFreeze } = useAccountStore();
+  const [card, setCard] = useState<any>(null);
 
-  if (!card) return null;
+useEffect(() => {
+  const loadCard = async () => {
+    const id = await getCurrentUserId();
+    const result = await fetchCard(id);
+    if (result.success) {
+      setCard(result.card);
+    }
+  };
+  loadCard();
+}, []);
+
+const handleToggleFreeze = async () => {
+  const id = await getCurrentUserId();
+  await toggleCardFreeze(id, card.is_frozen);
+  setCard({ ...card, is_frozen: !card.is_frozen });
+};
+
+if (!card) return null;
 
   // How far into the monthly limit the user has spent, clamped to 100%
   // so an edge case (spending exactly at or somehow over the limit)
   // never renders a bar wider than its container.
   const spendPercentage = Math.min(
-    (card.monthlySpent / card.monthlyLimit) * 100,
-    100
-  );
-  const remaining = card.monthlyLimit - card.monthlySpent;
+  (card.monthly_spent / card.monthly_limit) * 100,
+  100
+);
+const remaining = card.monthly_limit - card.monthly_spent;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
@@ -58,8 +76,8 @@ export default function CardsScreen() {
           <Text style={styles.rowSubtitle}>Instantly block transactions</Text>
         </View>
         <Switch
-          value={card.isFrozen}
-          onValueChange={toggleCardFreeze}
+          value={card.is_frozen}
+          onValueChange={handleToggleFreeze}
           trackColor={{ false: colors.borderLight, true: colors.orange }}
           thumbColor={colors.white}
         />
@@ -69,7 +87,7 @@ export default function CardsScreen() {
       <View style={styles.limitCard}>
         <View style={styles.limitHeader}>
           <Text style={styles.limitLabel}>Monthly Spending Limit</Text>
-          <Text style={styles.limitAmount}>{formatCurrency(card.monthlyLimit)}</Text>
+          <Text style={styles.limitAmount}>{formatCurrency(card.monthly_limit)}</Text>
         </View>
 
         <View style={styles.progressTrack}>
@@ -78,7 +96,7 @@ export default function CardsScreen() {
 
         <View style={styles.limitFooter}>
           <Text style={styles.limitFooterText}>
-            Spent: {formatCurrency(card.monthlySpent)}
+            Spent: {formatCurrency(card.monthly_spent)}
           </Text>
           <Text style={styles.limitFooterText}>
             Remaining: {formatCurrency(remaining)}

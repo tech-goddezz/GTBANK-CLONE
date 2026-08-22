@@ -14,6 +14,9 @@ export async function signUp(email: string, password: string) {
   const profileResult = await createProfile(data.user?.id ?? '');
   console.log('Profile creation:', profileResult.message);
 
+  const cardResult = await createCard(data.user?.id ?? '');
+  console.log('Card creation:', cardResult.message);
+
   console.log('Signup successful:', data.user?.email);
   return { success: true, message: 'Account created!', userId: data.user?.id };
 }
@@ -248,4 +251,40 @@ export async function topUpBalance(userId: string, amount: number) {
 
 export async function signOutUser() {
   await supabase.auth.signOut();
+}
+
+export async function createCard(userId: string) {
+  const randomCardNumber = `**** **** **** ${Math.floor(1000 + Math.random() * 9000)}`;
+  const { error } = await supabase.from('cards').insert({
+    user_id: userId,
+    masked_number: randomCardNumber,
+  });
+
+  if (error) {
+    console.log('createCard failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Card created' };
+}
+
+export async function fetchCard(userId: string) {
+  const { data, error } = await supabase.from('cards').select().eq('user_id', userId).single();
+
+  if (error) {
+    console.log('fetchCard failed:', error.message);
+    return { success: false, card: null };
+  }
+
+  return { success: true, card: data };
+}
+
+export async function toggleCardFreeze(userId: string, isFrozen: boolean) {
+  const { error } = await supabase.from('cards').update({ is_frozen: !isFrozen }).eq('user_id', userId);
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Card status updated' };
 }
