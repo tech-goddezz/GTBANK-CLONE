@@ -295,3 +295,20 @@ export async function toggleCardFreeze(userId: string, isFrozen: boolean) {
 
   return { success: true, message: 'Card status updated' };
 }
+
+export async function applyForHigherLimit(userId: string, employmentStatus: string, monthlyIncome: number, employerName: string) {
+  const { error } = await supabase.from('profiles').update({
+    employment_status: employmentStatus,
+    monthly_income: monthlyIncome,
+    employer_name: employerName,
+    tier: 2,
+    transfer_limit: 2000000,
+  }).eq('id', userId);
+
+  if (error) {
+    console.log('applyForHigherLimit failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Verification complete! Your limit has been increased.' };
+}
