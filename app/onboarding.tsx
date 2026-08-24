@@ -1,25 +1,20 @@
 // app/onboarding.tsx
 //
-// 5-slide intro carousel. The splash frame from Figma lives at app/index.tsx
-// (logo, 900ms, redirect) — this screen starts straight at slide 1.
-
-import React, { useRef, useState } from 'react';
+// 5-slide intro carousel. Renders ONE slide at a time based on an index —
+// no horizontal scrolling FlatList, since that combination proved unreliable
+// across web browsers (Safari/Chrome), even though it worked in Expo Go.
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
-  useWindowDimensions,
   TouchableOpacity,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing } from '../constants/typography';
 import CubeIllustration from '../components/CubeIllustration';
-
 
 const slides = [
   { id: '1', title: 'GT World\nAll fresh and\nclean' },
@@ -31,16 +26,10 @@ const slides = [
 
 export default function Onboarding() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const isLastSlide = activeIndex === slides.length - 1;
-
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.x / width);
-    setActiveIndex(index);
-  };
+  const currentSlide = slides[activeIndex];
 
   const goToAuth = () => router.replace('/(auth)/phone');
 
@@ -48,7 +37,7 @@ export default function Onboarding() {
     if (isLastSlide) {
       goToAuth();
     } else {
-      flatListRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
+      setActiveIndex((prev) => prev + 1);
     }
   };
 
@@ -60,40 +49,28 @@ export default function Onboarding() {
         </TouchableOpacity>
       )}
 
-      <FlatList
-        ref={flatListRef}
-        data={slides}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        renderItem={({ item }) => (
-          <View style={[styles.slide, { width }]}>
-            <CubeIllustration />
-            <Text style={styles.title}>{item.title}</Text>
+      <View style={styles.slide}>
+        <CubeIllustration />
+        <Text style={styles.title}>{currentSlide.title}</Text>
 
-            <View style={styles.controlsRow}>
-              <View style={styles.dotsRow}>
-                {slides.map((_, i) => (
-                  <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
-                ))}
-              </View>
-
-              <TouchableOpacity
-                style={isLastSlide ? styles.letsStartButton : styles.nextButton}
-                onPress={handleNext}
-                activeOpacity={0.8}
-              >
-                <Text style={isLastSlide ? styles.letsStartButtonLabel : styles.nextButtonLabel}>
-                  {isLastSlide ? "Let's start" : 'Next'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+        <View style={styles.controlsRow}>
+          <View style={styles.dotsRow}>
+            {slides.map((_, i) => (
+              <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
+            ))}
           </View>
-        )}
-      />
+
+          <TouchableOpacity
+            style={isLastSlide ? styles.letsStartButton : styles.nextButton}
+            onPress={handleNext}
+            activeOpacity={0.8}
+          >
+            <Text style={isLastSlide ? styles.letsStartButtonLabel : styles.nextButtonLabel}>
+              {isLastSlide ? "Let's start" : 'Next'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -105,44 +82,41 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: spacing.xxl + 30,
+    top: 60,
     right: spacing.xl,
     zIndex: 10,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.xs,
   },
   skipText: {
-    fontSize: fontSize.large,
-    fontFamily: fontFamily.regular,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.medium,
     color: colors.orange,
   },
-    slide: {
+  slide: {
+    flex: 1,
     paddingTop: 64,
+    paddingHorizontal: spacing.xl,
   },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
     color: colors.textDark,
-    lineHeight: 34,
-    marginTop: spacing.xxxl + 50,
-    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xl,
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.xxxl,
+    marginTop: 'auto',
+    marginBottom: spacing.xxxl,
   },
   dotsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
+    gap: spacing.sm,
   },
   dot: {
-    width: 8,
     height: 8,
-    borderRadius: 999,
+    width: 8,
+    borderRadius: 4,
     backgroundColor: colors.borderLight,
   },
   dotActive: {
