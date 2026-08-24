@@ -45,9 +45,12 @@ export default function TransferLandingScreen() {
         >
           <Text style={styles.primaryButtonText}>Quickly Transfer</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Apply for more</Text>
-        </TouchableOpacity>
+        <TouchableOpacity
+  style={styles.secondaryButton}
+  onPress={() => router.push('/(tabs)/transfer-flow/income-verification')}
+>
+  <Text style={styles.secondaryButtonText}>Apply for more</Text>
+</TouchableOpacity>
       </View>
 
       {/* Bank type selector sheet */}
