@@ -13,6 +13,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,9 +25,14 @@ import { useAccountStore } from '../../../store/useAccountStore';
 import { fetchProfile, getCurrentUserId, lookupAccountName } from '../../../services/auth';
 
 const BANKS = [
-  'Access Bank', 'First Bank', 'GTBank', 'UBA', 'Zenith Bank',
-  'Fidelity Bank', 'FCMB', 'Sterling Bank', 'Union Bank', 'Stanbic IBTC',
-  'Polaris Bank', 'Wema Bank', 'Keystone Bank', 'Ecobank', 'Heritage Bank',
+  'Access Bank', 'Citibank Nigeria', 'Ecobank', 'Fidelity Bank', 'First Bank',
+  'First City Monument Bank (FCMB)', 'Globus Bank', 'GTBank', 'Heritage Bank',
+  'Jaiz Bank', 'Keystone Bank', 'Kuda Bank', 'Lotus Bank', 'Moniepoint MFB',
+  'Opay', 'Optimus Bank', 'Palmpay', 'Parallex Bank', 'Polaris Bank',
+  'Premium Trust Bank', 'Providus Bank', 'Signature Bank', 'Stanbic IBTC',
+  'Standard Chartered Bank', 'Sterling Bank', 'SunTrust Bank', 'Suntrust Bank',
+  'Taj Bank', 'Titan Trust Bank', 'Union Bank', 'United Bank for Africa (UBA)',
+  'Unity Bank', 'VFD Microfinance Bank', 'Wema Bank', 'Zenith Bank',
 ];
 
 export default function TransferDetailsScreen() {
@@ -52,14 +58,16 @@ useEffect(() => {
   const [narration, setNarration] = useState('');
   const [showBankPicker, setShowBankPicker] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
   const [resolvedName, setResolvedName] = useState('');
+  const [resolvingName, setResolvingName] = useState(false);
 
 useEffect(() => {
   const resolveAccountName = async () => {
     if (accountNumber.length === 10) {
+      setResolvingName(true);
       const result = await lookupAccountName(accountNumber);
       setResolvedName(result.success ? result.name : '');
+      setResolvingName(false);
     } else {
       setResolvedName('');
     }
@@ -110,7 +118,13 @@ useEffect(() => {
             error={errors.account}
           />
 
-          {resolvedName !== '' && (
+                    {resolvingName && (
+            <View style={styles.resolvedBadge}>
+              <ActivityIndicator size="small" color={colors.orange} />
+              <Text style={styles.resolvedText}>Verifying account...</Text>
+            </View>
+          )}
+          {!resolvingName && resolvedName !== '' && (
             <View style={styles.resolvedBadge}>
               <Ionicons name="checkmark-circle" size={16} color={colors.green} />
               <Text style={styles.resolvedText}>{resolvedName}</Text>

@@ -83,18 +83,20 @@ export default function SettingsScreen() {
           onPress={() => router.push('/(settings)/change-transaction-pin')}
         />
         <SettingsRow
-          icon="flag-outline"
-          label="Report Transaction"
-        />
+  icon="flag-outline"
+  label="Report Transaction"
+  onPress={() => router.push('/(tabs)/report-transaction')}
+/>
         <SettingsRow
-          icon="card-outline"
-          label="Card Management"
-          onPress={() => router.push('/(tabs)/cards')}
-        />
+  icon="card-outline"
+  label="Card Management"
+  onPress={() => router.push('/(tabs)/cards')}
+/>
         <SettingsRow
-          icon="person-circle-outline"
-          label="Account Settings"
-        />
+  icon="person-circle-outline"
+  label="Account Settings"
+  onPress={() => router.push('/(auth)/personal-info')}
+/>
       </View>
 
       <View style={styles.section}>
@@ -111,7 +113,7 @@ export default function SettingsScreen() {
           />
         </View>
 
-        <SettingsRow icon="person-outline" label="Your profile" />
+        <SettingsRow icon="person-outline" label="Your profile" onPress={() => router.push('/(auth)/personal-info')} />
 
         <View style={styles.row}>
           <View style={styles.rowLeft}>

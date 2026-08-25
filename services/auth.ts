@@ -312,3 +312,18 @@ export async function applyForHigherLimit(userId: string, employmentStatus: stri
 
   return { success: true, message: 'Verification complete! Your limit has been increased.' };
 }
+
+export async function reportTransaction(userId: string, transactionId: string, reason: string) {
+  const { error } = await supabase.from('transaction_reports').insert({
+    user_id: userId,
+    transaction_id: transactionId,
+    reason: reason,
+  });
+
+  if (error) {
+    console.log('reportTransaction failed:', error.message);
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Report submitted successfully' };
+}
