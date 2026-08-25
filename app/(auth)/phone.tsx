@@ -18,7 +18,7 @@ export default function PhoneScreen() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
-  const isValid = phone.length === 10;
+  const isValid = /^[789][01]\d{8}$/.test(phone);
 
   const handleProceed = () => {
     if (!isValid) {
