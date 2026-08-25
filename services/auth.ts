@@ -11,7 +11,7 @@ export async function signUp(email: string, password: string) {
     return { success: false, message: error.message };
   }
 
-  const profileResult = await createProfile(data.user?.id ?? '');
+  const profileResult = await createProfile(data.user?.id ?? '', email);
   console.log('Profile creation:', profileResult.message);
 
   const cardResult = await createCard(data.user?.id ?? '');
@@ -36,9 +36,9 @@ export async function signIn(email: string, password: string) {
   return { success: true, message: 'login successful', userId: data.user?.id };
 }
 
-export async function createProfile(id: string) {
+export async function createProfile(id: string, email: string) {
   const randomAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  const { data, error } = await supabase.from('profiles').insert({ id: id, account_number: randomAccountNumber }).select();
+  const { data, error } = await supabase.from('profiles').insert({ id: id, account_number: randomAccountNumber, email: email }).select();
 
   if (error) {
     console.log('profiles failed:', error.message);
@@ -326,4 +326,45 @@ export async function reportTransaction(userId: string, transactionId: string, r
   }
 
   return { success: true, message: 'Report submitted successfully' };
+}
+
+export async function savePhoneNumber(id: string, phoneNumber: string) {
+  const { error } = await supabase.from('profiles').update({ phone_number: phoneNumber }).eq('id', id);
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'Phone number saved' };
+}
+
+export async function lookupEmailByPhone(phoneNumber: string) {
+  const { data, error } = await supabase.from('profiles').select('email').eq('phone_number', phoneNumber).single();
+
+  if (error || !data?.email) {
+    return { success: false, email: '' };
+  }
+
+  return { success: true, email: data.email };
+}
+
+export async function setPin(id: string, pin: string) {
+  const { error } = await supabase.auth.updateUser({ password: pin });
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  return { success: true, message: 'PIN set successfully' };
+}
+
+export async function signInWithPin(phoneNumber: string, pin: string) {
+  const lookupResult = await lookupEmailByPhone(phoneNumber);
+
+  if (!lookupResult.success) {
+    return { success: false, message: 'No account found for this phone number' };
+  }
+
+  const result = await signIn(lookupResult.email, pin);
+  return result;
 }

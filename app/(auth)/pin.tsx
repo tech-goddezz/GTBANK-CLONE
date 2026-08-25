@@ -13,7 +13,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
-import { useAuthStore } from '../../store/useAuthStore';import { mockUser } from '../../constants/mockData';
+import { useAuthStore } from '../../store/useAuthStore';
+import { setPin as saveRealPin, getCurrentUserId, fetchProfile } from '../../services/auth';
 
 const PIN_LENGTH = 4;
 
@@ -50,16 +51,27 @@ export default function PinScreen() {
     }
   };
 
-  const handleSubmit = (enteredPin: string) => {
-    // Mock validation — in production this hits your API
-    if (enteredPin === '1234') {
-        login(mockUser, 'mock-token-abc123');
-      router.replace('/(tabs)/home');
-    } else {
-      setError('Incorrect PIN. Try 1234 for demo.');
-      setPin([]);
-    }
-  };
+  const handleSubmit = async (enteredPin: string) => {
+  const id = await getCurrentUserId();
+  const result = await saveRealPin(id, enteredPin);
+
+  if (result.success) {
+    const profileResult = await fetchProfile(id);
+    const realUser = {
+      id: id,
+      firstName: profileResult.profile?.first_name ?? '',
+      lastName: profileResult.profile?.last_name ?? '',
+      phoneNumber: profileResult.profile?.phone_number ?? '',
+      accountNumber: profileResult.profile?.account_number ?? '',
+      tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
+    };
+    login(realUser, 'real-session');
+    router.replace('/(tabs)/home');
+  } else {
+    setError('Could not set PIN. Please try again.');
+    setPin([]);
+  }
+};
 
   return (
     <View style={styles.container}>

@@ -7,14 +7,15 @@ import {
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
-import { updateName, getCurrentUserId } from '../../services/auth';
+import { updateName, getCurrentUserId, savePhoneNumber } from '../../services/auth';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ phone: string }>();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,10 @@ export default function PersonalInfoScreen() {
     setError('');
     setLoading(true);
     const id = await getCurrentUserId();
-    await updateName(id, firstName, lastName);
+await updateName(id, firstName, lastName);
+if (params.phone) {
+  await savePhoneNumber(id, params.phone);
+}
     setLoading(false);
     router.replace('/(auth)/requirements');
   };

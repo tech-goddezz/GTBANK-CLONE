@@ -41,7 +41,7 @@ export default function OTPScreen() {
   // After OTP, always go to the PIN/password entry screen.
   // The KYC flow (requirements → DOB → BVN etc.) is only for
   // brand-new account opening, triggered separately.
-  router.replace('/(auth)/login-password');
+  router.replace(`/(auth)/login-biometric?phone=${phone}`);
 };
 
   // const handleProceed = () => {
