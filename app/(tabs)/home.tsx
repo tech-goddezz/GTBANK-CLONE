@@ -20,6 +20,8 @@ import { useAccountStore } from '../../store/useAccountStore';
 import { useState, useEffect } from 'react';
 import { fetchTransactions, getCurrentUserId, fetchProfile } from '../../services/auth';
 import BalanceCard from '../../components/BalanceCard';
+import TransactionTicker from '../../components/TransactionTicker';
+import PromoCarousel from '../../components/PromoCarousel';
 import TransactionItem from '../../components/TransactionItem';
 import profilePhoto from '../../assets/images/profilePhoto.png'; 
 
@@ -98,7 +100,7 @@ const recentTransactions = transactions.slice(0, 5);
               <Text style={styles.userName}>{firstName}</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.bellButton}>
+          <TouchableOpacity style={styles.bellButton} onPress={() => router.push('/(tabs)/notifications')}>
             <Ionicons name="notifications-outline" size={22} color={colors.textDark} />
             <View style={styles.bellDot} />
           </TouchableOpacity>
@@ -126,6 +128,8 @@ const recentTransactions = transactions.slice(0, 5);
 
         {/* Balance card */}
         <BalanceCard />
+<TransactionTicker transactions={transactions} />
+<PromoCarousel />
 
         {/* Quick actions — sit directly on page background, no card wrapper */}
         <View style={styles.quickActionsRow}>
