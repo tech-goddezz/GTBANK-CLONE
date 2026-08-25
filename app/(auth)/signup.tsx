@@ -7,7 +7,7 @@ import {
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
@@ -16,6 +16,7 @@ import { signUp, fetchProfile } from '../../services/auth';
 
 export default function SignupScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ phone: string }>();
   const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +43,7 @@ export default function SignupScreen() {
     tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
   };
   login(realUser, 'mock-token-abc123');
-  router.replace('/(auth)/personal-info');
+  router.replace(`/(auth)/personal-info?phone=${params.phone ?? ''}`);
 } else {
   setError(result.message);
 }

@@ -77,7 +77,7 @@ export default function PhoneScreen() {
 
         {!!error && <Text style={styles.errorText}>{error}</Text>}
 
-        <TouchableOpacity onPress={() => router.push('/signup')}>
+        <TouchableOpacity onPress={() => router.push(`/signup?phone=${phone}`)}>
         <Text style={styles.link}>New here? Sign up</Text>
         </TouchableOpacity>
         {/* Legal disclaimer with orange links */}
