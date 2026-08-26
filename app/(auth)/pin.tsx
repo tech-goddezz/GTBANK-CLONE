@@ -1,14 +1,8 @@
 // app/(auth)/pin.tsx
-// 4-digit PIN entry with custom number pad.
-// On completion, saves login state and redirects to dashboard.
-
+// 4-digit PIN creation with confirmation step, then saves the real
+// PIN and redirects to the dashboard.
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
@@ -17,204 +11,125 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { setPin as saveRealPin, getCurrentUserId, fetchProfile } from '../../services/auth';
 
 const PIN_LENGTH = 4;
-
-const keypadKeys = [
-  '1', '2', '3',
-  '4', '5', '6',
-  '7', '8', '9',
-  '',  '0', 'del',
-];
+const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
 
 export default function PinScreen() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
+  const [stage, setStage] = useState<'create' | 'confirm'>('create');
+  const [firstPin, setFirstPin] = useState('');
   const [pin, setPin] = useState<string[]>([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleKey = (key: string) => {
-    if (key === '') return;
+  const finishSetPin = async (confirmedPin: string) => {
+    setLoading(true);
+    const id = await getCurrentUserId();
+    const result = await saveRealPin(id, confirmedPin);
+    setLoading(false);
 
-    if (key === 'del') {
-      setPin((prev) => prev.slice(0, -1));
-      setError('');
-      return;
-    }
-
-    if (pin.length >= PIN_LENGTH) return;
-
-    const newPin = [...pin, key];
-    setPin(newPin);
-
-    // Auto-submit when 4 digits are entered
-    if (newPin.length === PIN_LENGTH) {
-      handleSubmit(newPin.join(''));
+    if (result.success) {
+      const profileResult = await fetchProfile(id);
+      const realUser = {
+        id,
+        firstName: profileResult.profile?.first_name ?? '',
+        lastName: profileResult.profile?.last_name ?? '',
+        phoneNumber: profileResult.profile?.phone_number ?? '',
+        accountNumber: profileResult.profile?.account_number ?? '',
+        tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
+      };
+      login(realUser, 'real-session');
+      router.replace('/(tabs)/home');
+    } else {
+      setError('Could not set PIN. Please try again.');
+      setStage('create');
+      setFirstPin('');
+      setPin([]);
     }
   };
 
-  const handleSubmit = async (enteredPin: string) => {
-  const id = await getCurrentUserId();
-  const result = await saveRealPin(id, enteredPin);
+  const handleKey = (key: string) => {
+    setError('');
+    if (key === 'del') {
+      setPin((prev) => prev.slice(0, -1));
+      return;
+    }
+    if (key === '' || pin.length >= PIN_LENGTH) return;
 
-  if (result.success) {
-    const profileResult = await fetchProfile(id);
-    const realUser = {
-      id: id,
-      firstName: profileResult.profile?.first_name ?? '',
-      lastName: profileResult.profile?.last_name ?? '',
-      phoneNumber: profileResult.profile?.phone_number ?? '',
-      accountNumber: profileResult.profile?.account_number ?? '',
-      tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
-    };
-    login(realUser, 'real-session');
-    router.replace('/(tabs)/home');
-  } else {
-    setError('Could not set PIN. Please try again.');
-    setPin([]);
-  }
-};
+    const next = [...pin, key];
+    setPin(next);
+
+    if (next.length === PIN_LENGTH) {
+      const entered = next.join('');
+      if (stage === 'create') {
+        setFirstPin(entered);
+        setStage('confirm');
+        setPin([]);
+      } else {
+        if (entered === firstPin) {
+          finishSetPin(entered);
+        } else {
+          setError('PINs do not match. Please start over.');
+          setStage('create');
+          setFirstPin('');
+          setPin([]);
+        }
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Back button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-      </TouchableOpacity>
+      <Text style={styles.title}>
+        {stage === 'create' ? 'Create your PIN' : 'Confirm your PIN'}
+      </Text>
+      <Text style={styles.subtitle}>
+        {stage === 'create'
+          ? 'Choose a 4-digit PIN for quick login'
+          : 'Re-enter your PIN to confirm'}
+      </Text>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Enter your PIN</Text>
-        <Text style={styles.subtitle}>
-          Use PIN: 1234 for this demo
-        </Text>
-      </View>
-
-      {/* PIN dots */}
       <View style={styles.dotsRow}>
-        {Array(PIN_LENGTH).fill(null).map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.dot,
-              i < pin.length && styles.dotFilled,
-            ]}
-          />
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+          <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
         ))}
       </View>
 
-      {/* Error message */}
       {!!error && <Text style={styles.error}>{error}</Text>}
+      {loading && <Text style={styles.loading}>Saving...</Text>}
 
-      {/* Number pad */}
       <View style={styles.keypad}>
-        {keypadKeys.map((key, index) => (
+        {keypadKeys.map((key, i) => (
           <TouchableOpacity
-            key={index}
-            style={[
-              styles.key,
-              key === '' && styles.keyInvisible,
-            ]}
+            key={i}
+            style={styles.key}
             onPress={() => handleKey(key)}
-            disabled={key === ''}
-            activeOpacity={0.6}
+            disabled={!key || loading}
+            activeOpacity={key ? 0.5 : 1}
           >
             {key === 'del' ? (
-              <Ionicons
-                name="backspace-outline"
-                size={24}
-                color={colors.textDark}
-              />
+              <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
             ) : (
-              <Text style={styles.keyText}>{key}</Text>
+              <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
             )}
           </TouchableOpacity>
-          
         ))}
-        <TouchableOpacity onPress={() => router.push('/(forgot-password)/requirements')}>
-      
-      <Text style={{ color: colors.orange, fontSize: fontSize.body, fontFamily: fontFamily.medium, marginTop: spacing.large, }}>
-      Forget password?
-      </Text>
-    </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingHorizontal: spacing.xl,
-  },
-  backButton: {
-    marginTop: 70,
-    marginBottom: spacing.xxl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  header: {
-    marginBottom: spacing.xxxl,
-  },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.textDark,
-    marginBottom: spacing.sm,
-    marginTop: spacing.md,
-  },
-  subtitle: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-  },
-  dotsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.xl,
-    marginBottom: spacing.lg,
-    marginTop: spacing.xl,
-  },
-  dot: {
-    width: 18,
-    height: 18,
-    borderRadius: radius.pill,
-    borderWidth: 2,
-    borderColor: colors.borderLight,
-    backgroundColor: colors.transparent,
-  },
-  dotFilled: {
-    backgroundColor: colors.orange,
-    borderColor: colors.orange,
-  },
-  error: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.red,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  keypad: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: spacing.xl,
-  },
-  key: {
-    width: '33.33%',
-    height: 72,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.button,
-  },
-  keyInvisible: {
-    opacity: 0,
-  },
-  keyText: {
-    fontSize: 28,
-    fontFamily: fontFamily.medium,
-    color: colors.textDark,
-  },
+  container: { flex: 1, backgroundColor: colors.white, alignItems: 'center', paddingHorizontal: spacing.xl },
+  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginTop: spacing.xxxl + 40 },
+  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.textGrey, marginTop: spacing.sm },
+  dotsRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xxl },
+  dot: { width: 16, height: 16, borderRadius: 8, borderWidth: 1, borderColor: colors.borderLight },
+  dotFilled: { backgroundColor: colors.orange, borderColor: colors.orange },
+  error: { fontSize: fontSize.small, color: colors.red, marginTop: spacing.lg, textAlign: 'center' },
+  loading: { fontSize: fontSize.small, color: colors.textGrey, marginTop: spacing.lg },
+  keypad: { width: '100%', marginTop: 'auto', marginBottom: spacing.xxxl, flexDirection: 'row', flexWrap: 'wrap' },
+  key: { width: '33.33%', height: 72, alignItems: 'center', justifyContent: 'center' },
+  keyText: { fontSize: 28, fontFamily: fontFamily.regular, color: colors.textDark },
+  keyTextHidden: { opacity: 0 },
 });

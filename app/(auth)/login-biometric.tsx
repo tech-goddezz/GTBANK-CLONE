@@ -21,7 +21,7 @@ export default function LoginBiometricScreen() {
 
   const handleSubmit = async (enteredPin: string) => {
     setLoading(true);
-    const phoneNumber = `234${params.phone ?? ''}`;
+    const phoneNumber = (params.phone ?? '').replace(/^234/, '');
     const result = await signInWithPin(phoneNumber, enteredPin);
     setLoading(false);
     if (result.success) {

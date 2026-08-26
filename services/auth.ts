@@ -349,7 +349,11 @@ export async function lookupEmailByPhone(phoneNumber: string) {
 }
 
 export async function setPin(id: string, pin: string) {
-  const { error } = await supabase.auth.updateUser({ password: pin });
+  // Stored as plain text for this demo project — a real production app
+  // would hash this before saving. Kept separate from the account's
+  // real Supabase Auth password, so email/password login and PIN login
+  // work independently.
+  const { error } = await supabase.from('profiles').update({ pin: pin }).eq('id', id);
 
   if (error) {
     return { success: false, message: error.message };
@@ -358,13 +362,40 @@ export async function setPin(id: string, pin: string) {
   return { success: true, message: 'PIN set successfully' };
 }
 
-export async function signInWithPin(phoneNumber: string, pin: string) {
-  const lookupResult = await lookupEmailByPhone(phoneNumber);
+export async function signInWithUserIdAndPin(userId: string, pin: string) {
+  const { data, error } = await supabase.from('profiles').select('pin').eq('id', userId).single();
 
-  if (!lookupResult.success) {
+  if (error || !data) {
+    return { success: false, message: 'Account not found' };
+  }
+
+  if (data.pin !== pin) {
+    return { success: false, message: 'Incorrect PIN' };
+  }
+
+  return { success: true, message: 'PIN verified', userId };
+}
+
+export async function signInWithPin(phoneNumber: string, pin: string) {
+  const { data, error } = await supabase.from('profiles').select('id, pin').eq('phone_number', phoneNumber).single();
+
+  if (error || !data) {
     return { success: false, message: 'No account found for this phone number' };
   }
 
-  const result = await signIn(lookupResult.email, pin);
-  return result;
+  if (data.pin !== pin) {
+    return { success: false, message: 'Incorrect PIN' };
+  }
+
+  return { success: true, message: 'PIN verified', userId: data.id };
+}
+
+export async function checkPhoneExists(phoneNumber: string) {
+  const { data, error } = await supabase.from('profiles').select('id').eq('phone_number', phoneNumber).single();
+
+  if (error || !data) {
+    return { exists: false };
+  }
+
+  return { exists: true, userId: data.id };
 }
