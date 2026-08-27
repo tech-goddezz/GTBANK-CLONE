@@ -139,7 +139,7 @@ export default function OTPScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
   },
   scroll: {
     flexGrow: 1,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginBottom: spacing.lg,
   },
   tabContainer: {
@@ -190,13 +190,13 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     lineHeight: 22,
     marginBottom: spacing.xl,
   },
   phoneHighlight: {
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
   },
   otpWrapper: {
     marginBottom: spacing.xl,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   resendText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
   },
   resendHighlight: {
     fontSize: fontSize.body,

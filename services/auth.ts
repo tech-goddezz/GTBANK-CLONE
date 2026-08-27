@@ -11,7 +11,7 @@ export async function signUp(email: string, password: string) {
     return { success: false, message: error.message };
   }
 
-  const profileResult = await createProfile(data.user?.id ?? '', email);
+  const profileResult = await createProfile(data.user?.id ?? '', email, password);
   console.log('Profile creation:', profileResult.message);
 
   const cardResult = await createCard(data.user?.id ?? '');
@@ -36,9 +36,9 @@ export async function signIn(email: string, password: string) {
   return { success: true, message: 'login successful', userId: data.user?.id };
 }
 
-export async function createProfile(id: string, email: string) {
+export async function createProfile(id: string, email: string, password: string) {
   const randomAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-  const { data, error } = await supabase.from('profiles').insert({ id: id, account_number: randomAccountNumber, email: email }).select();
+  const { data, error } = await supabase.from('profiles').insert({ id: id, account_number: randomAccountNumber, email: email, demo_password: password }).select();
 
   if (error) {
     console.log('profiles failed:', error.message);
@@ -376,8 +376,8 @@ export async function signInWithUserIdAndPin(userId: string, pin: string) {
   return { success: true, message: 'PIN verified', userId };
 }
 
-export async function signInWithPin(phoneNumber: string, pin: string) {
-  const { data, error } = await supabase.from('profiles').select('id, pin').eq('phone_number', phoneNumber).single();
+  export async function signInWithPin(phoneNumber: string, pin: string) {
+  const { data, error } = await supabase.from('profiles').select('id, pin, email, demo_password').eq('phone_number', phoneNumber).single();
 
   if (error || !data) {
     return { success: false, message: 'No account found for this phone number' };
@@ -385,6 +385,13 @@ export async function signInWithPin(phoneNumber: string, pin: string) {
 
   if (data.pin !== pin) {
     return { success: false, message: 'Incorrect PIN' };
+  }
+
+  // Establish a real Supabase session using the stored signup password,
+  // so subsequent calls (getCurrentUserId, RLS-protected queries) work
+  // correctly — PIN alone doesn't create a real session.
+  if (data.email && data.demo_password) {
+    await supabase.auth.signInWithPassword({ email: data.email, password: data.demo_password });
   }
 
   return { success: true, message: 'PIN verified', userId: data.id };

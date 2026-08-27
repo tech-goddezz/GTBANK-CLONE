@@ -59,16 +59,16 @@ export default function PhoneScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
+  container: { flex: 1, backgroundColor: colors.darkNavy },
   scroll: { flexGrow: 1, paddingHorizontal: spacing.xl, paddingTop: 60 },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark },
-  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.textGrey, marginTop: spacing.sm, marginBottom: spacing.xl },
+  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.white },
+  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.base, marginTop: spacing.sm, marginBottom: spacing.xl },
   inputRow: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.borderLight, paddingBottom: spacing.md, gap: spacing.sm },
   inputRowError: { borderBottomColor: colors.red },
-  prefix: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textDark },
-  input: { flex: 1, fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textDark },
+  prefix: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.white },
+  input: { flex: 1, fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.white },
   errorText: { fontSize: fontSize.small, color: colors.red, marginTop: spacing.sm },
-  disclaimer: { fontSize: 11, fontFamily: fontFamily.regular, color: colors.textGrey, marginTop: spacing.lg },
+  disclaimer: { fontSize: 11, fontFamily: fontFamily.regular, color: colors.base, marginTop: spacing.lg },
   buttonRow: { marginTop: 'auto', paddingVertical: spacing.xl, alignItems: 'flex-end' },
   proceedButton: { backgroundColor: colors.orange, borderRadius: 6, paddingVertical: spacing.md, paddingHorizontal: spacing.xxl },
   proceedButtonDisabled: { opacity: 0.5 },

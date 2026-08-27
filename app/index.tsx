@@ -5,15 +5,23 @@
 // spinner, no text). Checks login state in the background and redirects
 // once the short splash delay is up.
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
 import colors from '../constants/colors';
 
 export default function Index() {
   const router = useRouter();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const [dotCount, setDotCount] = useState(1);
+
+  useEffect(() => {
+    const dotInterval = setInterval(() => {
+      setDotCount((prev) => (prev % 3) + 1);
+    }, 400);
+    return () => clearInterval(dotInterval);
+  }, []);
 
   useEffect(() => {
     // 📚 Quick concept: why a timer at all?
@@ -26,28 +34,34 @@ export default function Index() {
       } else {
         router.replace('/onboarding');
       }
-    }, 900);
-
+        }, 2200);
     return () => clearTimeout(timer);
   }, [isLoggedIn]);
-
   return (
     <View style={styles.container}>
       <Image source={require('../assets/icon.png')} style={styles.logo} resizeMode="contain" />
+      <Text style={styles.dots}>{'.'.repeat(dotCount)}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logo: {
+    logo: {
     width: 120,
     height: 120,
     borderRadius: 28,
+  },
+  dots: {
+    color: colors.orange,
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginTop: 16,
+    letterSpacing: 4,
   },
 })
