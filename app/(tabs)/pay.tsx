@@ -48,21 +48,17 @@ export default function PayScreen() {
       </View>
 
       <Text style={styles.sectionLabel}>Select bill type</Text>
-      <FlatList
-        data={BILL_TYPES}
-        keyExtractor={(item) => item}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.billList}
-        renderItem={({ item }) => (
+      <View style={[styles.billList, { flexDirection: "row", flexWrap: "wrap" }]}>
+        {BILL_TYPES.map((item) => (
           <TouchableOpacity
+            key={item}
             style={[styles.billOption, selectedBill === item && styles.billOptionActive]}
             onPress={() => setSelectedBill(item)}
           >
             <Text style={[styles.billText, selectedBill === item && styles.billTextActive]}>{item}</Text>
           </TouchableOpacity>
-        )}
-      />
+        ))}
+      </View>
 
       <Text style={styles.sectionLabel}>Amount</Text>
       <View style={styles.inputRow}>
@@ -87,7 +83,7 @@ export default function PayScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
+  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -99,12 +95,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontSize.heading2,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   sectionLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.base,
     marginBottom: spacing.sm,
   },
   billList: { marginBottom: spacing.xl },
@@ -117,7 +113,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   billOptionActive: { backgroundColor: colors.orange, borderColor: colors.orange },
-  billText: { fontFamily: fontFamily.medium, color: colors.textDark },
+  billText: { fontFamily: fontFamily.medium, color: colors.white },
   billTextActive: { color: colors.white },
   inputRow: {
     flexDirection: 'row',
@@ -125,13 +121,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     borderRadius: 6,
+    backgroundColor: colors.navyCard,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.lg,
   },
   currencyPrefix: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
     marginRight: spacing.sm,
   },
   input: {
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
   },
   error: {
     fontSize: fontSize.small,
