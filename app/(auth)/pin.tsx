@@ -120,16 +120,16 @@ export default function PinScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, alignItems: 'center', paddingHorizontal: spacing.xl },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginTop: spacing.xxxl + 40 },
-  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.textGrey, marginTop: spacing.sm },
+  container: { flex: 1, backgroundColor: colors.darkNavy, alignItems: 'center', paddingHorizontal: spacing.xl },
+  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.white, marginTop: spacing.xxxl + 40 },
+  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.base, marginTop: spacing.sm },
   dotsRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xxl },
   dot: { width: 16, height: 16, borderRadius: 8, borderWidth: 1, borderColor: colors.borderLight },
   dotFilled: { backgroundColor: colors.orange, borderColor: colors.orange },
   error: { fontSize: fontSize.small, color: colors.red, marginTop: spacing.lg, textAlign: 'center' },
-  loading: { fontSize: fontSize.small, color: colors.textGrey, marginTop: spacing.lg },
+  loading: { fontSize: fontSize.small, color: colors.base, marginTop: spacing.lg },
   keypad: { width: '100%', marginTop: 'auto', marginBottom: spacing.xxxl, flexDirection: 'row', flexWrap: 'wrap' },
   key: { width: '33.33%', height: 72, alignItems: 'center', justifyContent: 'center' },
-  keyText: { fontSize: 28, fontFamily: fontFamily.regular, color: colors.textDark },
+  keyText: { fontSize: 28, fontFamily: fontFamily.regular, color: colors.white },
   keyTextHidden: { opacity: 0 },
 });
