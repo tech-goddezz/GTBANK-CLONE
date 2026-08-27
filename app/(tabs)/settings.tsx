@@ -35,7 +35,7 @@ function SettingsRow({ icon, label, onPress, danger }: SettingsRowProps) {
         <Ionicons
           name={icon}
           size={20}
-          color={danger ? colors.red : colors.textDark}
+          color={danger ? colors.red : colors.white}
         />
         <Text style={[styles.rowLabel, danger && styles.rowLabelDanger]}>
           {label}
@@ -148,22 +148,22 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.pageBackground },
+  container: { flex: 1, backgroundColor: colors.darkNavy },
   scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
   header: { marginTop: 56, marginBottom: spacing.xl },
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     marginTop: spacing.xs,
   },
   section: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.navyCard,
     borderRadius: radius.card,
     marginBottom: spacing.lg,
     overflow: 'hidden',
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
   },
   rowLabelDanger: {
     color: colors.red,

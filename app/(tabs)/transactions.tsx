@@ -81,7 +81,7 @@ export default function TransactionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.pageBackground },
+  safeArea: { flex: 1, backgroundColor: colors.darkNavy },
   scroll: { padding: spacing.lg, paddingBottom: spacing.xxxl },
   header: {
     flexDirection: 'row',
@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   subtitle: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     marginTop: 2,
   },
   banner: {

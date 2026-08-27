@@ -116,7 +116,7 @@ export default function TransferLandingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.pageBackground },
+  container: { flex: 1, backgroundColor: colors.darkNavy },
   header: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xl,
@@ -125,12 +125,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     marginTop: spacing.xs,
   },
   illustrationArea: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   illustrationText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     textAlign: 'center',
     lineHeight: 24,
   },
