@@ -48,7 +48,7 @@ export default function TopUpScreen() {
         <TextInput
           style={styles.input}
           placeholder="0.00"
-          placeholderTextColor={colors.textFaded}
+          placeholderTextColor={colors.base}
           value={amount}
           onChangeText={setAmount}
           keyboardType="decimal-pad"
@@ -77,7 +77,7 @@ export default function TopUpScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
+  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -89,12 +89,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontSize.heading2,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   sectionLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.base,
     marginBottom: spacing.sm,
   },
   inputRow: {
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   currencyPrefix: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
     marginRight: spacing.sm,
   },
   input: {
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
   },
   quickRow: {
     flexDirection: 'row',
@@ -131,10 +131,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderLight,
     borderRadius: 20,
+    backgroundColor: colors.navyCard,
   },
   quickChipText: {
     fontFamily: fontFamily.medium,
-    color: colors.textDark,
+    color: colors.white,
     fontSize: fontSize.small,
   },
   error: {
