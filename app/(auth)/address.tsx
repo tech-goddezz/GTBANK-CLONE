@@ -222,7 +222,7 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
   },
   scroll: {
     flexGrow: 1,
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   subtitle: {
     fontSize: fontSize.small,

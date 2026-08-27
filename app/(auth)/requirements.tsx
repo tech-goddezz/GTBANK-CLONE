@@ -158,7 +158,7 @@ export default function RequirementsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
   },
   scroll: {
     flexGrow: 1,
@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginBottom: spacing.sm,
     lineHeight: 36,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     lineHeight: 22,
   },
   sectionRow: {
@@ -197,16 +197,17 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: fontSize.heading2,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.orange,
   },
   sectionCounter: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.orange,
   },
   listBox: {
     borderWidth: 1,
     borderColor: colors.dark,
+    backgroundColor: colors.white,
     borderRadius: 7,
     overflow: 'hidden',
   },
@@ -214,11 +215,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
   },
   listRowDivider: {
-    borderBottomWidth: 0,
+    borderBottomWidth: 1,
     borderBottomColor: colors.borderLight,
   },
   listRowText: {

@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 import { fetchTransactions, getCurrentUserId, fetchProfile } from '../../services/auth';
 import BalanceCard from '../../components/BalanceCard';
 import TransactionTicker from '../../components/TransactionTicker';
+import AdTicker from '../../components/AdTicker';
 import PromoCarousel from '../../components/PromoCarousel';
 import TransactionItem from '../../components/TransactionItem';
 import profilePhoto from '../../assets/images/profilePhoto.png'; 
@@ -101,7 +102,7 @@ const recentTransactions = transactions.slice(0, 5);
             </View>
           </View>
           <TouchableOpacity style={styles.bellButton} onPress={() => router.push('/(tabs)/notifications')}>
-            <Ionicons name="notifications-outline" size={22} color={colors.textDark} />
+            <Ionicons name="notifications-outline" size={22} color={colors.white} />
             <View style={styles.bellDot} />
           </TouchableOpacity>
         </View>
@@ -114,7 +115,7 @@ const recentTransactions = transactions.slice(0, 5);
             onPress={() => router.push('/(tabs)/settings')}
             activeOpacity={0.7}
           >
-            <Ionicons name="settings-outline" size={16} color={colors.textDark} />
+            <Ionicons name="settings-outline" size={16} color={colors.white} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.controlButton}
@@ -129,6 +130,7 @@ const recentTransactions = transactions.slice(0, 5);
         {/* Balance card */}
         <BalanceCard />
 <TransactionTicker transactions={transactions} />
+<AdTicker />
 <PromoCarousel />
 
         {/* Quick actions — sit directly on page background, no card wrapper */}
@@ -174,11 +176,11 @@ const recentTransactions = transactions.slice(0, 5);
 
 const styles = StyleSheet.create({
   
-  safeArea: { flex: 1, backgroundColor: colors.pageBackground },
+  safeArea: { flex: 1, backgroundColor: colors.darkNavy },
 
-  scroll: { flex: 1, backgroundColor: colors.pageBackground },
+  scroll: { flex: 1, backgroundColor: colors.darkNavy },
 
-  scrollContent: { paddingBottom: spacing.xxxl, backgroundColor: colors.pageBackground },
+  scrollContent: { paddingBottom: spacing.xxxl, backgroundColor: colors.darkNavy },
   
   topBar: {
     flexDirection: 'row',
@@ -205,13 +207,13 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
   },
   userName: {
     fontSize: fontSize.heading2,
     fontFamily: fontFamily.bold,
     fontWeight: fontWeight.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   bellButton: {
     width: 30,
@@ -255,7 +257,7 @@ divider: {
   controlLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textDark,
+    color: colors.white,
   },
   quickActionsRow: {
     flexDirection: 'row',
@@ -285,7 +287,7 @@ divider: {
   quickActionLabel: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.textDark,
+    color: colors.white,
   },
   section: { marginTop: spacing.xl },
   sectionHeader: {
@@ -298,7 +300,7 @@ divider: {
   sectionTitle: {
     fontSize: fontSize.large,
     fontFamily: fontFamily.semibold,
-    color: colors.textLightDark,
+    color: colors.white,
     fontWeight: fontWeight.bold,
     marginBottom: spacing.md, 
   },
@@ -315,7 +317,7 @@ divider: {
   emptyText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     textAlign: 'center',
     padding: spacing.xl,
   },

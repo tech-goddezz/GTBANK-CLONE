@@ -330,7 +330,7 @@ export default function DateOfBirthScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
+  container: { flex: 1, backgroundColor: colors.darkNavy },
   scroll: {
     flexGrow: 1,
     paddingHorizontal: spacing.xl,
@@ -348,13 +348,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
   },
   calendarCard: {
     backgroundColor: colors.pageBackground,
@@ -376,12 +376,12 @@ const styles = StyleSheet.create({
   dateValue: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.orange,
   },
   datePlaceholder: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.dark,
+    color: colors.orange,
   },
   monthRow: {
     flexDirection: "row",

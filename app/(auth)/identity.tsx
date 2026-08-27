@@ -174,7 +174,7 @@ export default function IdentityScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
+  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -199,13 +199,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     lineHeight: 22,
   },
  illustrationWrap: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   consent: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     lineHeight: 20,
     marginTop: spacing.sm - 30,
   },
