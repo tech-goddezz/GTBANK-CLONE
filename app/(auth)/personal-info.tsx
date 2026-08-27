@@ -82,7 +82,7 @@ if (params.phone) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
   },
@@ -100,27 +100,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginTop: spacing.xl,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     marginTop: spacing.sm,
     textAlign: 'center',
   },
   inputBox: {
     width: '100%',
     borderWidth: 1,
-    borderColor: colors.borderLight,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.orange,
+    backgroundColor: colors.navyCard,
     borderRadius: 6,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
     marginTop: spacing.lg,
   },
   button: {

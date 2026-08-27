@@ -8,7 +8,7 @@ const colors = {
 
   // The main GTCO orange. Used on buttons, links, active tab icons —
   // basically anything the user needs to tap or pay attention to.
-  orange: '#E85D24',
+    orange: '#F47920',
 
   // A slightly darker orange for when a button is being pressed.
   // That small color shift gives the user physical feedback — it "feels" tappable.
@@ -45,6 +45,10 @@ const colors = {
   // The dark charcoal card on the home screen that shows the balance.
   // Sampled directly from the Figma export: flat #444444, no gradient.
   darkCard: '#302f2f',
+  darkNavy: '#003057',
+  navyDark: '#0a1628',
+  navyCard: '#0d1f3c',
+  brandGold: '#EEB211',
 
   lightest: '#F7F9FA',
 

@@ -103,7 +103,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
   },
@@ -121,29 +121,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginTop: spacing.xl,
   },
-  inputBox: {
+    inputBox: {
     width: '100%',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 6,
-    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.orange,
+    paddingHorizontal: spacing.sm,
     paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
+    backgroundColor: colors.navyCard,
     marginTop: spacing.lg,
   },
-  passwordRow: {
+    passwordRow: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 6,
-    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.orange,
+    paddingHorizontal: spacing.sm,
+    backgroundColor: colors.navyCard,
     marginTop: spacing.lg,
   },
   passwordInput: {
@@ -151,7 +151,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
+    paddingRight: spacing.sm,
   },
   signupButton: {
     width: '100%',

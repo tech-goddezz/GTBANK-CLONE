@@ -78,7 +78,7 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.darkNavy,
   },
   skipButton: {
     position: 'absolute',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading1,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
     marginTop: spacing.xl,
   },
   controlsRow: {
@@ -127,14 +127,14 @@ const styles = StyleSheet.create({
     height: 44,
     paddingHorizontal: spacing.xxl + 20,
     borderRadius: 3,
-    backgroundColor: colors.borderLight,
+    backgroundColor: colors.orange,
     alignItems: 'center',
     justifyContent: 'center',
   },
   nextButtonLabel: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
   },
   letsStartButton: {
     height: 44,
