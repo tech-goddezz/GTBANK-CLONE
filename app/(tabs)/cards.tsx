@@ -126,7 +126,7 @@ const remaining = card.monthly_limit - card.monthly_spent;
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
+  container: { flex: 1, backgroundColor: colors.darkNavy },
   scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
   header: {
     flexDirection: 'row',
@@ -140,19 +140,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.heading2,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   subtitle: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
     marginTop: 2,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: colors.pageBackground,
+    backgroundColor: colors.navyCard,
     borderRadius: radius.card,
     padding: spacing.lg,
     marginTop: spacing.lg,
@@ -161,16 +161,16 @@ const styles = StyleSheet.create({
   rowTitle: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
     marginBottom: 2,
   },
   rowSubtitle: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
   },
   limitCard: {
-    backgroundColor: colors.pageBackground,
+    backgroundColor: colors.navyCard,
     borderRadius: radius.card,
     padding: spacing.lg,
     marginTop: spacing.lg,
@@ -183,12 +183,12 @@ const styles = StyleSheet.create({
   limitLabel: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.medium,
-    color: colors.textGrey,
+    color: colors.base,
   },
   limitAmount: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.bold,
-    color: colors.textDark,
+    color: colors.white,
   },
   progressTrack: {
     height: 8,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   limitFooterText: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
-    color: colors.textGrey,
+    color: colors.base,
   },
   staticRow: {
     flexDirection: 'row',
@@ -221,11 +221,11 @@ const styles = StyleSheet.create({
   staticLabel: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.white,
   },
   staticValue: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    color: colors.white,
   },
 });
