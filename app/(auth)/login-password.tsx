@@ -51,7 +51,7 @@ export default function LoginPasswordScreen() {
     tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
   };
   login(realUser, 'mock-token-abc123');
-  router.replace('/(auth)/requirements');
+  router.replace('/(tabs)/home');
 } else {
   setError(result.message);
 }

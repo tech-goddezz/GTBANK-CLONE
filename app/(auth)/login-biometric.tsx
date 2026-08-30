@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -7,6 +7,7 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { signInWithPin, fetchProfile } from '../../services/auth';
+import { supabase } from '../../lib/supabase';
 
 const PIN_LENGTH = 4;
 const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
@@ -18,6 +19,19 @@ export default function LoginBiometricScreen() {
   const [pin, setPin] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const check = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        router.replace('/(auth)/login-password');
+        return;
+      }
+      setCheckingSession(false);
+    };
+    check();
+  }, []);
 
   const handleSubmit = async (enteredPin: string) => {
     setLoading(true);
