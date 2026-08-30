@@ -149,33 +149,22 @@ export async function updateName(id: string, firstName: string, lastName: string
 }
 
 export async function sendMoney(senderId: string, receiverAccountNumber: string, amount: number, narration: string) {
-  const { data: senderProfile } = await supabase.from('profiles').select('balance').eq('id', senderId).single();
-
-  if (!senderProfile || senderProfile.balance < amount) {
-    return { success: false, message: 'Insufficient balance' };
-  }
-
-  const { data: receiverProfile, error: receiverError } = await supabase.from('profiles').select('id, balance').eq('account_number', receiverAccountNumber).single();
-
-  if (receiverError || !receiverProfile) {
-    return { success: false, message: 'Receiver account not found' };
-  }
-
-  await supabase.from('profiles').update({ balance: senderProfile.balance - amount }).eq('id', senderId);
-  await supabase.from('profiles').update({ balance: receiverProfile.balance + amount }).eq('id', receiverProfile.id);
-
-  const { error: transactionError } = await supabase.from('transactions').insert({
-    sender_id: senderId,
-    receiver_account_number: receiverAccountNumber,
-    amount: amount,
-    narration: narration,
+  const { data, error } = await supabase.rpc('transfer_money', {
+    p_recipient_account: receiverAccountNumber,
+    p_amount: amount,
+    p_narration: narration,
   });
 
-  if (transactionError) {
-    return { success: false, message: transactionError.message };
+  if (error) {
+    return { success: false, message: error.message };
   }
 
-  return { success: true, message: 'Transfer successful' };
+  const result = data?.[0];
+  if (!result || result.status !== 'success') {
+    return { success: false, message: result?.message ?? 'Transfer failed' };
+  }
+
+  return { success: true, message: result.message };
 }
 
 export async function lookupAccountName(accountNumber: string) {
