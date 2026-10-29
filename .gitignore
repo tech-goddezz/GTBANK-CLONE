@@ -23,3 +23,7 @@ Thumbs.db
 *.p12
 *.key
 *.mobileprovision
+
+# Design files (kept local)
+design/
+PIXEL-PERFECT-GUIDE.md
