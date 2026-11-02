@@ -48,7 +48,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C20 | Phone keyboards (number & letters) | Keyboard.pdf, Keyboard-1.pdf | The phone's own keyboard; nothing to build | — | ➖ |
 | C21 | Small 16px icons (bullseye ×3, download) | bullseye.pdf, bullseye-1.pdf, bullseye-2.pdf, Download.pdf | Used inside other screens as needed | — | ➖ |
 | C22 | Large square image (852 × 852) | Rectangle.pdf | Unclear what it's for; owner to confirm | — | ➖ |
-| C23 | Transaction row | To be checked | `components/TransactionItem.tsx` | — | ⬜ |
+| C23 | Transaction row | To be checked | `components/TransactionItem.tsx` | — | ✅ |
 | C24 | Balance card | To be checked | `components/BalanceCard.tsx` | — | ⬜ |
 | C25 | Status badge | To be checked | `components/StatusBadge.tsx` | — | ⬜ |
 | C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ⬜ |

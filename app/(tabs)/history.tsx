@@ -126,7 +126,7 @@ useEffect(() => {
               <Text style={styles.dateLabel}>{section.label}</Text>
               <View style={styles.transactionsList}>
                 {section.items.map((t) => (
-                  <TransactionItem key={t.id} transaction={t} />
+                  <TransactionItem key={t.id} transaction={t} variant="history" />
                 ))}
               </View>
             </View>

@@ -11,9 +11,10 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
+import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 import { Transaction } from '../types';
-import { formatCurrency, formatTime } from '../constants/mockData';
+import { formatTime } from '../constants/mockData';
 
 interface TransactionItemProps {
   transaction: Transaction;
@@ -24,21 +25,20 @@ export default function TransactionItem({ transaction, variant = 'home' }: Trans
   const isCredit = transaction.type === 'credit';
   const isHistory = variant === 'history';
 
-  const amountColor =
-    transaction.status === 'declined'
-      ? colors.red
-      : isCredit
-      ? colors.green
-      : colors.textDark;
-
   const statusColor =
     transaction.status === 'declined'
       ? colors.red
       : transaction.status === 'pending'
-      ? colors.amber
+      ? colors.textFaded
       : colors.green;
 
+  // Home always shows a dark grey amount; History colours it by status.
+  const amountColor = isHistory ? statusColor : colors.textLightDark;
+
   const amountPrefix = isCredit ? '+' : '-';
+  // "- ₦50": whole amounts have no decimals, but kobo are still shown when there are any.
+  const decimals = Number.isInteger(transaction.amount) ? 0 : 2;
+  const amountText = `₦${transaction.amount.toLocaleString('en-NG', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
   const statusLabel = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1);
 
   return (
@@ -56,7 +56,7 @@ export default function TransactionItem({ transaction, variant = 'home' }: Trans
       </View>
 
       <View style={styles.details}>
-        <Text style={styles.merchantName} numberOfLines={1}>
+        <Text style={[styles.merchantName, isHistory && styles.textHistory]} numberOfLines={1}>
           {transaction.merchantName}
         </Text>
         <Text style={styles.category} numberOfLines={1}>
@@ -67,9 +67,8 @@ export default function TransactionItem({ transaction, variant = 'home' }: Trans
       </View>
 
       <View style={styles.right}>
-        <Text style={[styles.amount, { color: amountColor }]}>
-          {amountPrefix}
-          {formatCurrency(transaction.amount)}
+        <Text style={[styles.amount, isHistory && styles.textHistory, { color: amountColor }]}>
+          {amountPrefix} {amountText}
         </Text>
         {isHistory && (
           <Text style={[styles.status, { color: statusColor }]}>{statusLabel}</Text>
@@ -83,7 +82,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    minHeight: layout.transactionRowHeight,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
     backgroundColor: colors.cardBackground,
     borderRadius: radius.card,
@@ -92,16 +92,16 @@ const styles = StyleSheet.create({
   logoContainer: { marginRight: spacing.md },
 
   logo: {
-    width: 42,
-    height: 42,
-    borderRadius: radius.buttonTrans,
+    width: 40,
+    height: 40,
+    borderRadius: radius.pill,
     backgroundColor: colors.borderLight,
   },
 
   logoFallback: {
-    width: 42,
-    height: 42,
-    borderRadius: radius.button,
+    width: 40,
+    height: 40,
+    borderRadius: radius.pill,
     backgroundColor: colors.orangeFaint,
     alignItems: 'center',
     justifyContent: 'center',
@@ -115,13 +115,16 @@ const styles = StyleSheet.create({
 
  merchantName: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.bold,
-    fontWeight: fontWeight.bold, 
+    fontFamily: fontFamily.medium,
     color: colors.textLightDark,
     marginBottom: 2,
   },
+  // The name and amount are bigger on the History screen.
+  textHistory: {
+    fontSize: fontSize.large,
+  },
   category: {
-    fontSize: fontSize.small,
+    fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
   },
@@ -130,10 +133,8 @@ const styles = StyleSheet.create({
 
   amount: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.bold,
+    fontFamily: fontFamily.medium,
     marginBottom: 2,
-    fontWeight: fontWeight.bold,
-    color: colors.textLightDark, 
   },
 
   status: {
