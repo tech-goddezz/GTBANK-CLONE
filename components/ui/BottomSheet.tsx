@@ -8,20 +8,32 @@ interface BottomSheetProps {
   visible: boolean;
   onClose: () => void;
   title?: string;
+  // For sheets that draw their own top and edges, like the date pickers.
+  bare?: boolean;
+  topRadius?: number;
   children: React.ReactNode;
 }
 
-export default function BottomSheet({ visible, onClose, title, children }: BottomSheetProps) {
+export default function BottomSheet({ visible, onClose, title, bare, topRadius, children }: BottomSheetProps) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => {}}>
-          <View style={styles.header}>
-            {title ? <Text style={styles.title}>{title}</Text> : <View />}
-            <TouchableOpacity onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close" size={22} color={colors.textDark} />
-            </TouchableOpacity>
-          </View>
+        <Pressable
+          style={[
+            styles.sheet,
+            bare && styles.sheetBare,
+            topRadius !== undefined && { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius },
+          ]}
+          onPress={() => {}}
+        >
+          {!bare && (
+            <View style={styles.header}>
+              {title ? <Text style={styles.title}>{title}</Text> : <View />}
+              <TouchableOpacity onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <Ionicons name="close" size={22} color={colors.textDark} />
+              </TouchableOpacity>
+            </View>
+          )}
           {children}
         </Pressable>
       </Pressable>
@@ -30,8 +42,9 @@ export default function BottomSheet({ visible, onClose, title, children }: Botto
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  sheet: { backgroundColor: colors.white, borderTopLeftRadius: radius.card, borderTopRightRadius: radius.card, paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.xxxl, maxHeight: '85%' },
+  backdrop: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  sheet: { backgroundColor: colors.white, borderTopLeftRadius: radius.sheet, borderTopRightRadius: radius.sheet, paddingHorizontal: spacing.xl, paddingTop: spacing.xxl, paddingBottom: spacing.xxxl, maxHeight: '85%' },
+  sheetBare: { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
-  title: { fontSize: fontSize.heading3, fontFamily: fontFamily.semibold, color: colors.textDark },
+  title: { fontSize: fontSize.heading2, fontFamily: fontFamily.semibold, color: colors.textDark },
 });

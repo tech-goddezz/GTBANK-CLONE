@@ -144,6 +144,13 @@ const colors = {
   // Orange border — appears on an input field when the user taps into it.
   borderActive: '#E85D24',
 
+  // The 6-digit code boxes: thin outline, and the grey fill of the active box.
+  codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
+  codeBoxActive: '#D9D9D9',
+
+  // "Cancel" and "OK" in the date pickers.
+  datePickerAction: '#FB551F',
+
   // ── Bare utilities ─────────────────────────────────────────────
   white: '#FFFFFF',
   black: '#000000',

@@ -2,17 +2,20 @@
 // Custom bottom tab bar with 4 tabs.
 // Reads the active route from Expo Router and highlights the right tab orange.
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing } from '../constants/typography';
+import { layout } from '../constants/layout';
+import { tabIcons } from '../constants/tabIcons';
 
-const TAB_CONFIG: Record<string, { label: string; icon: string; activeIcon: string }> = {
-  home: { label: 'Home', icon: 'home-outline', activeIcon: 'home' },
-  transactions: { label: 'Transactions', icon: 'list-outline', activeIcon: 'list' },
-  'transfer-flow': { label: 'Transfer', icon: 'swap-horizontal-outline', activeIcon: 'swap-horizontal' },
-  settings: { label: 'Settings', icon: 'settings-outline', activeIcon: 'settings' },
+const TAB_CONFIG: Record<string, { label: string; icon: keyof typeof tabIcons; inactiveColor: string }> = {
+  home: { label: 'Home', icon: 'home', inactiveColor: colors.textFaded },
+  transactions: { label: 'Transactions', icon: 'transactions', inactiveColor: colors.textFaded },
+  // The design draws this one icon slightly darker than the others.
+  'transfer-flow': { label: 'Transfers', icon: 'transfer-flow', inactiveColor: colors.textGrey },
+  settings: { label: 'Settings', icon: 'settings', inactiveColor: colors.textFaded },
 };
 
 export default function TabBar({ state, navigation }: BottomTabBarProps) {
@@ -22,6 +25,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         const config = TAB_CONFIG[route.name];
         if (!config) return null;
         const isActive = state.index === index;
+        const icon = tabIcons[config.icon];
         const onPress = () => {
           const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
           if (!isActive && !event.defaultPrevented) {
@@ -30,12 +34,14 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         };
         return (
           <TouchableOpacity key={route.key} style={styles.tab} onPress={onPress} activeOpacity={0.7}>
-            <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-              <Ionicons
-                name={(isActive ? config.activeIcon : config.icon) as any}
-                size={22}
-                color={isActive ? colors.white : colors.base}
-              />
+            <View style={styles.iconWrap}>
+              <Svg width={icon.width} height={icon.height} viewBox={`0 0 ${icon.width} ${icon.height}`}>
+                <Path
+                  d={icon.path}
+                  fill={isActive ? colors.orangeDark : config.inactiveColor}
+                  fillRule={icon.fillRule}
+                />
+              </Svg>
             </View>
             <Text style={[styles.label, isActive && styles.labelActive]}>{config.label}</Text>
           </TouchableOpacity>
@@ -48,36 +54,28 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: colors.navyDark,
-    borderTopWidth: 2,
-    borderTopColor: colors.orange,
-    paddingBottom: Platform.OS === 'ios' ? 24 : spacing.md,
-    paddingTop: spacing.sm,
+    height: layout.tabBarHeight,
+    backgroundColor: colors.background,
+    paddingHorizontal: layout.tabBarSidePadding,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xs,
-    gap: 3,
+    paddingTop: 25,
   },
   iconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    height: 16,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  iconWrapActive: {
-    backgroundColor: colors.orange,
+    marginBottom: spacing.sm + 1,
   },
   label: {
-    fontSize: fontSize.tiny ?? 10,
+    fontSize: fontSize.small,
+    lineHeight: 16,
     fontFamily: fontFamily.regular,
-    color: colors.base,
+    color: colors.textFaded,
   },
   labelActive: {
-    fontFamily: fontFamily.semibold,
-    color: colors.orange,
+    color: colors.orangeDark,
   },
 });

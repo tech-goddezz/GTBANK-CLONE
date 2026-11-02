@@ -15,6 +15,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import { fontFamily, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 
 interface NumericKeypadProps {
   // Called with '0'-'9', or 'del' for backspace.
@@ -84,10 +85,11 @@ const styles = StyleSheet.create({
   keypad: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingHorizontal: layout.keypadSidePadding,
   },
   key: {
     width: '33.33%',
-    height: 72,
+    height: layout.keypadKeyHeight,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.button,

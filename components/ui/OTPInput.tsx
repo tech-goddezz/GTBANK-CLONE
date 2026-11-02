@@ -5,10 +5,11 @@
 // code entry (OTP, PIN reset, etc.) can just drop this in instead of
 // rebuilding the focus-management logic from scratch.
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
 
 interface OTPInputProps {
   // How many digit boxes to render. Defaults to 6 since that's what
@@ -28,6 +29,8 @@ export default function OTPInput({ length = 6, value, onChange }: OTPInputProps)
   // whichever one should get keyboard focus next. This can't be done
   // with plain state — focus is a direct instruction to the OS keyboard.
   const inputRefs = useRef<(TextInput | null)[]>([]);
+  // The box being typed in turns grey, as in the design.
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   const handleChange = (text: string, index: number) => {
     // Strip anything that isn't a digit, and only keep the last character
@@ -60,9 +63,11 @@ export default function OTPInput({ length = 6, value, onChange }: OTPInputProps)
           <TextInput
             key={index}
             ref={(ref) => { inputRefs.current[index] = ref; }}
-            style={[styles.box, digit !== '' && styles.boxFilled]}
+            style={[styles.box, focusedIndex === index && styles.boxActive]}
             value={digit}
             onChangeText={(text) => handleChange(text, index)}
+            onFocus={() => setFocusedIndex(index)}
+            onBlur={() => setFocusedIndex((current) => (current === index ? null : current))}
             onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
             keyboardType="number-pad"
             maxLength={1}
@@ -82,18 +87,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   box: {
-    width: 48,
-    height: 56,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.borderLight,
-    backgroundColor: colors.inputBackground,
-    fontSize: fontSize.heading2,
-    fontFamily: fontFamily.bold,
+    width: layout.codeBoxSize,
+    height: layout.codeBoxSize,
+    borderRadius: radius.codeBox,
+    borderWidth: 1,
+    borderColor: colors.codeBoxBorder,
+    backgroundColor: colors.white,
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.medium,
     color: colors.textDark,
   },
-  boxFilled: {
-    borderColor: colors.base,
-    backgroundColor: '#eef1fd',
+  boxActive: {
+    backgroundColor: colors.codeBoxActive,
   },
 });

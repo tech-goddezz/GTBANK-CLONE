@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  TextInput,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ import {
   spacing,
   radius,
 } from "../../constants/typography";
+import { layout } from "../../constants/layout";
 import Button from "../../components/Button";
 import BottomSheet from "../../components/ui/BottomSheet";
 import { useKycStore } from "../../store/useKycStore";
@@ -41,7 +43,8 @@ const MONTH_NAMES = [
   "November",
   "December",
 ];
-const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Minimum banking age — GTBank (and most banks) require the account
 // holder to be at least 18. We check this before letting them continue.
@@ -156,6 +159,45 @@ export default function DateOfBirthScreen() {
   };
 
   const [calendarSheetVisible, setCalendarSheetVisible] = useState(false);
+  // The pencil icon swaps the calendar for a box to type the date into.
+  const [typingDate, setTypingDate] = useState(false);
+  const [typedDate, setTypedDate] = useState("");
+  const [typedDateError, setTypedDateError] = useState("");
+
+  const closePicker = () => {
+    setCalendarSheetVisible(false);
+    setTypingDate(false);
+    setTypedDateError("");
+  };
+
+  const handleCancelPicker = () => {
+    setSelectedDay(null);
+    closePicker();
+  };
+
+  const handleConfirmPicker = () => {
+    if (!typingDate) {
+      closePicker();
+      return;
+    }
+    const match = typedDate.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    const day = match ? Number(match[1]) : 0;
+    const month = match ? Number(match[2]) - 1 : 0;
+    const year = match ? Number(match[3]) : 0;
+    if (!match || month > 11 || day < 1 || day > getDaysInMonth(month, year)) {
+      setTypedDateError("Enter the date as DD/MM/YYYY");
+      return;
+    }
+    setViewMonth(month);
+    setViewYear(year);
+    setSelectedDay(day);
+    closePicker();
+  };
+
+  // Header of the pickers, e.g. "Mon, Aug 17".
+  const headerDay = selectedDay ?? 1;
+  const pickerHeading = `${WEEKDAY_NAMES[new Date(viewYear, viewMonth, headerDay).getDay()]}, ${MONTH_NAMES[viewMonth].slice(0, 3)} ${headerDay}`;
+
   const displayValue =
     selectedDay != null
       ? `${String(selectedDay).padStart(2, "0")} ${MONTH_NAMES[viewMonth]} ${viewYear}`
@@ -200,97 +242,141 @@ export default function DateOfBirthScreen() {
         <Button label="Proceed" onPress={handleContinue} />
       </View>
 
-      {/* Calendar picker sheet - same month/day-grid logic as before, just
-          moved off the main screen and into a sheet so the base screen
-          matches the design's simple single-field layout. */}
+      {/* Date pickers: the calendar (Frame 17.pdf) and, after tapping the
+          pencil, a box to type the date (Frame 25.pdf). */}
       <BottomSheet
         visible={calendarSheetVisible}
-        onClose={() => setCalendarSheetVisible(false)}
-        title="Select Date of Birth"
+        onClose={closePicker}
+        bare
+        topRadius={typingDate ? radius.sheet : radius.datePicker}
       >
-        <View style={styles.calendarCard}>
-          {/* Month navigation row */}
-          <View style={styles.monthRow}>
+        <View style={styles.picker}>
+          <Text style={styles.pickerCaption}>Selected date</Text>
+          <View style={styles.pickerHeadingRow}>
+            <Text style={styles.pickerHeading}>{pickerHeading}</Text>
             <TouchableOpacity
-              onPress={goToPreviousMonth}
+              onPress={() => {
+                setTypingDate((t) => !t);
+                setTypedDateError("");
+              }}
               accessibilityRole="button"
-              accessibilityLabel="Previous month"
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="chevron-back" size={22} color={colors.textDark} />
-            </TouchableOpacity>
-
-            {/* Tapping the month/year label opens the fast year-picker sheet */}
-            <TouchableOpacity
-              style={styles.monthYearLabel}
-              onPress={() => setYearSheetVisible(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Jump to a different year"
-            >
-              <Text style={styles.monthYearText}>
-                {MONTH_NAMES[viewMonth]} {viewYear}
-              </Text>
-              <Ionicons name="chevron-down" size={16} color={colors.orange} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={goToNextMonth}
-              accessibilityRole="button"
-              accessibilityLabel="Next month"
+              accessibilityLabel={typingDate ? "Choose from calendar" : "Type the date"}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Ionicons
-                name="chevron-forward"
-                size={22}
-                color={colors.textDark}
+                name={typingDate ? "calendar-outline" : "pencil"}
+                size={14}
+                color={colors.black}
               />
             </TouchableOpacity>
           </View>
 
-          {/* Weekday labels */}
-          <View style={styles.weekdayRow}>
-            {WEEKDAY_LABELS.map((label) => (
-              <Text key={label} style={styles.weekdayLabel}>
-                {label}
-              </Text>
-            ))}
-          </View>
+          {typingDate ? (
+            <View style={styles.typedDateWrap}>
+              <View style={styles.typedDateBox}>
+                <Text style={styles.typedDateLabel}>Date</Text>
+                <TextInput
+                  style={styles.typedDateInput}
+                  value={typedDate}
+                  onChangeText={setTypedDate}
+                  placeholder="DD/MM/YYYY"
+                  placeholderTextColor={colors.textGrey}
+                  keyboardType="numbers-and-punctuation"
+                  maxLength={10}
+                  autoFocus
+                />
+              </View>
+              {!!typedDateError && <Text style={styles.typedDateError}>{typedDateError}</Text>}
+            </View>
+          ) : (
+            <>
+              {/* Month navigation row */}
+              <View style={styles.monthRow}>
+                {/* Tapping the month/year label opens the fast year-picker sheet */}
+                <TouchableOpacity
+                  style={styles.monthYearLabel}
+                  onPress={() => setYearSheetVisible(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Jump to a different year"
+                >
+                  <Text style={styles.monthYearText}>
+                    {MONTH_NAMES[viewMonth].slice(0, 3)} {viewYear}
+                  </Text>
+                  <Ionicons name="caret-down" size={10} color={colors.black} />
+                </TouchableOpacity>
 
-          {/* Day grid */}
-          <View style={styles.dayGrid}>
-            {gridDays.map((day, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.dayCell}
-                disabled={day === null}
-                onPress={() => {
-                  if (day) {
-                    setSelectedDay(day);
-                    setCalendarSheetVisible(false);
-                  }
-                }}
-                accessibilityRole={day ? "button" : undefined}
-                accessibilityLabel={day ? `Select day ${day}` : undefined}
-              >
-                {day !== null && (
-                  <View
-                    style={[
-                      styles.dayCircle,
-                      selectedDay === day && styles.dayCircleSelected,
-                    ]}
+                <View style={styles.monthArrows}>
+                  <TouchableOpacity
+                    onPress={goToPreviousMonth}
+                    accessibilityRole="button"
+                    accessibilityLabel="Previous month"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
-                    <Text
-                      style={[
-                        styles.dayText,
-                        selectedDay === day && styles.dayTextSelected,
-                      ]}
-                    >
-                      {day}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
+                    <Ionicons name="chevron-back" size={14} color={colors.black} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={goToNextMonth}
+                    accessibilityRole="button"
+                    accessibilityLabel="Next month"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons name="chevron-forward" size={14} color={colors.black} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Weekday labels */}
+              <View style={styles.weekdayRow}>
+                {WEEKDAY_LABELS.map((label, index) => (
+                  <Text key={index} style={styles.weekdayLabel}>
+                    {label}
+                  </Text>
+                ))}
+              </View>
+
+              {/* Day grid */}
+              <View style={styles.dayGrid}>
+                {gridDays.map((day, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.dayCell}
+                    disabled={day === null}
+                    onPress={() => {
+                      if (day) setSelectedDay(day);
+                    }}
+                    accessibilityRole={day ? "button" : undefined}
+                    accessibilityLabel={day ? `Select day ${day}` : undefined}
+                  >
+                    {day !== null && (
+                      <View
+                        style={[
+                          styles.dayCircle,
+                          selectedDay === day && styles.dayCircleSelected,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.dayText,
+                            selectedDay === day && styles.dayTextSelected,
+                          ]}
+                        >
+                          {day}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          <View style={styles.pickerActions}>
+            <TouchableOpacity onPress={handleCancelPicker} accessibilityRole="button">
+              <Text style={styles.pickerActionText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleConfirmPicker} accessibilityRole="button">
+              <Text style={styles.pickerActionText}>OK</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </BottomSheet>
@@ -356,11 +442,72 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.base,
   },
-  calendarCard: {
-    backgroundColor: colors.pageBackground,
-    borderRadius: radius.card,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
+  picker: {
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.xxl,
+  },
+  pickerCaption: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+    marginBottom: spacing.xxxl,
+  },
+  pickerHeadingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.xxxl,
+    paddingRight: spacing.xs,
+  },
+  pickerHeading: {
+    fontSize: fontSize.heading2,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  pickerActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: spacing.xxxl,
+    marginTop: spacing.xxl,
+    paddingRight: spacing.sm,
+  },
+  pickerActionText: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.medium,
+    color: colors.datePickerAction,
+  },
+  typedDateWrap: {
+    marginBottom: spacing.sm,
+  },
+  typedDateBox: {
+    height: layout.inputHeight,
+    borderWidth: 1,
+    borderColor: colors.black,
+    borderRadius: radius.codeBox,
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+  },
+  typedDateLabel: {
+    position: "absolute",
+    top: -8,
+    left: spacing.md,
+    paddingHorizontal: spacing.xs,
+    backgroundColor: colors.white,
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  typedDateInput: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+  },
+  typedDateError: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
+    color: colors.red,
+    marginTop: spacing.xs,
   },
   dateField: {
     flexDirection: "row",
@@ -387,49 +534,56 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xxl,
   },
   monthYearLabel: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.xs,
+    gap: spacing.md,
+  },
+  monthArrows: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xxxl,
   },
   monthYearText: {
-    fontSize: fontSize.heading3,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
   },
   weekdayRow: {
     flexDirection: "row",
-    marginBottom: spacing.sm,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
   },
   weekdayLabel: {
     flex: 1,
     textAlign: "center",
     fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.regular,
     color: colors.textGrey,
   },
   dayGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
+    paddingHorizontal: spacing.md,
   },
   dayCell: {
     width: `${100 / 7}%`,
-    aspectRatio: 1,
+    height: 48,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
   },
   dayCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.pill,
+    width: 37.7,
+    height: 40,
+    borderRadius: radius.dayCell,
     alignItems: "center",
     justifyContent: "center",
   },
   dayCircleSelected: {
-    backgroundColor: colors.orange,
+    backgroundColor: colors.orangeLogo,
   },
   dayText: {
     fontSize: fontSize.body,
@@ -437,7 +591,6 @@ const styles = StyleSheet.create({
     color: colors.textDark,
   },
   dayTextSelected: {
-    fontFamily: fontFamily.semibold,
     color: colors.white,
   },
   errorText: {

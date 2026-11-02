@@ -11,6 +11,11 @@ export const layout = {
   buttonHeightLarge: 56, // "Apply Filters" button
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
+  tabBarHeight: 110,   // Bottom tab bar, including the space at the bottom of the phone
+  tabBarSidePadding: 8.5,
+  codeBoxSize: 46.4,   // The 6-digit code boxes
+  keypadSidePadding: 18.5, // Number keypad: 356 wide on a 393 screen
+  keypadKeyHeight: 89,
 };
 
 // Border radius values from the design. Consistent rounding across the whole app.
@@ -24,5 +29,8 @@ export const radius = {
   buttonLarge: 8, // Except the large "Apply Filters" button
   buttonTrans: 20,
   input: 0,      // Input boxes have square corners in the design
+  sheet: 16,     // Top corners of pop-up sheets and the type-the-date picker
+  datePicker: 32, // Top corners of the calendar date picker
+  dayCell: 18.9, // The selected day in the date picker
   pill: 999,     // Badges, avatar circles — fully round
 };

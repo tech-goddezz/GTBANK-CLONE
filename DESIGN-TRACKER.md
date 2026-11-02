@@ -30,15 +30,15 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C2 | Fonts & text sizes | all PDFs | `constants/typography.ts` | — | ✅ |
 | C3 | Orange button (Proceed / Next / Done) | all PDFs | `components/Button.tsx` | — | ✅ |
 | C4 | Grey text input field | all PDFs | `components/InputField.tsx` | — | ✅ |
-| C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ⬜ |
+| C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ✅ |
 | C6 | Screen header (back arrow, title, subtitle, bell, ≡ icon) | most in-app screens | MISSING (each screen draws its own) | — | 🆕 |
-| C7 | 6-digit code boxes | Sign in.pdf, Kyc flow.pdf | `components/ui/OTPInput.tsx` | — | ⬜ |
-| C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | ⬜ |
-| C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ⬜ |
+| C7 | 6-digit code boxes | Sign in.pdf, Kyc flow.pdf | `components/ui/OTPInput.tsx` | — | ✅ |
+| C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | 🟨 |
+| C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ✅ |
 | C10 | Blue info banner ("Recipient will be credited shortly") | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | C11 | "Welcome! Your number isn't linked" pop-up (rocket) | Frame 16.pdf | MISSING | — | 🆕 |
-| C12 | Date picker – calendar | Frame 17.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ⬜ |
-| C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ⬜ |
+| C12 | Date picker – calendar | Frame 17.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
+| C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
 | C14 | "Congrats! Tier 1 account opened" card | Default.pdf / Default-1.pdf | MISSING | — | 🆕 |
 | C15 | "Congrats! Loan account opened" card | Default.pdf / Default-1.pdf | MISSING | — | 🆕 |
 | C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | MISSING | — | 🆕 |
