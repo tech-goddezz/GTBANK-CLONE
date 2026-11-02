@@ -9,7 +9,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing, fontWeight, radius } from '../constants/typography';
+import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { fetchProfile, getCurrentUserId } from '../services/auth';
@@ -41,7 +42,7 @@ export default function BalanceCard() {
         <TouchableOpacity onPress={toggleBalance} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Ionicons
             name={balanceHidden ? 'eye-off-outline' : 'eye-outline'}
-            size={20}
+            size={16}
             color={colors.white}
           />
         </TouchableOpacity>
@@ -50,50 +51,57 @@ export default function BalanceCard() {
       {/* The balance itself — hidden or shown. The ₦ symbol is deliberately
           much smaller than the digits, matching the design (it's easy to
           miss this if you just use one Text with one fontSize). */}
-      <Text style={styles.balance}>
-        <Text style={styles.currencySymbol}>₦ </Text>
-        {balanceHidden
-          ? '*****'
-          : balance.toLocaleString('en-NG', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-      </Text>
+      <View style={styles.balanceRow}>
+        <Text style={styles.currencySymbol}>₦</Text>
+        <Text style={styles.balance}>
+          {balanceHidden
+            ? '*****'
+            : balance.toLocaleString('en-NG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.darkCard,
+    backgroundColor: colors.balanceCard,
     borderRadius: radius.balanceCard,
-    padding: spacing.xl,
-    marginHorizontal: spacing.lg,
+    height: layout.balanceCardHeight,
+    paddingHorizontal: spacing.xl,
+    paddingTop: 32,
+    marginHorizontal: layout.balanceCardSideMargin,
     marginTop: spacing.lg,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginRight: 9, // Eye icon sits 29 from the card's right edge
+    marginBottom: 13,
   },
   accountLabel: {
     fontSize: fontSize.small,
+    lineHeight: 16,
     fontFamily: fontFamily.regular,
-    color: '#bbbbbb',
-    letterSpacing: 0.5,
-    marginTop: spacing.md,
+    color: colors.balanceLabel,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
   balance: {
-    fontSize: 32,
-    fontFamily: fontFamily.bold,
+    fontSize: fontSize.display,
+    fontFamily: fontFamily.semibold,
     color: colors.white,
-    marginTop: spacing.xl - 20,
-    marginBottom: spacing.md,
-    fontWeight: fontWeight.bold,
   },
   currencySymbol: {
-    fontSize: fontSize.body,
+    fontSize: fontSize.large,
     fontFamily: fontFamily.semibold,
+    color: colors.balanceSymbol,
+    marginRight: 9,
   },
 });

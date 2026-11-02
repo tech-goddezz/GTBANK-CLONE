@@ -12,6 +12,8 @@ export const layout = {
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
   transactionRowHeight: 72,
+  balanceCardHeight: 130,
+  balanceCardSideMargin: 18,
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

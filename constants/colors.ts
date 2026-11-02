@@ -78,6 +78,9 @@ const colors = {
 
   // The dark charcoal card on the home screen that shows the balance.
   darkCard: '#444444',
+  balanceCard: '#1E1E21',
+  balanceLabel: '#E3E5E6',
+  balanceSymbol: '#E6E6E6',
   darkNavy: '#003057',
   navyDark: '#0a1628',
   navyCard: '#0d1f3c',
