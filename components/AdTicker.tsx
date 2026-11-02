@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 
 const ADS = [
   { icon: '⚡', text: 'Instant transfers to all Nigerian banks — 24/7.' },
@@ -53,13 +54,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.navyCard,
+    backgroundColor: colors.infoBlueFaint,
     borderRadius: radius.button,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.brandGold,
+    borderWidth: 1,
+    borderColor: colors.infoBlue,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    marginHorizontal: spacing.lg,
+    marginHorizontal: layout.balanceCardSideMargin,
     marginTop: spacing.sm,
     gap: spacing.sm,
     overflow: 'hidden',
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: fontSize.small,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
+    fontFamily: fontFamily.regular,
+    color: colors.textLightDark,
   },
 });

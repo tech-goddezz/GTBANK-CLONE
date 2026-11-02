@@ -53,7 +53,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C25 | Status badge | Not in the design (History uses plain text) | `components/StatusBadge.tsx` (not used by any screen) | — | ➖ |
 | C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ✅ |
 | C27 | Promo carousel | Not in the design; owner chose to keep it on Home | `components/PromoCarousel.tsx` | /home | ✅ |
-| C28 | Ad ticker | To be checked | `components/AdTicker.tsx` | — | ⬜ |
+| C28 | Ad ticker | Not in the design; owner chose to keep it on Home | `components/AdTicker.tsx` | /home | ✅ |
 | C29 | Transaction ticker | To be checked | `components/TransactionTicker.tsx` | — | ⬜ |
 | C30 | Cube illustration | To be checked | `components/CubeIllustration.tsx` | — | ⬜ |
 | C31 | Crash screen (ErrorBoundary) | To be checked | `components/ErrorBoundary.tsx` | — | ⬜ |
