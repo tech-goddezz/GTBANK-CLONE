@@ -6,6 +6,7 @@
 //   "secondary" — white with an orange border (less urgent actions)
 //   "ghost"     — no background, no border, just orange text (links, skippable actions)
 //   "ghostGrey" — same as ghost, but grey text ("Reset Filters")
+//   "outline"   — white with a thin black border (the "Cancel" on the Welcome pop-up)
 //
 // And three sizes:
 //   "medium" — 46 tall, square corners (almost every button)
@@ -28,7 +29,7 @@ import { layout } from '../constants/layout';
 interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'grey' | 'secondary' | 'ghost' | 'ghostGrey';
+  variant?: 'primary' | 'grey' | 'secondary' | 'ghost' | 'ghostGrey' | 'outline';
   size?: 'medium' | 'large' | 'small';
   loading?: boolean;
   disabled?: boolean;
@@ -52,6 +53,7 @@ export default function Button({
     variant === 'primary' && styles.primaryContainer,
     variant === 'grey' && styles.greyContainer,
     variant === 'secondary' && styles.secondaryContainer,
+    variant === 'outline' && styles.outlineContainer,
     (variant === 'ghost' || variant === 'ghostGrey') && styles.ghostContainer,
     (disabled || loading) && styles.disabled,
     style,
@@ -63,6 +65,7 @@ export default function Button({
     variant === 'primary' && styles.primaryLabel,
     variant === 'grey' && styles.greyLabel,
     variant === 'secondary' && styles.secondaryLabel,
+    variant === 'outline' && styles.greyLabel,
     variant === 'ghost' && styles.ghostLabel,
     variant === 'ghostGrey' && styles.ghostGreyLabel,
   ] as unknown as TextStyle;
@@ -113,6 +116,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.orange,
+  },
+  outlineContainer: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.black,
   },
   ghostContainer: {
     backgroundColor: colors.transparent,

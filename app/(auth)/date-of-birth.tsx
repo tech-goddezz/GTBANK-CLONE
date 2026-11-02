@@ -44,7 +44,6 @@ const MONTH_NAMES = [
   "December",
 ];
 const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
-const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Minimum banking age — GTBank (and most banks) require the account
 // holder to be at least 18. We check this before letting them continue.
@@ -180,12 +179,12 @@ export default function DateOfBirthScreen() {
       closePicker();
       return;
     }
-    const match = typedDate.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-    const day = match ? Number(match[1]) : 0;
+    const match = typedDate.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    const day = match ? Number(match[3]) : 0;
     const month = match ? Number(match[2]) - 1 : 0;
-    const year = match ? Number(match[3]) : 0;
+    const year = match ? Number(match[1]) : 0;
     if (!match || month > 11 || day < 1 || day > getDaysInMonth(month, year)) {
-      setTypedDateError("Enter the date as DD/MM/YYYY");
+      setTypedDateError("Enter the date as YYYY-MM-DD");
       return;
     }
     setViewMonth(month);
@@ -194,9 +193,8 @@ export default function DateOfBirthScreen() {
     closePicker();
   };
 
-  // Header of the pickers, e.g. "Mon, Aug 17".
-  const headerDay = selectedDay ?? 1;
-  const pickerHeading = `${WEEKDAY_NAMES[new Date(viewYear, viewMonth, headerDay).getDay()]}, ${MONTH_NAMES[viewMonth].slice(0, 3)} ${headerDay}`;
+  // Header of the pickers, e.g. "15 May 2008".
+  const pickerHeading = `${selectedDay ?? 1} ${MONTH_NAMES[viewMonth]} ${viewYear}`;
 
   const displayValue =
     selectedDay != null
@@ -251,7 +249,7 @@ export default function DateOfBirthScreen() {
         topRadius={typingDate ? radius.sheet : radius.datePicker}
       >
         <View style={styles.picker}>
-          <Text style={styles.pickerCaption}>Selected date</Text>
+          <Text style={styles.pickerCaption}>Date of birth</Text>
           <View style={styles.pickerHeadingRow}>
             <Text style={styles.pickerHeading}>{pickerHeading}</Text>
             <TouchableOpacity
@@ -279,7 +277,7 @@ export default function DateOfBirthScreen() {
                   style={styles.typedDateInput}
                   value={typedDate}
                   onChangeText={setTypedDate}
-                  placeholder="DD/MM/YYYY"
+                  placeholder="YYYY-MM-DD"
                   placeholderTextColor={colors.textGrey}
                   keyboardType="numbers-and-punctuation"
                   maxLength={10}
@@ -300,7 +298,7 @@ export default function DateOfBirthScreen() {
                   accessibilityLabel="Jump to a different year"
                 >
                   <Text style={styles.monthYearText}>
-                    {MONTH_NAMES[viewMonth].slice(0, 3)} {viewYear}
+                    {MONTH_NAMES[viewMonth]} {viewYear}
                   </Text>
                   <Ionicons name="caret-down" size={10} color={colors.black} />
                 </TouchableOpacity>
@@ -375,7 +373,7 @@ export default function DateOfBirthScreen() {
               <Text style={styles.pickerActionText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleConfirmPicker} accessibilityRole="button">
-              <Text style={styles.pickerActionText}>OK</Text>
+              <Text style={styles.pickerActionText}>ok</Text>
             </TouchableOpacity>
           </View>
         </View>

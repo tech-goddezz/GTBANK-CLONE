@@ -5,12 +5,14 @@ import { useRouter } from 'expo-router';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import { checkPhoneExists } from '../../services/auth';
+import WelcomeSheet from '../../components/WelcomeSheet';
 
 export default function PhoneScreen() {
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [welcomeVisible, setWelcomeVisible] = useState(false);
   const isValid = /^[789][01]\d{8}$/.test(phone);
 
   const handleChangeText = (text: string) => {
@@ -31,7 +33,7 @@ export default function PhoneScreen() {
     if (result.exists) {
       router.push(`/(auth)/otp?phone=${phone}&mode=login`);
     } else {
-      router.push(`/signup?phone=${phone}`);
+      setWelcomeVisible(true);
     }
   };
 
@@ -54,6 +56,14 @@ export default function PhoneScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
+      <WelcomeSheet
+        visible={welcomeVisible}
+        onCancel={() => setWelcomeVisible(false)}
+        onOpenAccount={() => {
+          setWelcomeVisible(false);
+          router.push(`/signup?phone=${phone}`);
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
