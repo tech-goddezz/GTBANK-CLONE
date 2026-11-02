@@ -11,6 +11,7 @@ export const layout = {
   buttonHeightLarge: 56, // "Apply Filters" button
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
+  onboardingArtHeight: 403, // The floating cubes picture
   transactionRowHeight: 72,
   debitCardWidth: 350,
   debitCardHeight: 181,

@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
+import { layout } from '../constants/layout';
 
 const illustration = require('../assets/images/onboarding-illustration.png');
 
@@ -25,7 +26,7 @@ export default function CubeIllustration() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 260,
+    height: layout.onboardingArtHeight,
     overflow: 'hidden',
   },
   image: {
