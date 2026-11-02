@@ -148,6 +148,10 @@ const colors = {
   // Orange border — appears on an input field when the user taps into it.
   borderActive: '#E85D24',
 
+  // The line under the screen header's title, and its small menu icon.
+  headerDivider: '#E2E8F0',
+  headerMenuIcon: '#757575',
+
   // The 6-digit code boxes: thin outline, and the grey fill of the active box.
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',

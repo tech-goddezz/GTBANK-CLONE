@@ -31,7 +31,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C3 | Orange button (Proceed / Next / Done) | all PDFs | `components/Button.tsx` | — | ✅ |
 | C4 | Grey text input field | all PDFs | `components/InputField.tsx` | — | ✅ |
 | C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ✅ |
-| C6 | Screen header (back arrow, title, subtitle, bell, ≡ icon) | most in-app screens | MISSING (each screen draws its own) | — | 🆕 |
+| C6 | Screen header (back arrow, title, subtitle, bell, ≡ icon) | most in-app screens | `components/ScreenHeader.tsx` | — | ✅ |
 | C7 | 6-digit code boxes | Sign in.pdf, Kyc flow.pdf | `components/ui/OTPInput.tsx` | — | ✅ |
 | C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | 🟨 |
 | C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ✅ |
