@@ -11,6 +11,8 @@ export const layout = {
   buttonHeightLarge: 56, // "Apply Filters" button
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
+  infoBannerHeight: 40,
+  infoBannerHeightTall: 46, // The centred version with no icon
   statusBarHeight: 52, // Space the design leaves for the phone's clock and battery
   headerHeight: 65,    // Screen header: the strip with the title
   headerMenuHeight: 48, // Screen header: the strip with the small menu icon

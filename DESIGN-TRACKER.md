@@ -35,7 +35,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C7 | 6-digit code boxes | Sign in.pdf, Kyc flow.pdf | `components/ui/OTPInput.tsx` | — | ✅ |
 | C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | 🟨 |
 | C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ✅ |
-| C10 | Blue info banner ("Recipient will be credited shortly") | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| C10 | Blue info banner ("Recipient will be credited shortly") | Dashboard flow + transfer flow.pdf | `components/InfoBanner.tsx` | — | ✅ |
 | C11 | "Welcome! Your number isn't linked" pop-up (rocket) | Frame 16.pdf | MISSING | — | 🆕 |
 | C12 | Date picker – calendar | Frame 17.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
 | C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
