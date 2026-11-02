@@ -12,6 +12,8 @@ export const layout = {
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
   transactionRowHeight: 72,
+  debitCardWidth: 350,
+  debitCardHeight: 181,
   balanceCardHeight: 130,
   balanceCardSideMargin: 18,
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
@@ -32,7 +34,8 @@ export const radius = {
   buttonLarge: 8, // Except the large "Apply Filters" button
   buttonTrans: 20,
   input: 0,      // Input boxes have square corners in the design
-  sheet: 16,     // Top corners of pop-up sheets and the type-the-date picker
+  debitCard: 16,
+  sheet: 16,    // Top corners of pop-up sheets and the type-the-date picker
   datePicker: 32, // Top corners of the calendar date picker
   dayCell: 18.9, // The selected day in the date picker
   pill: 999,     // Badges, avatar circles — fully round

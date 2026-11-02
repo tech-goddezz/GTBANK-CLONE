@@ -51,7 +51,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C23 | Transaction row | To be checked | `components/TransactionItem.tsx` | — | ✅ |
 | C24 | Balance card | To be checked | `components/BalanceCard.tsx` | — | ✅ |
 | C25 | Status badge | Not in the design (History uses plain text) | `components/StatusBadge.tsx` (not used by any screen) | — | ➖ |
-| C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ⬜ |
+| C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ✅ |
 | C27 | Promo carousel | To be checked | `components/PromoCarousel.tsx` | — | ⬜ |
 | C28 | Ad ticker | To be checked | `components/AdTicker.tsx` | — | ⬜ |
 | C29 | Transaction ticker | To be checked | `components/TransactionTicker.tsx` | — | ⬜ |

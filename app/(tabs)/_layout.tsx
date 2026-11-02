@@ -3,12 +3,13 @@
 
 import { Tabs } from 'expo-router';
 import TabBar from '../../components/TabBar';
+import colors from '../../constants/colors';
 
 export default function TabsLayout() {
   return (
     <Tabs
       tabBar={(props) => <TabBar {...props} />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#ff2929' } }}
+      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.white } }}
     >
       <Tabs.Screen name="home" />
       <Tabs.Screen name="transactions" />
