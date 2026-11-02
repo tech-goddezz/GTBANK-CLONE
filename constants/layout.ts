@@ -1,0 +1,28 @@
+// constants/layout.ts
+//
+// Screen margins, standard heights and corner rounding from the design.
+// Measured from the design PDFs (phone frame 393 x 852).
+
+export const layout = {
+  screenWidth: 393,
+  screenPadding: 16,   // Left and right margin on almost every screen
+  contentWidth: 361,   // 393 - 16 - 16
+  buttonHeight: 46,    // Orange Proceed / Next / Done button
+  buttonHeightLarge: 56, // "Apply Filters" button
+  buttonHeightSmall: 32, // "Authenticating fingerprint" button
+  inputHeight: 46,     // Grey input box (a few taller ones are 56)
+};
+
+// Border radius values from the design. Consistent rounding across the whole app.
+export const radius = {
+  none: 0,
+  card: 8,       // White cards
+  row: 16,       // Transaction / list rows
+  codeBox: 8,    // The 6-digit code boxes
+  balanceCard: 18,
+  button: 0,     // Buttons have square corners in the design
+  buttonLarge: 8, // Except the large "Apply Filters" button
+  buttonTrans: 20,
+  input: 0,      // Input boxes have square corners in the design
+  pill: 999,     // Badges, avatar circles — fully round
+};

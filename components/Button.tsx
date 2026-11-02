@@ -1,9 +1,16 @@
 // components/Button.tsx
 //
-// The main button for the whole app. Three looks:
+// The main button for the whole app. Five looks:
 //   "primary"   — solid orange fill, white text (main CTAs like "Continue", "Send")
+//   "grey"      — solid grey fill, black text (onboarding "Next")
 //   "secondary" — white with an orange border (less urgent actions)
 //   "ghost"     — no background, no border, just orange text (links, skippable actions)
+//   "ghostGrey" — same as ghost, but grey text ("Reset Filters")
+//
+// And three sizes:
+//   "medium" — 46 tall, square corners (almost every button)
+//   "large"  — 56 tall, rounded corners, bold text ("Apply Filters")
+//   "small"  — 32 tall, square corners ("Authenticating fingerprint")
 
 import React from 'react';
 import {
@@ -16,11 +23,13 @@ import {
 } from 'react-native';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, radius, spacing } from '../constants/typography';
+import { layout } from '../constants/layout';
 
 interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'grey' | 'secondary' | 'ghost' | 'ghostGrey';
+  size?: 'medium' | 'large' | 'small';
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
@@ -30,6 +39,7 @@ export default function Button({
   label,
   onPress,
   variant = 'primary',
+  size = 'medium',
   loading = false,
   disabled = false,
   style,
@@ -37,18 +47,24 @@ export default function Button({
   // Pick the right container and text style based on the variant
   const containerStyle = [
     styles.base,
+    size === 'large' && styles.largeContainer,
+    size === 'small' && styles.smallContainer,
     variant === 'primary' && styles.primaryContainer,
+    variant === 'grey' && styles.greyContainer,
     variant === 'secondary' && styles.secondaryContainer,
-    variant === 'ghost' && styles.ghostContainer,
+    (variant === 'ghost' || variant === 'ghostGrey') && styles.ghostContainer,
     (disabled || loading) && styles.disabled,
     style,
   ];
 
   const labelStyle: TextStyle = [
     styles.label,
+    size === 'large' && styles.largeLabel,
     variant === 'primary' && styles.primaryLabel,
+    variant === 'grey' && styles.greyLabel,
     variant === 'secondary' && styles.secondaryLabel,
     variant === 'ghost' && styles.ghostLabel,
+    variant === 'ghostGrey' && styles.ghostGreyLabel,
   ] as unknown as TextStyle;
 
   return (
@@ -73,18 +89,29 @@ export default function Button({
 
 const styles = StyleSheet.create({
   base: {
-    height: 44,
+    height: layout.buttonHeight,
     borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
+    paddingHorizontal: spacing.xxxl,
+  },
+  largeContainer: {
+    height: layout.buttonHeightLarge,
+    borderRadius: radius.buttonLarge,
+  },
+  smallContainer: {
+    height: layout.buttonHeightSmall,
+    paddingHorizontal: spacing.lg,
   },
   primaryContainer: {
     backgroundColor: colors.orange,
   },
+  greyContainer: {
+    backgroundColor: colors.light,
+  },
   secondaryContainer: {
     backgroundColor: colors.white,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.orange,
   },
   ghostContainer: {
@@ -95,15 +122,25 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontSize.large,
-    fontFamily: fontFamily.semibold,
+    fontFamily: fontFamily.medium,
+  },
+  largeLabel: {
+    fontFamily: fontFamily.bold,
   },
   primaryLabel: {
     color: colors.white,
+  },
+  greyLabel: {
+    color: colors.black,
   },
   secondaryLabel: {
     color: colors.orange,
   },
   ghostLabel: {
     color: colors.orange,
+  },
+  ghostGreyLabel: {
+    color: colors.textFaded,
+    fontFamily: fontFamily.regular,
   },
 });

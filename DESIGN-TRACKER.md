@@ -9,7 +9,7 @@ Progress of making the app match the design. The design PDFs in `design/` are th
 | Design screens (all flows) | **124** |
 | Already exist in the app (need restyling) | **91** |
 | Missing (need building) | **33** |
-| Shared components & foundations | 22 (10 exist, 9 missing, 3 nothing to build / to decide) |
+| Shared components & foundations | 31 (19 exist, 9 missing, 3 nothing to build / to decide) |
 | Screens in the app but not in the design | 6 |
 
 Many design screens are variations of the same code file (for example the 5 onboarding slides are all `app/onboarding.tsx`), so the number of code files to work on is much smaller than 124.
@@ -26,9 +26,9 @@ Many design screens are variations of the same code file (for example the 5 onbo
 
 | # | Name | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| C1 | Colours | all PDFs | `constants/colors.ts` | — | ⬜ |
-| C2 | Fonts & text sizes | all PDFs | `constants/typography.ts` | — | ⬜ |
-| C3 | Orange button (Proceed / Next / Done) | all PDFs | `components/Button.tsx` | — | ⬜ |
+| C1 | Colours | all PDFs | `constants/colors.ts` | — | ✅ |
+| C2 | Fonts & text sizes | all PDFs | `constants/typography.ts` | — | ✅ |
+| C3 | Orange button (Proceed / Next / Done) | all PDFs | `components/Button.tsx` | — | ✅ |
 | C4 | Grey text input field | all PDFs | `components/InputField.tsx` | — | ⬜ |
 | C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ⬜ |
 | C6 | Screen header (back arrow, title, subtitle, bell, ≡ icon) | most in-app screens | MISSING (each screen draws its own) | — | 🆕 |
@@ -48,6 +48,15 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C20 | Phone keyboards (number & letters) | Keyboard.pdf, Keyboard-1.pdf | The phone's own keyboard; nothing to build | — | ➖ |
 | C21 | Small 16px icons (bullseye ×3, download) | bullseye.pdf, bullseye-1.pdf, bullseye-2.pdf, Download.pdf | Used inside other screens as needed | — | ➖ |
 | C22 | Large square image (852 × 852) | Rectangle.pdf | Unclear what it's for; owner to confirm | — | ➖ |
+| C23 | Transaction row | To be checked | `components/TransactionItem.tsx` | — | ⬜ |
+| C24 | Balance card | To be checked | `components/BalanceCard.tsx` | — | ⬜ |
+| C25 | Status badge | To be checked | `components/StatusBadge.tsx` | — | ⬜ |
+| C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ⬜ |
+| C27 | Promo carousel | To be checked | `components/PromoCarousel.tsx` | — | ⬜ |
+| C28 | Ad ticker | To be checked | `components/AdTicker.tsx` | — | ⬜ |
+| C29 | Transaction ticker | To be checked | `components/TransactionTicker.tsx` | — | ⬜ |
+| C30 | Cube illustration | To be checked | `components/CubeIllustration.tsx` | — | ⬜ |
+| C31 | Crash screen (ErrorBoundary) | To be checked | `components/ErrorBoundary.tsx` | — | ⬜ |
 
 ## 2. Onboarding — `On boarding  flow.pdf`
 

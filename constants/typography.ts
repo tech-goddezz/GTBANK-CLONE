@@ -5,13 +5,21 @@
 // No random 17px or 13px showing up because someone guessed.
 
 export const fontSize = {
+  display: 32,    // Onboarding headlines — "GT World All fresh and clean"
   heading1: 28,   // Big screen titles — "Hello!", "History"
-  heading2: 22,   // Section headings — "Open a GTBank Account"
+  heading2: 24,   // Section headings — "Identity Verification", "Wait a moment"
   heading3: 18,   // Sub-headings — card titles, modal titles
   large: 16,      // Prominent body text — button labels, important values
   body: 14,       // Default text — descriptions, list items
   small: 12,      // Supporting text — timestamps, category labels
   tiny: 10,       // The smallest text in the app — fine print
+};
+
+// Distance between lines of text, measured from multi-line text in the design.
+export const lineHeight = {
+  display: 36,    // 32px text
+  heading1: 34,   // 28px text
+  body: 18,       // 14px text
 };
 
 export const fontWeight = {
@@ -33,15 +41,9 @@ export const fontFamily = {
 
 
 
-// Border radius values from the design. Consistent rounding across the whole app.
-export const radius = {
-  card: 6,     // All cards and large containers
-  balanceCard: 18,
-  button: 4,   // Buttons and input fields
-  buttonTrans: 20,
-  input: 3,
-  pill: 999,    // Badges, avatar circles — fully round
-};
+// Corner rounding now lives in constants/layout.ts. It's re-exported here
+// so screens that already import it from this file keep working.
+export { radius } from './layout';
 
 // Spacing scale. Use these instead of writing random numbers like marginTop: 17.
 // Everything snaps to this grid, which keeps the layout feeling intentional.

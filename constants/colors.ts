@@ -3,12 +3,20 @@
 // Every color the app uses lives here. This way, if GTCO ever
 // tweaks their brand orange, you change it in one place and
 // the whole app updates — not hunting through 40 files.
+//
+// Values are measured from the design PDFs in design/.
 
 const colors = {
 
-  // The main GTCO orange. Used on buttons, links, active tab icons —
-  // basically anything the user needs to tap or pay attention to.
-    orange: '#F47920',
+  // The main GTCO orange. Used on buttons, links ("Need help?", "Forget password?"),
+  // and orange icons — anything the user needs to tap or pay attention to.
+  orange: '#FF6130',
+
+  // Darker orange used on the active bottom-tab label/icon and "See All".
+  orangeDark: '#D96A0B',
+
+  // The orange inside the GTCO logo and onboarding artwork.
+  orangeLogo: '#F58220',
 
   // A slightly darker orange for when a button is being pressed.
   // That small color shift gives the user physical feedback — it "feels" tappable.
@@ -19,32 +27,57 @@ const colors = {
 
   // ── Text colors ────────────────────────────────────────────────
 
-  // Near-black. Used for headings and body text — easier on the eyes than pure black.
-  textDark: '#1A1A1A',
-  textLightDark: '#353535',
+  // Near-black. Dark text: status-bar time, phone numbers, amounts, input text.
+  // (Big screen titles like "Hello!" use pure black — colors.black.)
+  textDark: '#090A0A',
 
-  // Medium grey. For subtitles, labels, and anything that supports the main text.
-  textGrey: '#6B6B6B',
+  // Dark grey for "Enter password" and list item titles.
+  textLightDark: '#303437',
 
-  // Light grey. Placeholders and disabled text — present but not demanding attention.
-  textFaded: '#9CA3AF',
+  // Transaction names.
+  textCharcoal: '#333333',
+
+  // Account detail values (account name / number on transfer screens).
+  textNearBlack: '#222222',
+
+  // The balance amount on the home screen.
+  textBalance: '#202325',
+
+  // Labels in the Filter Transactions sheet.
+  textLabel: '#404446',
+
+  // Send / Pay / Top up / More labels on the home screen.
+  textNavy: '#060F27',
+
+  // Get Help article titles and article text.
+  textHelpTitle: '#0B1C30',
+  textHelpBody: '#76777D',
+
+  // Medium grey. The most common body text: subtitles, descriptions, labels.
+  textGrey: '#72777A',
+
+  // Light grey. Inactive tab labels, secondary links ("Login with Fingerprint").
+  textFaded: '#979C9E',
+
+  // Placeholder text inside search boxes.
+  textPlaceholder: '#6C7072',
 
   // Pure white text. Used when text sits on top of the orange background.
   textWhite: '#FFFFFF',
 
   // ── Page and surface backgrounds ───────────────────────────────
 
-  // The light grey behind everything. Makes white cards look elevated and clean.
+  // Light grey used for input boxes and some screen backgrounds.
   pageBackground: '#F5F5F5',
 
-  background: '#F5F6FA',
+  // Off-white background of the home/dashboard screens and transaction rows.
+  background: '#FAFAFA',
 
-  // White. Used on cards, modals, and input fields.
+  // White. Used on cards, modals, and most screen backgrounds.
   cardBackground: '#FFFFFF',
 
   // The dark charcoal card on the home screen that shows the balance.
-  // Sampled directly from the Figma export: flat #444444, no gradient.
-  darkCard: '#302f2f',
+  darkCard: '#444444',
   darkNavy: '#003057',
   navyDark: '#0a1628',
   navyCard: '#0d1f3c',
@@ -60,38 +93,53 @@ const colors = {
 
   dark: '#979C9E',
 
-
-
   // Neutral light-grey circle background used behind the Send/Pay/Top up/More
   // icons on the home screen. Design does NOT tint these orange.
   iconGrey: '#F2F2F2',
 
-  // Slightly off-white for input fields — subtle separation from a white card.
-  inputBackground: '#F9F9F9',
+  // Grey input boxes — same grey as pageBackground in the design.
+  inputBackground: '#F5F5F5',
+
+  // Blue info banner ("Recipient will be credited shortly") and its accent.
+  infoBlueFaint: '#EBF0FD',
+  infoBlue: '#5484FF',
+
+  // The "Unread" label on notifications.
+  unreadBlue: '#0C349A',
+
+  // Dimmed see-through layer behind pop-ups and bottom sheets.
+  overlay: 'rgba(9, 10, 10, 0.4)',
 
   // ── Status colors ──────────────────────────────────────────────
 
   pink: '#F4B4C8',
 
-  
   pinkFaint: '#FDF0F4',
 
   // Green for successful transactions and completed states.
-  green: '#22C55E',
+  green: '#0DBF66',
   greenFaint: '#DCFCE7',
 
-  // Red for failed transactions and error messages.
-  red: '#EF4444',
+  // Green tick icons on the sign-in / KYC / forgot-password screens.
+  greenTick: '#14B53A',
+
+  // Red for failed transactions, money-out amounts and error messages.
+  red: '#CC1800',
   redFaint: '#FEE2E2',
 
+  // Brighter red for "Log Out", darker red for "Transfer failed".
+  redBright: '#E50F0F',
+  redDark: '#93000A',
+
   // Amber for pending / in-transit states.
-  amber: '#F59E0B',
+  amber: '#FF8F00',
   amberFaint: '#FEF3C7',
 
   // ── Borders ────────────────────────────────────────────────────
 
   // A light grey line. Used between list items, around cards, around inputs.
-  borderLight: '#E5E7EB',
+  // The design draws these as #E2E8F0 at 60% see-through.
+  borderLight: 'rgba(226, 232, 240, 0.6)',
 
   // Orange border — appears on an input field when the user taps into it.
   borderActive: '#E85D24',
