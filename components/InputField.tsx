@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, radius, spacing } from '../constants/typography';
+import { layout } from '../constants/layout';
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
@@ -43,7 +44,7 @@ interface InputFieldProps extends TextInputProps {
     !!error && styles.inputError,
     style,
   ]}
-        placeholderTextColor={colors.textFaded}
+        placeholderTextColor={colors.textGrey}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         {...rest}
@@ -66,19 +67,20 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   input: {
-    height: 52,
+    height: layout.inputHeight,
     backgroundColor: colors.inputBackground,
     borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.borderLight,
-    paddingHorizontal: spacing.lg,
+    // Invisible until focused, so the text doesn't shift when the border appears.
+    // 1 border + 15 padding = the design's 16 left margin.
+    borderWidth: 1,
+    borderColor: colors.transparent,
+    paddingHorizontal: spacing.lg - 1,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.textNearBlack,
   },
   inputFocused: {
     borderColor: colors.borderActive,
-    backgroundColor: colors.white,
   },
   inputError: {
     borderColor: colors.red,
