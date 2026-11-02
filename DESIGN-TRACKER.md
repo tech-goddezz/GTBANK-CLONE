@@ -56,7 +56,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C28 | Ad ticker | Not in the design; owner chose to keep it on Home | `components/AdTicker.tsx` | /home | ✅ |
 | C29 | Transaction ticker | Not in the design; owner chose to keep it on Home | `components/TransactionTicker.tsx` | /home | ✅ |
 | C30 | Cube illustration | On boarding flow.pdf | `components/CubeIllustration.tsx` | /onboarding | ✅ |
-| C31 | Crash screen (ErrorBoundary) | To be checked | `components/ErrorBoundary.tsx` | — | ⬜ |
+| C31 | Crash screen (ErrorBoundary) | Not in the design | `components/ErrorBoundary.tsx` (not connected yet; connect before launch) | — | ➖ |
 
 ## 2. Onboarding — `On boarding  flow.pdf`
 
