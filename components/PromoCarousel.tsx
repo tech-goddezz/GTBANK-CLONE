@@ -8,11 +8,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 
+// Not in the design; the owner chose to keep it, so it uses the app's own colours.
 const PROMOS = [
-  { id: '1', title: 'Enable Interest', subtitle: 'Earn on your balance daily', color: '#6C5CE7' },
-  { id: '2', title: 'Refer & Earn', subtitle: 'Invite friends, get rewards', color: '#00B894' },
-  { id: '3', title: 'Cashback', subtitle: 'Up to ₦30 cashback on bills', color: '#E17055' },
+  { id: '1', title: 'Enable Interest', subtitle: 'Earn on your balance daily', color: colors.orange },
+  { id: '2', title: 'Refer & Earn', subtitle: 'Invite friends, get rewards', color: colors.balanceCard },
+  { id: '3', title: 'Cashback', subtitle: 'Up to ₦30 cashback on bills', color: colors.orangeDark },
 ];
 
 export default function PromoCarousel() {
@@ -68,21 +70,20 @@ const styles = StyleSheet.create({
   card: {
     height: 90,
     borderRadius: radius.card,
-    marginHorizontal: spacing.lg,
+    marginHorizontal: layout.balanceCardSideMargin,
     padding: spacing.lg,
     justifyContent: 'center',
   },
   cardTitle: {
     color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: fontSize.body,
+    fontFamily: fontFamily.medium,
+    fontSize: fontSize.large,
   },
   cardSubtitle: {
     color: colors.white,
     fontFamily: fontFamily.regular,
-    fontSize: fontSize.small,
-    marginTop: spacing.sm,
-    opacity: 0.9,
+    fontSize: fontSize.body,
+    marginTop: spacing.xs,
   },
   dotsRow: {
     flexDirection: 'row',
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     height: 6,
     width: 6,
     borderRadius: 3,
-    backgroundColor: colors.borderLight,
+    backgroundColor: colors.light,
   },
   dotActive: {
     width: 18,
