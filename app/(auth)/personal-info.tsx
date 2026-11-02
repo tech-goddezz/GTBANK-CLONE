@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import { updateName, getCurrentUserId, savePhoneNumber } from '../../services/auth';
+import ScreenScroll from '../../components/ScreenScroll';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
@@ -38,44 +39,46 @@ if (params.phone) {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.avatarCircle}>
-        <Ionicons name="person-outline" size={26} color={colors.textGrey} />
-      </View>
+    <ScreenScroll>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <View style={styles.avatarCircle}>
+          <Ionicons name="person-outline" size={26} color={colors.textGrey} />
+        </View>
 
-      <Text style={styles.title}>Tell us about yourself</Text>
-      <Text style={styles.subtitle}>We'll use this to personalize your account</Text>
+        <Text style={styles.title}>Tell us about yourself</Text>
+        <Text style={styles.subtitle}>We'll use this to personalize your account</Text>
 
-      <TextInput
-        style={styles.inputBox}
-        placeholder="First Name"
-        placeholderTextColor={colors.textFaded}
-        value={firstName}
-        onChangeText={setFirstName}
-        autoCapitalize="words"
-      />
+        <TextInput
+          style={styles.inputBox}
+          placeholder="First Name"
+          placeholderTextColor={colors.textFaded}
+          value={firstName}
+          onChangeText={setFirstName}
+          autoCapitalize="words"
+        />
 
-      <TextInput
-        style={styles.inputBox}
-        placeholder="Last Name"
-        placeholderTextColor={colors.textFaded}
-        value={lastName}
-        onChangeText={setLastName}
-        autoCapitalize="words"
-      />
+        <TextInput
+          style={styles.inputBox}
+          placeholder="Last Name"
+          placeholderTextColor={colors.textFaded}
+          value={lastName}
+          onChangeText={setLastName}
+          autoCapitalize="words"
+        />
 
-      {!!error && <Text style={styles.error}>{error}</Text>}
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>
-          {loading ? 'Saving...' : 'Continue'}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? 'Saving...' : 'Continue'}
+          </Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </ScreenScroll>
   );
 }
 

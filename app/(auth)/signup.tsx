@@ -13,6 +13,7 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { signUp, fetchProfile } from '../../services/auth';
+import ScreenScroll from '../../components/ScreenScroll';
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -50,53 +51,55 @@ export default function SignupScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.avatarCircle}>
-        <Ionicons name="person-add-outline" size={26} color={colors.textGrey} />
-      </View>
+    <ScreenScroll>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <View style={styles.avatarCircle}>
+          <Ionicons name="person-add-outline" size={26} color={colors.textGrey} />
+        </View>
 
-      <Text style={styles.title}>Create your account</Text>
+        <Text style={styles.title}>Create your account</Text>
 
-      <TextInput
-        style={styles.inputBox}
-        placeholder="Email"
-        placeholderTextColor={colors.textFaded}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-
-      <View style={styles.passwordRow}>
         <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
+          style={styles.inputBox}
+          placeholder="Email"
           placeholderTextColor={colors.textFaded}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Ionicons
-            name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-            size={22}
-            color={colors.textGrey}
+
+        <View style={styles.passwordRow}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor={colors.textFaded}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
           />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={22}
+              color={colors.textGrey}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {!!error && <Text style={styles.error}>{error}</Text>}
+
+        <TouchableOpacity
+          style={styles.signupButton}
+          onPress={handleSignup}
+          disabled={loading}
+        >
+          <Text style={styles.signupButtonText}>
+            {loading ? 'Creating account...' : 'Sign Up'}
+          </Text>
         </TouchableOpacity>
-      </View>
-
-      {!!error && <Text style={styles.error}>{error}</Text>}
-
-      <TouchableOpacity
-        style={styles.signupButton}
-        onPress={handleSignup}
-        disabled={loading}
-      >
-        <Text style={styles.signupButtonText}>
-          {loading ? 'Creating account...' : 'Sign Up'}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScreenScroll>
   );
 }
 

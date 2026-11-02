@@ -7,6 +7,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../constants/typography';
+import { layout } from '../constants/layout';
 import { lookupAccountName } from '../services/auth';
 
 interface TransactionTickerProps {
@@ -65,6 +66,10 @@ export default function TransactionTicker({ transactions }: TransactionTickerPro
 
   const current = transactions[index];
   const displayName = names[current.id] || current.merchantName;
+  // "₦5,000": whole amounts have no decimals, same as the transaction rows.
+  const amount = Number(current.amount);
+  const decimals = Number.isInteger(amount) ? 0 : 2;
+  const formattedAmount = amount.toLocaleString('en-NG', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const formattedDate = new Date(current.date).toLocaleString('en-NG', {
     month: 'short',
     day: '2-digit',
@@ -79,7 +84,7 @@ export default function TransactionTicker({ transactions }: TransactionTickerPro
       </Animated.View>
       <Animated.View style={[styles.textWrap, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
         <Text style={styles.text} numberOfLines={1}>
-          {current.category} · To <Text style={styles.bold}>{displayName}</Text> · <Text style={styles.amount}>₦{current.amount}</Text> · {formattedDate}
+          {current.category} · To <Text style={styles.bold}>{displayName}</Text> · <Text style={styles.amount}>₦{formattedAmount}</Text> · {formattedDate}
         </Text>
       </Animated.View>
     </View>
@@ -90,13 +95,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.navyCard,
+    backgroundColor: colors.white,
     borderRadius: radius.button,
     borderWidth: 1,
     borderColor: colors.orange,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    marginHorizontal: spacing.lg,
+    marginHorizontal: layout.balanceCardSideMargin,
     marginTop: spacing.sm,
     gap: spacing.sm,
   },
@@ -114,11 +119,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: fontSize.small,
     fontFamily: fontFamily.medium,
-    color: colors.base,
+    color: colors.textGrey,
   },
   bold: {
-    color: colors.white,
-    fontFamily: fontFamily.semibold,
+    color: colors.textLightDark,
+    fontFamily: fontFamily.medium,
   },
   amount: {
     color: colors.orange,

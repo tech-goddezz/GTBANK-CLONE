@@ -8,6 +8,7 @@ import { fontSize, fontFamily, spacing } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { signInWithPin, fetchProfile } from '../../services/auth';
 import { supabase } from '../../lib/supabase';
+import ScreenScroll from '../../components/ScreenScroll';
 
 const PIN_LENGTH = 4;
 const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
@@ -72,34 +73,36 @@ export default function LoginBiometricScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <Text style={styles.title}>Enter your PIN</Text>
-      <Text style={styles.subtitle}>Enter your 4-digit PIN to continue</Text>
-      <View style={styles.dotsRow}>
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-          <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
-        ))}
-      </View>
-      {!!error && <Text style={styles.error}>{error}</Text>}
-      {loading && <Text style={styles.loading}>Verifying...</Text>}
-      <View style={styles.keypad}>
-        {keypadKeys.map((key, i) => (
-          <TouchableOpacity
-            key={i}
-            style={styles.key}
-            onPress={() => handleKey(key)}
-            disabled={!key || loading}
-            activeOpacity={key ? 0.5 : 1}
-          >
-            {key === 'del' ? (
-              <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
-            ) : (
-              <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    </SafeAreaView>
+    <ScreenScroll>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <Text style={styles.title}>Enter your PIN</Text>
+        <Text style={styles.subtitle}>Enter your 4-digit PIN to continue</Text>
+        <View style={styles.dotsRow}>
+          {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+            <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
+          ))}
+        </View>
+        {!!error && <Text style={styles.error}>{error}</Text>}
+        {loading && <Text style={styles.loading}>Verifying...</Text>}
+        <View style={styles.keypad}>
+          {keypadKeys.map((key, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.key}
+              onPress={() => handleKey(key)}
+              disabled={!key || loading}
+              activeOpacity={key ? 0.5 : 1}
+            >
+              {key === 'del' ? (
+                <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
+              ) : (
+                <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </SafeAreaView>
+    </ScreenScroll>
   );
 }
 

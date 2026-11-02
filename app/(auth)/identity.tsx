@@ -20,6 +20,7 @@ import { useKycStore } from '../../store/useKycStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { updateIdentityVerified } from '../../services/auth';
 import Svg, { Circle } from 'react-native-svg';
+import ScreenScroll from '../../components/ScreenScroll';
 
 type Step = 'intro' | 'capturing';
 
@@ -51,125 +52,127 @@ export default function IdentityScreen() {
     // instead of skipping straight to the "Wait a moment" screen.
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-        </TouchableOpacity>
-      <View style={styles.topRow}>
-
-        <TouchableOpacity>
-          <Text style={styles.needHelp}>Need help?</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.header}>
-        <Text style={styles.title}>Identity Verification</Text>
-        <Text style={styles.subtitle}>
-          {step === 'intro'
-            ? 'Now find a well lit spot and take a photo of your face so we know its really you. To proceed, click "Start" or select another method if you are unable to take a photo'
-            : 'Please follow all the instructions given below'}
-        </Text>
-      </View>
-
-      {step === 'intro' ? (
-        <>
-          {/* Camera illustration — real asset exported from Figma */}
-          <View style={styles.illustrationWrap}>
-            <Image
-              source={require('../../assets/images/camera-illustration.png')}
-              style={styles.cameraImage}
-              resizeMode="contain"
-            />
-          </View>
-
-          <Text style={styles.consent}>
-            By pressing start, I give my consent to the collection and processing of my personal data
-          </Text>
-
-          <View style={styles.buttonArea}>
-            <Button
-              label="Start"
-              onPress={() => setStep('capturing')}
-              style={styles.compactButton}
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setStep('intro')}
+    <ScreenScroll>
+      <View style={styles.container}>
+        <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Cancel capture"
+            accessibilityLabel="Go back"
           >
-            <Ionicons name="close" size={22} color={colors.textDark} />
+            <Ionicons name="arrow-back" size={24} color={colors.textDark} />
           </TouchableOpacity>
+        <View style={styles.topRow}>
 
-          {/* Small red dot with a lighter ring around it — indicates the
-              camera is "live" during capture */}
-          <View style={styles.activeDotRing}>
-            <View style={styles.activeDotCenter} />
-          </View>
+          <TouchableOpacity>
+            <Text style={styles.needHelp}>Need help?</Text>
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.frameWrapper}>
-            <View style={styles.dashedRingWrapper}>
-              {/* SVG circle instead of a plain View border — this is the
-                  only way to control dash LENGTH (not just width) in
-                  React Native. strokeDasharray="14 10" means: draw a
-                  14px dash, then leave a 10px gap, repeat. Bump the first
-                  number up for longer dashes, the second for bigger gaps. */}
-              <Svg
-                width={300}
-                height={300}
-                style={StyleSheet.absoluteFill}
-              >
-                <Circle
-                  cx={150}
-                  cy={150}
-                  r={148}
-                  stroke={RING_COLOR}
-                  strokeWidth={3}
-                  strokeDasharray="40 30"
-                  fill="none"
-                />
-              </Svg>
+        <View style={styles.header}>
+          <Text style={styles.title}>Identity Verification</Text>
+          <Text style={styles.subtitle}>
+            {step === 'intro'
+              ? 'Now find a well lit spot and take a photo of your face so we know its really you. To proceed, click "Start" or select another method if you are unable to take a photo'
+              : 'Please follow all the instructions given below'}
+          </Text>
+        </View>
 
-              <View style={styles.frame}>
-                <Image
-                  source={require('../../assets/images/verification-face.png')}
-                  style={styles.faceImage}
-                  resizeMode="cover"
-                />
+        {step === 'intro' ? (
+          <>
+            {/* Camera illustration — real asset exported from Figma */}
+            <View style={styles.illustrationWrap}>
+              <Image
+                source={require('../../assets/images/camera-illustration.png')}
+                style={styles.cameraImage}
+                resizeMode="contain"
+              />
+            </View>
+
+            <Text style={styles.consent}>
+              By pressing start, I give my consent to the collection and processing of my personal data
+            </Text>
+
+            <View style={styles.buttonArea}>
+              <Button
+                label="Start"
+                onPress={() => setStep('capturing')}
+                style={styles.compactButton}
+              />
+            </View>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setStep('intro')}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel capture"
+            >
+              <Ionicons name="close" size={22} color={colors.textDark} />
+            </TouchableOpacity>
+
+            {/* Small red dot with a lighter ring around it — indicates the
+                camera is "live" during capture */}
+            <View style={styles.activeDotRing}>
+              <View style={styles.activeDotCenter} />
+            </View>
+
+            <View style={styles.frameWrapper}>
+              <View style={styles.dashedRingWrapper}>
+                {/* SVG circle instead of a plain View border — this is the
+                    only way to control dash LENGTH (not just width) in
+                    React Native. strokeDasharray="14 10" means: draw a
+                    14px dash, then leave a 10px gap, repeat. Bump the first
+                    number up for longer dashes, the second for bigger gaps. */}
+                <Svg
+                  width={300}
+                  height={300}
+                  style={StyleSheet.absoluteFill}
+                >
+                  <Circle
+                    cx={150}
+                    cy={150}
+                    r={148}
+                    stroke={RING_COLOR}
+                    strokeWidth={3}
+                    strokeDasharray="40 30"
+                    fill="none"
+                  />
+                </Svg>
+
+                <View style={styles.frame}>
+                  <Image
+                    source={require('../../assets/images/verification-face.png')}
+                    style={styles.faceImage}
+                    resizeMode="cover"
+                  />
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* Two-segment progress bar — matches the design's capture
-              progress indicator (mostly filled, small remainder). */}
-          <View style={styles.progressRow}>
-            <View style={styles.progressFilled} />
-            <View style={styles.progressRemaining} />
-          </View>
+            {/* Two-segment progress bar — matches the design's capture
+                progress indicator (mostly filled, small remainder). */}
+            <View style={styles.progressRow}>
+              <View style={styles.progressFilled} />
+              <View style={styles.progressRemaining} />
+            </View>
 
-          <Text style={styles.captureInstruction}>
-            Don&apos;t blink your eyes while on the camera. Camera automatically captures
-          </Text>
+            <Text style={styles.captureInstruction}>
+              Don&apos;t blink your eyes while on the camera. Camera automatically captures
+            </Text>
 
-          <View style={styles.buttonArea}>
-            <Button
-              label="Next"
-              onPress={handleContinue}
-              style={styles.compactButton}
-            />
-          </View>
-        </>
-      )}
-    </View>
+            <View style={styles.buttonArea}>
+              <Button
+                label="Next"
+                onPress={handleContinue}
+                style={styles.compactButton}
+              />
+            </View>
+          </>
+        )}
+      </View>
+    </ScreenScroll>
   );
 }
 

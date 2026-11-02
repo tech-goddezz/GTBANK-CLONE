@@ -54,7 +54,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C26 | Debit card | To be checked | `components/DebitCard.tsx` | — | ✅ |
 | C27 | Promo carousel | Not in the design; owner chose to keep it on Home | `components/PromoCarousel.tsx` | /home | ✅ |
 | C28 | Ad ticker | Not in the design; owner chose to keep it on Home | `components/AdTicker.tsx` | /home | ✅ |
-| C29 | Transaction ticker | To be checked | `components/TransactionTicker.tsx` | — | ⬜ |
+| C29 | Transaction ticker | Not in the design; owner chose to keep it on Home | `components/TransactionTicker.tsx` | /home | ✅ |
 | C30 | Cube illustration | To be checked | `components/CubeIllustration.tsx` | — | ⬜ |
 | C31 | Crash screen (ErrorBoundary) | To be checked | `components/ErrorBoundary.tsx` | — | ⬜ |
 

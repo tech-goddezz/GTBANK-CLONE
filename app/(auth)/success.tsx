@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import ScreenScroll from '../../components/ScreenScroll';
 
 export default function SuccessScreen() {
   const router = useRouter();
@@ -35,42 +36,44 @@ export default function SuccessScreen() {
   const ringOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0] });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconWrap}>
-        <Animated.View
-          style={[styles.ring, { transform: [{ scale: ringScale }], opacity: ringOpacity }]}
-        />
-        <View style={styles.ringStatic} />
-        <View style={styles.clockCircle}>
-          <Image
-            source={require('../../assets/images/processing-clock.png')}
-            style={styles.clockImage}
-            resizeMode="contain"
+    <ScreenScroll>
+      <View style={styles.container}>
+        <View style={styles.iconWrap}>
+          <Animated.View
+            style={[styles.ring, { transform: [{ scale: ringScale }], opacity: ringOpacity }]}
           />
-        </View>
-      </View>
-
-      <Text style={styles.title}>Wait a moment</Text>
-      <Text style={styles.subtitle}>
-        Your GTBank account opening request is in progress. You can view the applicable limits of
-        your accounts below.
-      </Text>
-
-      <View style={styles.tierCard}>
-        <View>
-          <Text style={styles.tierLabel}>GTBank Tier 1</Text>
-          <View style={styles.showDetailsRow}>
-            <Text style={styles.showDetails}>show details</Text>
-            <Ionicons name="chevron-down" size={14} color={colors.textGrey} />
+          <View style={styles.ringStatic} />
+          <View style={styles.clockCircle}>
+            <Image
+              source={require('../../assets/images/processing-clock.png')}
+              style={styles.clockImage}
+              resizeMode="contain"
+            />
           </View>
         </View>
 
-        <View style={styles.tierIconBox}>
-          <View style={styles.tierGemTop} />
-          <View style={styles.tierGemBottom} />
+        <Text style={styles.title}>Wait a moment</Text>
+        <Text style={styles.subtitle}>
+          Your GTBank account opening request is in progress. You can view the applicable limits of
+          your accounts below.
+        </Text>
+
+        <View style={styles.tierCard}>
+          <View>
+            <Text style={styles.tierLabel}>GTBank Tier 1</Text>
+            <View style={styles.showDetailsRow}>
+              <Text style={styles.showDetails}>show details</Text>
+              <Ionicons name="chevron-down" size={14} color={colors.textGrey} />
+            </View>
+          </View>
+
+          <View style={styles.tierIconBox}>
+            <View style={styles.tierGemTop} />
+            <View style={styles.tierGemBottom} />
+          </View>
         </View>
       </View>
-    </View>
+    </ScreenScroll>
   );
 }
 

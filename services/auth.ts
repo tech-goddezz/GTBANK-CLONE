@@ -168,13 +168,13 @@ export async function sendMoney(senderId: string, receiverAccountNumber: string,
 }
 
 export async function lookupAccountName(accountNumber: string) {
-  const { data, error } = await supabase.from('profiles').select('first_name, last_name').eq('account_number', accountNumber).single();
+  const { data, error } = await supabase.rpc('lookup_account_name', { p_account: accountNumber });
 
   if (error || !data) {
     return { success: false, name: '' };
   }
 
-  return { success: true, name: `${data.first_name ?? ''} ${data.last_name ?? ''}`.trim() };
+  return { success: true, name: data as string };
 }
 
 export async function fetchTransactions(userId: string) {
@@ -379,11 +379,11 @@ export async function signInWithUserIdAndPin(userId: string, pin: string) {
   
 
 export async function checkPhoneExists(phoneNumber: string) {
-  const { data, error } = await supabase.from('profiles').select('id').eq('phone_number', phoneNumber).single();
+  const { data, error } = await supabase.rpc('phone_exists', { p_phone: phoneNumber });
 
   if (error || !data) {
     return { exists: false };
   }
 
-  return { exists: true, userId: data.id };
+  return { exists: true };
 }

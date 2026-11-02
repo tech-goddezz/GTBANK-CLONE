@@ -13,6 +13,7 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { signIn, fetchProfile } from '../../services/auth';
+import ScreenScroll from '../../components/ScreenScroll';
 
 const PASSWORD_LENGTH = 4;
 
@@ -58,68 +59,70 @@ export default function LoginPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Avatar */}
-      <View style={styles.avatarCircle}>
-        <Ionicons name="person-outline" size={26} color={colors.textGrey} />
-      </View>
+    <ScreenScroll>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {/* Avatar */}
+        <View style={styles.avatarCircle}>
+          <Ionicons name="person-outline" size={26} color={colors.textGrey} />
+        </View>
 
-<TextInput
-        style={styles.inputBox}
-        placeholder="Email"
-        placeholderTextColor={colors.textFaded}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-
-      <View style={styles.passwordRow}>
-        <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
+  <TextInput
+          style={styles.inputBox}
+          placeholder="Email"
           placeholderTextColor={colors.textFaded}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Ionicons
-            name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-            size={22}
-            color={colors.textGrey}
+
+        <View style={styles.passwordRow}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            placeholderTextColor={colors.textFaded}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
           />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={22}
+              color={colors.textGrey}
+            />
+          </TouchableOpacity>
+        </View>
 
-      {!!error && <Text style={styles.error}>{error}</Text>}
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        <Text style={styles.loginButtonText}>
-          {loading ? 'Signing in...' : 'Sign In'}
-        </Text>
-      </TouchableOpacity> 
-
-      {/* Bottom links */}
-      <View style={styles.bottomLinks}>
         <TouchableOpacity
-          onPress={() => router.push('/(forgot-password)/requirements')}
-          accessibilityRole="button"
+          style={styles.loginButton}
+          onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.linkOrange}>Forget password?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => router.replace('/(auth)/login-biometric')}
-          accessibilityRole="button"
-        >
-          <Text style={styles.linkGrey}>Login with Fingerprint</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <Text style={styles.loginButtonText}>
+            {loading ? 'Signing in...' : 'Sign In'}
+          </Text>
+        </TouchableOpacity> 
+
+        {/* Bottom links */}
+        <View style={styles.bottomLinks}>
+          <TouchableOpacity
+            onPress={() => router.push('/(forgot-password)/requirements')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.linkOrange}>Forget password?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.replace('/(auth)/login-biometric')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.linkGrey}>Login with Fingerprint</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </ScreenScroll>
   );
 }
 

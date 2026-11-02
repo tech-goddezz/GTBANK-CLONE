@@ -88,7 +88,8 @@ export default function DebitCard({ card, balance }: DebitCardProps) {
           </View>
           <View style={styles.field}>
             <Text style={styles.fieldLabel}>CVV</Text>
-            <Text style={styles.fieldValue}>{detailsVisible ? card.cvv : '****'}</Text>
+            {/* The CVV is never stored, so it can't be revealed. */}
+            <Text style={styles.fieldValue}>{detailsVisible ? '***' : '****'}</Text>
           </View>
         </View>
 

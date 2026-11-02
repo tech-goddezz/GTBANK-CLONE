@@ -9,6 +9,7 @@ import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
 import { useAuthStore } from '../../store/useAuthStore';
 import { setPin as saveRealPin, getCurrentUserId, fetchProfile } from '../../services/auth';
+import ScreenScroll from '../../components/ScreenScroll';
 
 const PIN_LENGTH = 4;
 const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
@@ -79,43 +80,45 @@ export default function PinScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {stage === 'create' ? 'Create your PIN' : 'Confirm your PIN'}
-      </Text>
-      <Text style={styles.subtitle}>
-        {stage === 'create'
-          ? 'Choose a 4-digit PIN for quick login'
-          : 'Re-enter your PIN to confirm'}
-      </Text>
+    <ScreenScroll>
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          {stage === 'create' ? 'Create your PIN' : 'Confirm your PIN'}
+        </Text>
+        <Text style={styles.subtitle}>
+          {stage === 'create'
+            ? 'Choose a 4-digit PIN for quick login'
+            : 'Re-enter your PIN to confirm'}
+        </Text>
 
-      <View style={styles.dotsRow}>
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-          <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
-        ))}
+        <View style={styles.dotsRow}>
+          {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+            <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
+          ))}
+        </View>
+
+        {!!error && <Text style={styles.error}>{error}</Text>}
+        {loading && <Text style={styles.loading}>Saving...</Text>}
+
+        <View style={styles.keypad}>
+          {keypadKeys.map((key, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.key}
+              onPress={() => handleKey(key)}
+              disabled={!key || loading}
+              activeOpacity={key ? 0.5 : 1}
+            >
+              {key === 'del' ? (
+                <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
+              ) : (
+                <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-
-      {!!error && <Text style={styles.error}>{error}</Text>}
-      {loading && <Text style={styles.loading}>Saving...</Text>}
-
-      <View style={styles.keypad}>
-        {keypadKeys.map((key, i) => (
-          <TouchableOpacity
-            key={i}
-            style={styles.key}
-            onPress={() => handleKey(key)}
-            disabled={!key || loading}
-            activeOpacity={key ? 0.5 : 1}
-          >
-            {key === 'del' ? (
-              <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
-            ) : (
-              <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
+    </ScreenScroll>
   );
 }
 
