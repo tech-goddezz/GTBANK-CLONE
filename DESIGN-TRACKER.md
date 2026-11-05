@@ -41,7 +41,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
 | C14 | "Congrats! Tier 1 account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | /pin (after confirming PIN) | ✅ |
 | C15 | "Congrats! Loan account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | not connected until loan screens | ✅ |
-| C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | MISSING | — | 🆕 |
+| C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | `components/SelectActionSheet.tsx` | /transfer-flow ("Quickly Transfer") | ✅ |
 | C17 | Filter Transactions sheet | Menu.pdf | MISSING | — | 🆕 |
 | C18 | Filter Transactions – reset state | Reset filters.pdf | MISSING | — | 🆕 |
 | C19 | "Authenticating fingerprint" pop-up | Frame 1171276698.pdf | MISSING | — | 🆕 |

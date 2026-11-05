@@ -9,12 +9,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
+import SelectActionSheet from '../../../components/SelectActionSheet';
 
 export default function TransferLandingScreen() {
   const router = useRouter();
@@ -54,63 +54,26 @@ export default function TransferLandingScreen() {
       </View>
 
       {/* Bank type selector sheet */}
-      <Modal
+      <SelectActionSheet
         visible={showOptions}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowOptions(false)}
-      >
-        <TouchableOpacity
-          style={styles.overlay}
-          activeOpacity={1}
-          onPress={() => setShowOptions(false)}
-        >
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>Select Transfer Type</Text>
-
-            <TouchableOpacity
-              style={styles.sheetOption}
-              onPress={() => {
-                setShowOptions(false);
-                router.push('/(tabs)/transfer-flow/details?bank=gtbank');
-              }}
-            >
-              <View style={styles.sheetOptionIcon}>
-                <Ionicons name="business-outline" size={22} color={colors.orange} />
-              </View>
-              <View style={styles.sheetOptionText}>
-                <Text style={styles.sheetOptionLabel}>GT Bank</Text>
-                <Text style={styles.sheetOptionSub}>Transfer to GTBank accounts</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.textFaded} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.sheetOption}
-              onPress={() => {
-                setShowOptions(false);
-                router.push('/(tabs)/transfer-flow/details?bank=other');
-              }}
-            >
-              <View style={styles.sheetOptionIcon}>
-                <Ionicons name="swap-horizontal-outline" size={22} color={colors.orange} />
-              </View>
-              <View style={styles.sheetOptionText}>
-                <Text style={styles.sheetOptionLabel}>Other Banks</Text>
-                <Text style={styles.sheetOptionSub}>Transfer to any Nigerian bank</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.textFaded} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setShowOptions(false)}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        onCancel={() => setShowOptions(false)}
+        options={[
+          {
+            label: 'GT Bank',
+            onPress: () => {
+              setShowOptions(false);
+              router.push('/(tabs)/transfer-flow/details?bank=gtbank');
+            },
+          },
+          {
+            label: 'Other Banks',
+            onPress: () => {
+              setShowOptions(false);
+              router.push('/(tabs)/transfer-flow/details?bank=other');
+            },
+          },
+        ]}
+      />
     </SafeAreaView>
   );
 }
@@ -184,61 +147,5 @@ const styles = StyleSheet.create({
     fontSize: fontSize.large,
     fontFamily: fontFamily.semibold,
     color: colors.orange,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
-  sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.card,
-    borderTopRightRadius: radius.card,
-    padding: spacing.xl,
-    paddingBottom: spacing.xxxl,
-  },
-  sheetTitle: {
-    fontSize: fontSize.heading3,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
-    marginBottom: spacing.lg,
-  },
-  sheetOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-    gap: spacing.md,
-  },
-  sheetOptionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
-    backgroundColor: colors.orangeFaint,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sheetOptionText: { flex: 1 },
-  sheetOptionLabel: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
-  },
-  sheetOptionSub: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-    marginTop: 2,
-  },
-  cancelButton: {
-    marginTop: spacing.lg,
-    alignItems: 'center',
-    padding: spacing.md,
-  },
-  cancelText: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.medium,
-    color: colors.textGrey,
   },
 });

@@ -19,6 +19,11 @@ export const layout = {
   headerMenuHeight: 48, // Screen header: the strip with the small menu icon
   onboardingArtHeight: 403,// The floating cubes picture
   transactionRowHeight: 72,
+  optionRowHeight: 56,   // One choice in the "Select action" pop-up
+  radioSize: 26,         // Round choice button, including its 1px outline
+  cancelAreaHeight: 80,  // "Cancel" strip at the bottom of the "Select action" pop-up
+  dividerWidth: 375,     // Thin line above "Cancel"
+  homeBarSpace: 34,      // Space the design leaves for the phone's own swipe-up bar
   debitCardWidth: 350,
   debitCardHeight: 181,
   balanceCardHeight: 130,
