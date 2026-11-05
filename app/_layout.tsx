@@ -11,6 +11,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { KaushanScript_400Regular } from '@expo-google-fonts/kaushan-script';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
 
@@ -23,6 +24,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    KaushanScript_400Regular,
     ...Ionicons.font,
   });
 

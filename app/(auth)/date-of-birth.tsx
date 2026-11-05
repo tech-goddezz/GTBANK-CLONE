@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   },
   pickerCaption: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.handwriting,
     color: colors.black,
     marginBottom: spacing.xxxl,
   },
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   },
   pickerHeading: {
     fontSize: fontSize.heading2,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.handwriting,
     color: colors.black,
   },
   pickerActions: {
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   },
   pickerActionText: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.handwriting,
     color: colors.datePickerAction,
   },
   typedDateWrap: {
@@ -493,12 +493,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
     backgroundColor: colors.white,
     fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.handwriting,
     color: colors.black,
   },
   typedDateInput: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.handwriting,
     color: colors.textDark,
   },
   typedDateError: {
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   },
   monthYearText: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.handwriting,
     color: colors.black,
   },
   weekdayRow: {

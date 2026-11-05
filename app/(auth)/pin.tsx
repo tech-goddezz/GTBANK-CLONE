@@ -1,6 +1,6 @@
 // app/(auth)/pin.tsx
 // 4-digit PIN creation with confirmation step, then saves the real
-// PIN and redirects to the dashboard.
+// PIN, shows the "Congrats!" pop-up, then goes to the dashboard.
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -10,6 +10,7 @@ import { fontSize, fontFamily, spacing, radius } from '../../constants/typograph
 import { useAuthStore } from '../../store/useAuthStore';
 import { setPin as saveRealPin, getCurrentUserId, fetchProfile } from '../../services/auth';
 import ScreenScroll from '../../components/ScreenScroll';
+import CongratsSheet from '../../components/CongratsSheet';
 
 const PIN_LENGTH = 4;
 const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
@@ -22,6 +23,8 @@ export default function PinScreen() {
   const [pin, setPin] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Set once the PIN is saved; shows the "Congrats!" pop-up with the new account number.
+  const [newAccountNumber, setNewAccountNumber] = useState<string | null>(null);
 
   const finishSetPin = async (confirmedPin: string) => {
     setLoading(true);
@@ -40,7 +43,7 @@ export default function PinScreen() {
         tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
       };
       login(realUser, 'real-session');
-      router.replace('/(tabs)/home');
+      setNewAccountNumber(realUser.accountNumber);
     } else {
       setError('Could not set PIN. Please try again.');
       setStage('create');
@@ -118,6 +121,13 @@ export default function PinScreen() {
           ))}
         </View>
       </View>
+
+      <CongratsSheet
+        visible={newAccountNumber !== null}
+        accountType="Tier 1"
+        accountNumber={newAccountNumber ?? ''}
+        onViewDashboard={() => router.replace('/(tabs)/home')}
+      />
     </ScreenScroll>
   );
 }

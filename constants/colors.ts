@@ -152,6 +152,9 @@ const colors = {
   headerDivider: '#E2E8F0',
   headerMenuIcon: '#757575',
 
+  // The "Copy" link on the Congrats pop-up.
+  copyLink: '#9A2E02',
+
   // The 6-digit code boxes: thin outline, and the grey fill of the active box.
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',

@@ -11,6 +11,7 @@ export const layout = {
   buttonHeightLarge: 56, // "Apply Filters" button
   buttonHeightSmall: 32, // "Authenticating fingerprint" button
   inputHeight: 46,     // Grey input box (a few taller ones are 56)
+  congratsHeight: 563,
   infoBannerHeight: 40,
   infoBannerHeightTall: 46, // The centred version with no icon
   statusBarHeight: 52, // Space the design leaves for the phone's clock and battery
@@ -40,6 +41,9 @@ export const radius = {
   buttonLarge: 8, // Except the large "Apply Filters" button
   buttonTrans: 20,
   input: 0,      // Input boxes have square corners in the design
+  congrats: 32,  // Top corners of the Congrats pop-up
+  congratsCubesLeft: 6,  // Grey cubes picture on the Congrats pop-up: left corners
+  congratsCubesRight: 8, // ...and right corners
   debitCard: 16,
   sheet: 16,    // Top corners of pop-up sheets and the type-the-date picker
   datePicker: 32, // Top corners of the calendar date picker

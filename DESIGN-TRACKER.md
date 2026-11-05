@@ -37,10 +37,10 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ✅ |
 | C10 | Blue info banner ("Recipient will be credited shortly") | Dashboard flow + transfer flow.pdf | `components/InfoBanner.tsx` | — | ✅ |
 | C11 | "Welcome! Your number isn't linked" pop-up (rocket) | Frame 16.pdf | `components/WelcomeSheet.tsx`, opened from `app/(auth)/phone.tsx` | — | ✅ |
-| C12 | Date picker – calendar | Frame 17.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | 🟨 |
-| C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | 🟨 |
-| C14 | "Congrats! Tier 1 account opened" card | Default.pdf / Default-1.pdf | MISSING | — | 🆕 |
-| C15 | "Congrats! Loan account opened" card | Default.pdf / Default-1.pdf | MISSING | — | 🆕 |
+| C12 | Date picker – calendar | Frame 17.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
+| C13 | Date picker – type the date | Frame 25.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
+| C14 | "Congrats! Tier 1 account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | /pin (after confirming PIN) | ✅ |
+| C15 | "Congrats! Loan account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | not connected until loan screens | ✅ |
 | C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | MISSING | — | 🆕 |
 | C17 | Filter Transactions sheet | Menu.pdf | MISSING | — | 🆕 |
 | C18 | Filter Transactions – reset state | Reset filters.pdf | MISSING | — | 🆕 |

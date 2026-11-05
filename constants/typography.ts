@@ -37,6 +37,8 @@ export const fontFamily = {
   medium: 'Inter_500Medium',
   semibold: 'Inter_600SemiBold',
   bold: 'Inter_700Bold',
+  // Closest match to the handwriting font on the design's date pickers
+  handwriting: 'KaushanScript_400Regular',
 };
 
 
