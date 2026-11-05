@@ -24,6 +24,11 @@ export const layout = {
   cancelAreaHeight: 80,  // "Cancel" strip at the bottom of the "Select action" pop-up
   dividerWidth: 375,     // Thin line above "Cancel"
   homeBarSpace: 34,      // Space the design leaves for the phone's own swipe-up bar
+  filterPillHeight: 38,  // Choice buttons in the Filter Transactions pop-up
+  filterPillWidthNarrow: 105.67, // The Credit / Debit pills (the 3-in-a-row pills share the width)
+  filterPillGap: 10,
+  filterSidePadding: 19, // Left edge of the pills
+  iconSize: 24,          // Standard icon box, e.g. the close X
   debitCardWidth: 350,
   debitCardHeight: 181,
   balanceCardHeight: 130,
@@ -54,4 +59,5 @@ export const radius = {
   datePicker: 32, // Top corners of the calendar date picker
   dayCell: 18.9, // The selected day in the date picker
   pill: 999,     // Badges, avatar circles — fully round
+  filterPill: 9, // Choice buttons in the Filter Transactions pop-up
 };

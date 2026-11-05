@@ -30,11 +30,18 @@ import { useEffect } from 'react';
 import { fetchTransactions, getCurrentUserId } from '../../services/auth';
 import { formatDate } from '../../constants/mockData';
 import TransactionItem from '../../components/TransactionItem';
+import FilterTransactionsSheet, { TransactionFilters, noFilters } from '../../components/FilterTransactionsSheet';
+
+// How far back each date-range filter reaches, in days. "Custom" has no
+// date chooser in the design yet, so it doesn't narrow the list.
+const dateRangeDays: Record<string, number> = { '30days': 30, '3months': 91 };
 
 export default function HistoryScreen() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<any[]>([]);
 const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState<TransactionFilters>(noFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
 useEffect(() => {
   const loadTransactions = async () => {
@@ -57,10 +64,17 @@ useEffect(() => {
 }, []);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return transactions;
     const q = query.trim().toLowerCase();
-    return transactions.filter((t) => t.merchantName.toLowerCase().includes(q));
-  }, [transactions, query]);
+    const days = filters.dateRange ? dateRangeDays[filters.dateRange] : undefined;
+    const earliest = days ? Date.now() - days * 24 * 60 * 60 * 1000 : undefined;
+    return transactions.filter((t) => {
+      if (q && !t.merchantName.toLowerCase().includes(q)) return false;
+      if (filters.type && t.type !== filters.type) return false;
+      if (filters.status && t.status !== filters.status) return false;
+      if (earliest && new Date(t.date).getTime() < earliest) return false;
+      return true;
+    });
+  }, [transactions, query, filters]);
 
   // Group into TODAY / YESTERDAY / date sections — same logic Home used to
   // have, moved here since grouping belongs on History, not Home.
@@ -106,7 +120,12 @@ useEffect(() => {
               returnKeyType="search"
             />
           </View>
-          <TouchableOpacity style={styles.filterButton}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setShowFilters(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Filter transactions"
+          >
             <Ionicons name="options-outline" size={18} color={colors.textDark} />
           </TouchableOpacity>
         </View>
@@ -133,6 +152,16 @@ useEffect(() => {
           ))
         )}
       </ScrollView>
+
+      <FilterTransactionsSheet
+        visible={showFilters}
+        filters={filters}
+        onApply={(chosen) => {
+          setFilters(chosen);
+          setShowFilters(false);
+        }}
+        onClose={() => setShowFilters(false)}
+      />
     </SafeAreaView>
   );
 }

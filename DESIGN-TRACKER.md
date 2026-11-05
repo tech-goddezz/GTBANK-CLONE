@@ -42,8 +42,8 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C14 | "Congrats! Tier 1 account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | /pin (after confirming PIN) | ✅ |
 | C15 | "Congrats! Loan account opened" card | Default.pdf / Default-1.pdf | `components/CongratsSheet.tsx` | not connected until loan screens | ✅ |
 | C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | `components/SelectActionSheet.tsx` | /transfer-flow ("Quickly Transfer") | ✅ |
-| C17 | Filter Transactions sheet | Menu.pdf | MISSING | — | 🆕 |
-| C18 | Filter Transactions – reset state | Reset filters.pdf | MISSING | — | 🆕 |
+| C17 | Filter Transactions sheet | Menu.pdf | `components/FilterTransactionsSheet.tsx` | /history (filter button) | ✅ |
+| C18 | Filter Transactions – reset state | Reset filters.pdf | `components/FilterTransactionsSheet.tsx` | /history (filter button → Reset Filters) | ✅ |
 | C19 | "Authenticating fingerprint" pop-up | Frame 1171276698.pdf | MISSING | — | 🆕 |
 | C20 | Phone keyboards (number & letters) | Keyboard.pdf, Keyboard-1.pdf | The phone's own keyboard; nothing to build | — | ➖ |
 | C21 | Small 16px icons (bullseye ×3, download) | bullseye.pdf, bullseye-1.pdf, bullseye-2.pdf, Download.pdf | Used inside other screens as needed | — | ➖ |
