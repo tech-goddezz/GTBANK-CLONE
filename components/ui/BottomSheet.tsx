@@ -11,10 +11,12 @@ interface BottomSheetProps {
   // For sheets that draw their own top and edges, like the date pickers.
   bare?: boolean;
   topRadius?: number;
+  // For cards rounded on all four corners, like the fingerprint pop-up.
+  bottomRadius?: number;
   children: React.ReactNode;
 }
 
-export default function BottomSheet({ visible, onClose, title, bare, topRadius, children }: BottomSheetProps) {
+export default function BottomSheet({ visible, onClose, title, bare, topRadius, bottomRadius, children }: BottomSheetProps) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
@@ -23,6 +25,7 @@ export default function BottomSheet({ visible, onClose, title, bare, topRadius, 
             styles.sheet,
             bare && styles.sheetBare,
             topRadius !== undefined && { borderTopLeftRadius: topRadius, borderTopRightRadius: topRadius },
+            bottomRadius !== undefined && { borderBottomLeftRadius: bottomRadius, borderBottomRightRadius: bottomRadius },
           ]}
           onPress={() => {}}
         >

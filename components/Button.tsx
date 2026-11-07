@@ -34,6 +34,8 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
+  // Rarely needed: tweaks the text, e.g. the normal-weight "Cancel" on the fingerprint pop-up.
+  textStyle?: TextStyle;
 }
 
 export default function Button({
@@ -44,6 +46,7 @@ export default function Button({
   loading = false,
   disabled = false,
   style,
+  textStyle,
 }: ButtonProps) {
   // Pick the right container and text style based on the variant
   const containerStyle = [
@@ -68,6 +71,7 @@ export default function Button({
     variant === 'outline' && styles.greyLabel,
     variant === 'ghost' && styles.ghostLabel,
     variant === 'ghostGrey' && styles.ghostGreyLabel,
+    textStyle,
   ] as unknown as TextStyle;
 
   return (

@@ -29,6 +29,9 @@ export const layout = {
   filterPillGap: 10,
   filterSidePadding: 19, // Left edge of the pills
   iconSize: 24,          // Standard icon box, e.g. the close X
+  fingerprintSize: 100,  // Red fingerprint picture on the fingerprint pop-up
+  fingerprintCancelWidth: 117, // Grey "Cancel" button on the fingerprint pop-up
+  fingerprintTextBox: 36, // Height of each line of text on the fingerprint pop-up
   debitCardWidth: 350,
   debitCardHeight: 181,
   balanceCardHeight: 130,
