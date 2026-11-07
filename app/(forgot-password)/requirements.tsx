@@ -1,14 +1,19 @@
-// Checklist of what the reset flow requires — matches Figma exactly.
-// User sees this before any data is entered, setting expectations upfront.
+// Checklist of what the reset flow requires — matches the first screen of
+// "forget password.pdf". The user sees this before any data is entered,
+// setting expectations upfront: one thin black box holding all 5 steps,
+// each with a "not done" circle-cross icon, and an orange Proceed button.
 
 import React from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, lineHeight, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import Button from '../../components/Button';
 
 const STEPS = [
   'Reset Password',
@@ -20,11 +25,22 @@ const STEPS = [
 
 export default function ForgotRequirementsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="Go back"
+      >
+        <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
       </TouchableOpacity>
 
       <Text style={styles.title}>Open a GTBank Account</Text>
@@ -32,53 +48,98 @@ export default function ForgotRequirementsScreen() {
         Please verify the list of requirements before proceeding
       </Text>
 
-      <Text style={styles.sectionLabel}>Requirements</Text>
+      <View style={styles.headingRow}>
+        <Text style={styles.heading}>Requirements</Text>
+        <Text style={styles.ready}>0/{STEPS.length} ready</Text>
+      </View>
 
       <View style={styles.list}>
-        {STEPS.map((step, index) => (
-          <View key={step} style={styles.listItem}>
-            <Text style={styles.listIndex}>{index + 1}</Text>
-            <Text style={styles.listLabel}>{step}</Text>
-            <View style={styles.circleCheck}>
-              <Ionicons name="ellipse-outline" size={20} color={colors.borderLight} />
-            </View>
+        {STEPS.map((step) => (
+          <View key={step} style={styles.row}>
+            <Text style={styles.rowLabel}>{step}</Text>
+            <MaterialIcons name="highlight-off" size={layout.backArrowSize} color={colors.black} />
           </View>
         ))}
       </View>
 
-      <View style={styles.buttonWrap}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push('/(forgot-password)/reset-password')}
-        >
-          <Text style={styles.buttonText}>Proceed</Text>
-        </TouchableOpacity>
-      </View>
+      <Button
+        label="Proceed"
+        onPress={() => router.push('/(forgot-password)/reset-password')}
+        style={styles.proceed}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  scroll: { flexGrow: 1, paddingHorizontal: spacing.xl, paddingBottom: spacing.xxxl },
-  backButton: { marginTop: 56, marginBottom: spacing.xl, width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginBottom: spacing.sm },
-  subtitle: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textGrey, marginBottom: spacing.xl, lineHeight: 22 },
-  sectionLabel: { fontSize: fontSize.body, fontFamily: fontFamily.semibold, color: colors.textDark, marginBottom: spacing.md },
-  list: { gap: spacing.sm },
-  listItem: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingVertical: spacing.md, paddingHorizontal: spacing.lg,
-    backgroundColor: colors.pageBackground, borderRadius: radius.card,
-    gap: spacing.md,
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.reqButtonBottom,
   },
-  listIndex: { fontSize: fontSize.small, fontFamily: fontFamily.medium, color: colors.textGrey, width: 16 },
-  listLabel: { flex: 1, fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textDark },
-  circleCheck: { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
-  buttonWrap: { alignItems: 'flex-end', marginTop: spacing.xxxl },
-  button: {
-    backgroundColor: colors.orange, paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.md, borderRadius: radius.button,
+  backButton: {
+    alignSelf: 'flex-start',
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
-  buttonText: { fontSize: fontSize.body, fontFamily: fontFamily.semibold, color: colors.white },
+  title: {
+    fontSize: fontSize.heading1,
+    lineHeight: lineHeight.heading1,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+    marginTop: layout.codeTitleGap,
+  },
+  subtitle: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    marginTop: layout.reqSubtitleGap,
+    marginLeft: layout.reqSubtitleLeft,
+  },
+  headingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginTop: layout.reqHeadingGap,
+  },
+  heading: {
+    fontSize: fontSize.heading2,
+    lineHeight: layout.reqHeadingLine,
+    fontFamily: fontFamily.poppinsRegular,
+    color: colors.black,
+  },
+  ready: {
+    fontSize: fontSize.small,
+    lineHeight: lineHeight.compact,
+    fontFamily: fontFamily.poppinsMedium,
+    color: colors.black,
+    marginTop: layout.reqReadyTop,
+    marginRight: layout.reqReadyRight,
+  },
+  list: {
+    marginTop: layout.reqListGap,
+    borderWidth: 1,
+    borderColor: colors.black,
+    borderRadius: radius.card,
+    paddingHorizontal: layout.reqRowPadding,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: layout.reqRowHeight,
+  },
+  rowLabel: {
+    flex: 1,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  proceed: {
+    width: layout.phoneProceedWidth,
+    alignSelf: 'flex-end',
+    marginTop: 'auto',
+  },
 });

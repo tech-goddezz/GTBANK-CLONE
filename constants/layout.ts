@@ -81,6 +81,17 @@ export const layout = {
   fingerprintButtonWidth: 230,
   fingerprintLinksGap: 305,  // Orange button → bottom links
   fingerprintLink2Left: 185, // "Login with Password" (201 from the screen edge)
+  // Requirements checklist (forgot password). Gaps are measured from the design.
+  reqSubtitleGap: 12,     // Title → grey subtitle
+  reqHeadingGap: 34,      // Subtitle → "Requirements"
+  reqHeadingLine: 32,     // Line height of the 24px "Requirements"
+  reqReadyTop: 8,         // "0/4 ready" sits a little lower than "Requirements"
+  reqReadyRight: 18,      // Gap after "0/4 ready" (377 → 359 in the design)
+  reqListGap: 16,         // "Requirements" → list box
+  reqSubtitleLeft: 1.5,   // The subtitle starts slightly right of the title
+  reqRowHeight: 35.6,     // One row in the list box (5 rows + 1px border top and bottom = 180)
+  reqRowPadding: 9,       // Text / icon inset inside the box (10 minus the 1px border)
+  reqButtonBottom: 101,   // Proceed button → bottom of the screen
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

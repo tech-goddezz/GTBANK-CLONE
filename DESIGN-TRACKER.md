@@ -27,7 +27,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | # | Name | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
 | C1 | Colours | all PDFs | `constants/colors.ts` | — | ✅ |
-| C2 | Fonts & text sizes | all PDFs | `constants/typography.ts` | — | ✅ |
+| C2 | Fonts | C2 | Fonts & text sizes | all PDFs | `constants/typography.ts` | — | ✅ | text sizes (Inter, plus Poppins for some headings) | all PDFs | `constants/typography.ts` | — | ✅ |
 | C3 | Orange button (Proceed / Next / Done) | all PDFs | `components/Button.tsx` | — | ✅ |
 | C4 | Grey text input field | all PDFs | `components/InputField.tsx` | — | ✅ |
 | C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ✅ |
@@ -82,7 +82,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 
 | # | Screen | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| S11 | Requirements checklist | forget password.pdf | `app/(forgot-password)/requirements.tsx` | /requirements ⚠️ | ⬜ |
+| S11 | Requirements checklist | forget password.pdf | `app/(forgot-password)/requirements.tsx` | /login-biometric → "Forget password?" (/requirements opens the sign-up one ⚠️) | ✅ |
 | S12 | Reset password (account number + phone) | forget password.pdf | `app/(forgot-password)/reset-password.tsx` | /reset-password | ⬜ |
 | S13 | 6-digit code | forget password.pdf | `app/(forgot-password)/otp.tsx` | /otp ⚠️ | ⬜ |
 | S14 | Identity verification – camera | forget password.pdf | `app/(forgot-password)/identity.tsx` | /identity ⚠️ | ⬜ |

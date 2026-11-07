@@ -46,6 +46,9 @@ export const fontFamily = {
   bold: 'Inter_700Bold',
   // Closest match to the handwriting font on the design's date pickers
   handwriting: 'KaushanScript_400Regular',
+  // The rounder font on some headings, e.g. "Requirements" and "0/4 ready"
+  poppinsRegular: 'Poppins_400Regular',
+  poppinsMedium: 'Poppins_500Medium',
 };
 
 
