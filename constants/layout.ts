@@ -17,6 +17,7 @@ export const layout = {
   statusBarHeight: 52, // Space the design leaves for the phone's clock and battery
   headerHeight: 65,    // Screen header: the strip with the title
   headerMenuHeight: 48, // Screen header: the strip with the small menu icon
+  splashLogoSize: 155, // GTCO logo in the middle of the splash screen
   onboardingArtHeight: 403,// The floating cubes picture
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up

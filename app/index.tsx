@@ -1,27 +1,23 @@
 // app/index.tsx
 //
 // Entry point / splash screen — matches the design's first onboarding-flow
-// frame exactly: just the GTCO logo centered on white, nothing else (no
+// frame exactly: just the GTCO logo centred on white, nothing else (no
 // spinner, no text). Checks login state in the background and redirects
 // once the short splash delay is up.
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
 import colors from '../constants/colors';
+import { layout } from '../constants/layout';
+
+// Copied from the design PDF. Its rounded corners are part of the picture.
+const logo = require('../assets/images/gtco-logo.png');
 
 export default function Index() {
   const router = useRouter();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  const [dotCount, setDotCount] = useState(1);
-
-  useEffect(() => {
-    const dotInterval = setInterval(() => {
-      setDotCount((prev) => (prev % 3) + 1);
-    }, 400);
-    return () => clearInterval(dotInterval);
-  }, []);
 
   useEffect(() => {
     // 📚 Quick concept: why a timer at all?
@@ -34,34 +30,26 @@ export default function Index() {
       } else {
         router.replace('/onboarding');
       }
-        }, 2200);
+    }, 2200);
     return () => clearTimeout(timer);
   }, [isLoggedIn]);
+
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/icon.png')} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.dots}>{'.'.repeat(dotCount)}</Text>
+      <Image source={logo} style={styles.logo} resizeMode="contain" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
+  container: {
     flex: 1,
-    backgroundColor: colors.darkNavy,
+    backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
-    logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 28,
+  logo: {
+    width: layout.splashLogoSize,
+    height: layout.splashLogoSize,
   },
-  dots: {
-    color: colors.orange,
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginTop: 16,
-    letterSpacing: 4,
-  },
-})
+});
