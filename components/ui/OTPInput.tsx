@@ -22,9 +22,11 @@ interface OTPInputProps {
   // Called every time a digit changes. Always sends back the FULL array,
   // not just the one digit — keeps the parent's state update simple.
   onChange: (otp: string[]) => void;
+  // Put the cursor in the first box as soon as the screen opens.
+  autoFocus?: boolean;
 }
 
-export default function OTPInput({ length = 6, value, onChange }: OTPInputProps) {
+export default function OTPInput({ length = 6, value, onChange, autoFocus = false }: OTPInputProps) {
   // We keep a ref to every box so we can imperatively call .focus() on
   // whichever one should get keyboard focus next. This can't be done
   // with plain state — focus is a direct instruction to the OS keyboard.
@@ -71,6 +73,7 @@ export default function OTPInput({ length = 6, value, onChange }: OTPInputProps)
             onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
             keyboardType="number-pad"
             maxLength={1}
+            autoFocus={autoFocus && index === 0}
             textAlign="center"
             selectTextOnFocus
             accessibilityLabel={`Digit ${index + 1} of ${length}`}
@@ -84,7 +87,7 @@ export default function OTPInput({ length = 6, value, onChange }: OTPInputProps)
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: layout.codeBoxGap,
   },
   box: {
     width: layout.codeBoxSize,
@@ -96,8 +99,13 @@ const styles = StyleSheet.create({
     fontSize: fontSize.large,
     fontFamily: fontFamily.medium,
     color: colors.textDark,
-  },
+    // Centre the digit (the textAlign prop alone only works on phones, not the web)
+    textAlign: 'center',
+    // Hide the web browser's own focus ring, so only the design's outline shows.
+    outlineStyle: 'none',
+  } as any,
   boxActive: {
     backgroundColor: colors.codeBoxActive,
+    borderColor: colors.codeBoxActiveBorder,
   },
 });

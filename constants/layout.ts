@@ -48,6 +48,21 @@ export const layout = {
   dialChevronWidth: 10,
   dialChevronHeight: 6,
   mobileInputLeft: 148,  // "Mobile number"
+  // 6-digit code screen. Gaps are measured from the design.
+  backArrowSize: 16,     // Thin black back arrow
+  backArrowTop: 26,      // Below the status bar → arrow
+  backArrowLeft: 1,      // Extra left margin (17 from the screen edge)
+  codeTitleGap: 33,      // Arrow → "6- digit code"
+  codeTabsGap: 14,       // Title → "from SMS / Tokens" switch
+  codeTabsHeight: 46,
+  codeTabsPadV: 5,       // Space around the highlighted option inside the switch
+  codeTabsPadH: 8,
+  codeTabSmsWidth: 177,  // "from SMS" option
+  codeTabTokensWidth: 160, // "Tokens" option
+  codeTabHeight: 36,
+  codeSubtitleGap: 17,   // Switch → "Enter the 6 digit code…"
+  codeBoxesGap: 39,      // Text → code boxes
+  codeResendGap: 36,     // Code boxes → "Didn't get the code?"
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline
@@ -69,6 +84,7 @@ export const layout = {
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes
+  codeBoxGap: 16,      // Space between the code boxes
   keypadSidePadding: 18.5, // Number keypad: 356 wide on a 393 screen
   keypadKeyHeight: 89,
 };

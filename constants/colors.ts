@@ -161,6 +161,12 @@ const colors = {
   // The 6-digit code boxes: thin outline, and the grey fill of the active box.
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',
+  // The design says pure black, but it sits half a pixel off-grid so on screen it
+  // shows as a softer grey. The owner chose to match that look (2026-11-07).
+  codeBoxActiveBorder: 'rgba(0, 0, 0, 0.5)',
+
+  // The highlighted option in the "from SMS / Tokens" switch.
+  segmentActive: '#F5F5F5',
 
   // Onboarding page dots: the current slide and the others.
   // (Slide 1 in the design uses a lighter #FF9D3A; the owner chose to use
