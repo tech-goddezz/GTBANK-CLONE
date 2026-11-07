@@ -1,122 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing } from '../../constants/typography';
-import { useAuthStore } from '../../store/useAuthStore';
-import { signInWithPin, fetchProfile } from '../../services/auth';
-import { supabase } from '../../lib/supabase';
+import { fontSize, fontFamily, lineHeight, spacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
 import ScreenScroll from '../../components/ScreenScroll';
+import UserAvatar from '../../components/UserAvatar';
+import Button from '../../components/Button';
+import FingerprintSheet from '../../components/FingerprintSheet';
 
-const PIN_LENGTH = 4;
-const keypadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
+const fingerprint = require('../../assets/images/fingerprint.png');
 
+// Log in with fingerprint. For now this only shows the "Authenticating
+// fingerprint" pop-up; a real fingerprint scan would need an extra package.
 export default function LoginBiometricScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ phone: string }>();
-  const login = useAuthStore((state) => state.login);
-  const [pin, setPin] = useState<string[]>([]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
-
-  useEffect(() => {
-    const check = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        router.replace('/(auth)/login-password');
-        return;
-      }
-      setCheckingSession(false);
-    };
-    check();
-  }, []);
-
-  const handleSubmit = async (enteredPin: string) => {
-    setLoading(true);
-    const phoneNumber = (params.phone ?? '').replace(/^234/, '');
-    const result = await signInWithPin(phoneNumber, enteredPin);
-    setLoading(false);
-    if (result.success) {
-      const id = result.userId ?? '';
-      const profileResult = await fetchProfile(id);
-      const realUser = {
-        id,
-        firstName: profileResult.profile?.first_name ?? '',
-        lastName: profileResult.profile?.last_name ?? '',
-        phoneNumber: profileResult.profile?.phone_number ?? '',
-        accountNumber: profileResult.profile?.account_number ?? '',
-        tier: (profileResult.profile?.tier ?? 1) as 1 | 2 | 3,
-      };
-      login(realUser, 'real-session');
-      router.replace('/(tabs)/home');
-    } else {
-      setError('Incorrect PIN or no account found for this phone number.');
-      setPin([]);
-    }
-  };
-
-  const handleKey = (key: string) => {
-    setError('');
-    if (key === 'del') {
-      setPin((prev) => prev.slice(0, -1));
-      return;
-    }
-    if (key === '' || pin.length >= PIN_LENGTH) return;
-    const next = [...pin, key];
-    setPin(next);
-    if (next.length === PIN_LENGTH) {
-      handleSubmit(next.join(''));
-    }
-  };
+  const insets = useSafeAreaInsets();
+  const { phone } = useLocalSearchParams<{ phone: string }>();
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   return (
     <ScreenScroll>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <Text style={styles.title}>Enter your PIN</Text>
-        <Text style={styles.subtitle}>Enter your 4-digit PIN to continue</Text>
-        <View style={styles.dotsRow}>
-          {Array.from({ length: PIN_LENGTH }).map((_, i) => (
-            <View key={i} style={[styles.dot, i < pin.length && styles.dotFilled]} />
-          ))}
+      <View style={[styles.container, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}>
+        <UserAvatar style={styles.avatar} />
+
+        <TouchableOpacity onPress={() => setSheetVisible(true)} activeOpacity={0.7} style={styles.picture}>
+          <Image source={fingerprint} style={styles.pictureImage} accessibilityIgnoresInvertColors />
+        </TouchableOpacity>
+
+        <Text style={styles.hint}>Click to log in with Fingerprint</Text>
+
+        <Button
+          label="Authenticating fingerprint"
+          size="small"
+          onPress={() => setSheetVisible(true)}
+          style={styles.button}
+        />
+
+        {/* Bottom links */}
+        <View style={styles.links}>
+          <TouchableOpacity
+            style={styles.linkLeft}
+            onPress={() => router.push('/(forgot-password)/requirements')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.linkOrange}>Forget password?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.linkRight}
+            onPress={() => router.replace(phone ? `/(auth)/login-password?phone=${phone}` : '/(auth)/login-password')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.linkGrey}>Login with Password</Text>
+          </TouchableOpacity>
         </View>
-        {!!error && <Text style={styles.error}>{error}</Text>}
-        {loading && <Text style={styles.loading}>Verifying...</Text>}
-        <View style={styles.keypad}>
-          {keypadKeys.map((key, i) => (
-            <TouchableOpacity
-              key={i}
-              style={styles.key}
-              onPress={() => handleKey(key)}
-              disabled={!key || loading}
-              activeOpacity={key ? 0.5 : 1}
-            >
-              {key === 'del' ? (
-                <Ionicons name="backspace-outline" size={26} color={colors.textDark} />
-              ) : (
-                <Text style={[styles.keyText, !key && styles.keyTextHidden]}>{key}</Text>
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </SafeAreaView>
+      </View>
+
+      <FingerprintSheet visible={sheetVisible} onCancel={() => setSheetVisible(false)} />
     </ScreenScroll>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy, alignItems: 'center', paddingHorizontal: spacing.xl },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.white, marginTop: spacing.xxxl + 40 },
-  subtitle: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.base, marginTop: spacing.sm },
-  dotsRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xxl },
-  dot: { width: 16, height: 16, borderRadius: 8, borderWidth: 1, borderColor: colors.borderLight },
-  dotFilled: { backgroundColor: colors.orange, borderColor: colors.orange },
-  error: { fontSize: fontSize.small, color: colors.red, marginTop: spacing.lg, textAlign: 'center' },
-  loading: { fontSize: fontSize.small, color: colors.base, marginTop: spacing.lg },
-  keypad: { width: '100%', marginTop: 'auto', marginBottom: spacing.xxxl, flexDirection: 'row', flexWrap: 'wrap' },
-  key: { width: '33.33%', height: 72, alignItems: 'center', justifyContent: 'center' },
-  keyText: { fontSize: 28, fontFamily: fontFamily.regular, color: colors.white },
-  keyTextHidden: { opacity: 0 },
+  container: {
+    flexGrow: 1,
+    backgroundColor: colors.background,
+    paddingBottom: spacing.xxxl,
+  },
+  avatar: {
+    alignSelf: 'center',
+    marginTop: layout.avatarTop,
+  },
+  picture: {
+    alignSelf: 'center',
+    marginTop: layout.fingerprintPicGap,
+  },
+  pictureImage: {
+    width: layout.fingerprintSize,
+    height: layout.fingerprintSize,
+  },
+  hint: {
+    alignSelf: 'center',
+    marginTop: layout.fingerprintHintGap,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textLightDark,
+  },
+  button: {
+    alignSelf: 'center',
+    width: layout.fingerprintButtonWidth,
+    marginTop: layout.fingerprintButtonGap,
+  },
+  links: {
+    height: lineHeight.phoneRow,
+    marginTop: layout.fingerprintLinksGap,
+    marginHorizontal: layout.screenPadding,
+  },
+  linkLeft: {
+    position: 'absolute',
+    left: layout.passwordLinkLeft,
+  },
+  linkRight: {
+    position: 'absolute',
+    left: layout.fingerprintLink2Left,
+  },
+  linkOrange: {
+    fontSize: fontSize.large,
+    lineHeight: lineHeight.phoneRow,
+    fontFamily: fontFamily.regular,
+    color: colors.orange,
+  },
+  linkGrey: {
+    fontSize: fontSize.large,
+    lineHeight: lineHeight.phoneRow,
+    fontFamily: fontFamily.medium,
+    color: colors.textFaded,
+  },
 });

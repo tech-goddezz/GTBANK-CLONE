@@ -75,6 +75,12 @@ export const layout = {
   passwordLinksGap: 62,  // Keypad → bottom links
   passwordLinkLeft: 13,  // "Forget password?" (29 from the screen edge)
   passwordLink2Left: 180, // "Login with Fingerprint" (196 from the screen edge)
+  fingerprintPicGap: 92,     // Circle → red fingerprint picture (fingerprint login screen)
+  fingerprintHintGap: 1,     // Picture → "Click to log in with Fingerprint"
+  fingerprintButtonGap: 23,  // That text → orange button
+  fingerprintButtonWidth: 230,
+  fingerprintLinksGap: 305,  // Orange button → bottom links
+  fingerprintLink2Left: 185, // "Login with Password" (201 from the screen edge)
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

@@ -44,7 +44,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C16 | "Select action" sheet (GT Bank / Other Banks) | Frame 10837.pdf | `components/SelectActionSheet.tsx` | /transfer-flow ("Quickly Transfer") | ✅ |
 | C17 | Filter Transactions sheet | Menu.pdf | `components/FilterTransactionsSheet.tsx` | /history (filter button) | ✅ |
 | C18 | Filter Transactions – reset state | Reset filters.pdf | `components/FilterTransactionsSheet.tsx` | /history (filter button → Reset Filters) | ✅ |
-| C19 | "Authenticating fingerprint" pop-up | Frame 1171276698.pdf | `components/FingerprintSheet.tsx` | not connected until S10 (Section 8) | ✅ |
+| C19 | "Authenticating fingerprint" pop-up | Frame 1171276698.pdf | `components/FingerprintSheet.tsx` | connected at S10 (look-only, no real scan) | ✅ |
 | C20 | Phone keyboards (number & letters) | Keyboard.pdf, Keyboard-1.pdf | The phone's own keyboard; nothing to build | — | ➖ |
 | C21 | Small 16px icons (bullseye ×3, download) | bullseye.pdf, bullseye-1.pdf, bullseye-2.pdf, Download.pdf | Used inside other screens as needed | — | ➖ |
 | C22 | Large square image (852 × 852) | Rectangle.pdf | Unclear what it's for; owner to confirm | — | ➖ |
@@ -76,7 +76,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S7 | Input phone number ("Hello!") | Sign in.pdf | `app/(auth)/phone.tsx` | /phone | ✅ |
 | S8 | 6-digit code (from SMS / Tokens) | Sign in.pdf | `app/(auth)/otp.tsx` | /otp?phone=8012345678 | ✅ |
 | S9 | Enter password (number keypad) | Sign in.pdf | `app/(auth)/login-password.tsx` | /login-password | ✅ |
-| S10 | Log in with fingerprint | Sign in.pdf | `app/(auth)/login-biometric.tsx` (currently shows a PIN screen) | /login-biometric | ⬜ |
+| S10 | Log in with fingerprint | Sign in.pdf | `app/(auth)/login-biometric.tsx` | /login-biometric | ✅ |
 
 ## 4. Forgot password — `forget password.pdf`
 
