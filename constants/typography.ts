@@ -27,6 +27,7 @@ export const lineHeight = {
   paragraph: 17,  // 14px multi-line paragraphs, e.g. the Reset Password subtitle
   phoneRow: 20,   // 16px "+234" / "Mobile number" row
   heading1: 34,   // 28px text
+  heading2: 29,   // 24px text, e.g. "Identity Verification"
   body: 18,       // 14px text
 };
 

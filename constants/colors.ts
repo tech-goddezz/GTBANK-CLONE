@@ -161,6 +161,12 @@ const colors = {
   // The 6-digit code boxes: thin outline, and the grey fill of the active box.
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',
+  // Face scan screen (Identity Verification): the coral "recording" icon,
+  // the dark red dashed ring around the face, and the two progress bars.
+  recordIcon: '#FF7866',
+  scanRing: '#880606',
+  scanProgress: '#FF9D3A',
+  scanProgressRest: '#CC6600',
   // Light grey outline of the white input boxes ("Account number" on Reset Password).
   inputOutline: '#D9D9D9',
   // The design says pure black, but it sits half a pixel off-grid so on screen it

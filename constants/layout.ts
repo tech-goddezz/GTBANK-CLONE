@@ -110,6 +110,42 @@ export const layout = {
   forgotCodeBoxesGap: 31,     // Subtitle → code boxes
   forgotCodeResendGap: 35,    // Code boxes → "Didn't get the code?"
   forgotCodeProceedGap: 65,   // "Didn't get the code?" → Proceed button
+  // Identity Verification (camera + face scan). Gaps are measured from the design.
+  helpLinkTop: 19,          // Below the status bar → "Need help?" (Poppins)
+  helpLinkRight: 8,         // Extra right margin of "Need help?"
+  idTitleGap: 36,           // Back arrow → "Identity Verification"
+  idTitleLeft: 1,           // Title and most text start 17 from the screen edge
+  idSubtitleGap: 17,        // Title → subtitle (camera screen)
+  idCameraGap: 39,          // Subtitle → camera picture
+  idCameraLeft: -10,        // The picture starts 6 from the screen edge
+  idCameraWidth: 381,
+  idCameraHeight: 291,
+  idConsentGap: 24,         // Camera picture → consent text
+  idStartGap: 53,           // Consent text → Start button
+  idStartWidth: 102,
+  idScanSubtitleGap: 23,    // Title → subtitle (face scan screen)
+  idIconsGap: 14,           // Subtitle → recording icon / close X row
+  idIconSize: 16,
+  idRecordSize: 14,         // Coral "recording" icon
+  idRecordLeft: 2,
+  idCloseRight: 1,
+  idRingGap: 12,            // Icons → dashed ring
+  idRingSize: 368,          // Dashed ring, including its thickness
+  idRingLeft: -3,
+  idRingRadius: 180,
+  idRingStroke: 8,
+  idRingDash: 47.7,           // 12 dashes with rounded ends around the circle
+  idRingGapLength: 46.55,
+  idFaceSize: 318,          // Face photo inside the ring
+  idBarsGap: 12,            // Ring → progress bars
+  idBarsLeft: 50,
+  idBarLong: 193,
+  idBarShort: 56,
+  idBarSpacing: 12,
+  idBarHeight: 8,
+  idInstructionGap: 11,     // Progress bars → "Don't blink…"
+  idNextGap: 13,            // "Don't blink…" → Next button
+  idNextWidth: 100,
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

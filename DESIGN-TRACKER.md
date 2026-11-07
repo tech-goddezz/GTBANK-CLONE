@@ -85,8 +85,8 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S11 | Requirements checklist | forget password.pdf | `app/(forgot-password)/requirements.tsx` | Not linked any more: owner chose (2026-11-07) that "Forget password?" goes straight to Reset password. File kept. | ✅ |
 | S12 | Reset password (account number + phone) | forget password.pdf | `app/(forgot-password)/reset-password.tsx` | /reset-password | ✅ |
 | S13 | 6-digit code | forget password.pdf | `app/(forgot-password)/otp.tsx` | /reset-password → fill both numbers → Proceed (/otp opens the sign-in one ⚠️) | ✅ |
-| S14 | Identity verification – camera | forget password.pdf | `app/(forgot-password)/identity.tsx` | /identity ⚠️ | ⬜ |
-| S15 | Identity verification – face scan | forget password.pdf | `app/(forgot-password)/identity.tsx` | /identity ⚠️ | ⬜ |
+| S14 | Identity verification – camera | forget password.pdf | `app/(forgot-password)/identity.tsx` | /reset-password → numbers → Proceed → any 6 digits → Proceed (/identity opens the sign-up one ⚠️) | ✅ |
+| S15 | Identity verification – face scan | forget password.pdf | `app/(forgot-password)/identity.tsx` | S14 → tap Start | ✅ |
 | S16 | Create new password | forget password.pdf | `app/(forgot-password)/new-password.tsx` | /new-password | ⬜ |
 | S17 | Password updated! | forget password.pdf | `app/(forgot-password)/success.tsx` | /success ⚠️ | ⬜ |
 
