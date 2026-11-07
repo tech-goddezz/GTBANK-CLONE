@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, lineHeight, spacing } from '../constants/typography';
+import { fontSize, fontFamily, lineHeight } from '../constants/typography';
 import { layout } from '../constants/layout';
 import CubeIllustration from '../components/CubeIllustration';
 import Button from '../components/Button';
@@ -66,18 +66,14 @@ export default function Onboarding() {
           ))}
         </View>
 
-        {isLastSlide ? (
-          <TouchableOpacity style={styles.letsStartButton} onPress={handleNext} activeOpacity={0.8}>
-            <Text style={styles.letsStartButtonLabel}>Let's start</Text>
-          </TouchableOpacity>
-        ) : (
-          <Button
-            label="Next"
-            variant="grey"
-            onPress={handleNext}
-            style={styles.nextButton}
-          />
-        )}
+        {/* Grey "Next" on slides 1–4; orange "Let's start" (normal-weight text) on the last */}
+        <Button
+          label={isLastSlide ? "Let's start" : 'Next'}
+          variant={isLastSlide ? 'primary' : 'grey'}
+          onPress={handleNext}
+          style={styles.nextButton}
+          textStyle={isLastSlide ? styles.letsStartLabel : undefined}
+        />
       </View>
     </View>
   );
@@ -137,18 +133,7 @@ const styles = StyleSheet.create({
     width: layout.onboardingNextWidth,
     paddingHorizontal: 0,
   },
-  // "Let's start" on the last slide is restyled at screen S6.
-  letsStartButton: {
-    height: 44,
-    paddingHorizontal: spacing.xxl,
-    borderRadius: 3,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  letsStartButtonLabel: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
+  letsStartLabel: {
+    fontFamily: fontFamily.regular,
   },
 });

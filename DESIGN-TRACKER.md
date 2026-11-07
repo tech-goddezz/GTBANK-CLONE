@@ -67,7 +67,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S3 | Onboarding 2 – "All inclusive financial platform" | On boarding flow.pdf | `app/onboarding.tsx` | /onboarding | ✅ |
 | S4 | Onboarding 3 – "More efficient ways to pay" | On boarding flow.pdf | `app/onboarding.tsx` | /onboarding | ✅ |
 | S5 | Onboarding 4 – "Save for retirement with pensions" | On boarding flow.pdf | `app/onboarding.tsx` | /onboarding | ✅ |
-| S6 | Onboarding 5 – "A friendly financial services app" (Let's start) | On boarding flow.pdf | `app/onboarding.tsx` | /onboarding | ⬜ |
+| S6 | Onboarding 5 – "A friendly financial services app" (Let's start) | On boarding flow.pdf | `app/onboarding.tsx` | /onboarding | ✅ |
 
 ## 3. Sign in — `Sign in.pdf`
 
