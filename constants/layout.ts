@@ -146,6 +146,12 @@ export const layout = {
   idInstructionGap: 11,     // Progress bars → "Don't blink…"
   idNextGap: 13,            // "Don't blink…" → Next button
   idNextWidth: 100,
+  // Create New Password (forgot password). No back arrow in the design.
+  newPwTitleTop: 56,        // Below the status bar → title
+  newPwSubtitleGap: 16.5,   // Title → subtitle
+  newPwBoxGap: 33.5,        // Subtitle → "New Password" box (boxes reuse the reset* sizes)
+  newPwButtonGap: 48,       // "Confirm Password" box → Reset Password button
+  newPwButtonWidth: 187,
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

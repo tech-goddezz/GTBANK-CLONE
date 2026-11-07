@@ -1,18 +1,22 @@
 // Create new password — must differ from the previous one.
+// Matches the 6th screen of "forget password.pdf": no back arrow, and two
+// white boxes with a light grey outline (same look as Reset Password).
 
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
+  View, Text, StyleSheet, TextInput,
   KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
-import InputField from '../../components/InputField';
+import { fontSize, fontFamily, lineHeight, spacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import Button from '../../components/Button';
 
 export default function NewPasswordScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -28,42 +32,44 @@ export default function NewPasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-        </TouchableOpacity>
-
         <Text style={styles.title}>Create New Password</Text>
         <Text style={styles.subtitle}>
-          Your new password must be different from your previous password.
+          Your new password must be different from your previous password
         </Text>
 
-        <InputField
-          placeholder="New Password"
-          value={password}
-          onChangeText={(t) => { setPassword(t); if (errors.password) setErrors((e) => ({ ...e, password: '' })); }}
-          secureTextEntry
-          error={errors.password}
-        />
+        <View style={[styles.box, styles.firstBox]}>
+          <TextInput
+            style={styles.input}
+            placeholder="New Password"
+            placeholderTextColor={colors.textGrey}
+            value={password}
+            onChangeText={(t) => { setPassword(t); if (errors.password) setErrors((e) => ({ ...e, password: '' })); }}
+            secureTextEntry
+          />
+        </View>
+        {!!errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-        <InputField
-          placeholder="Confirm Password"
-          value={confirm}
-          onChangeText={(t) => { setConfirm(t); if (errors.confirm) setErrors((e) => ({ ...e, confirm: '' })); }}
-          secureTextEntry
-          error={errors.confirm}
-        />
+        <View style={[styles.box, styles.secondBox]}>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            placeholderTextColor={colors.textGrey}
+            value={confirm}
+            onChangeText={(t) => { setConfirm(t); if (errors.confirm) setErrors((e) => ({ ...e, confirm: '' })); }}
+            secureTextEntry
+          />
+        </View>
+        {!!errors.confirm && <Text style={styles.errorText}>{errors.confirm}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleReset}>
-          <Text style={styles.buttonText}>Reset Password</Text>
-        </TouchableOpacity>
+        <Button label="Reset Password" onPress={handleReset} style={styles.button} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -71,13 +77,47 @@ export default function NewPasswordScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  scroll: { flexGrow: 1, paddingHorizontal: spacing.xl, paddingBottom: spacing.xxxl },
-  backButton: { marginTop: 56, marginBottom: spacing.xl, width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginBottom: spacing.sm },
-  subtitle: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textGrey, marginBottom: spacing.xl, lineHeight: 22 },
-  button: {
-    backgroundColor: colors.orange, height: 54, borderRadius: radius.button,
-    alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl,
+  scroll: { flexGrow: 1, paddingHorizontal: layout.screenPadding, paddingBottom: spacing.xxxl },
+  title: {
+    fontSize: fontSize.heading1,
+    lineHeight: lineHeight.heading1,
+    fontFamily: fontFamily.medium,
+    color: colors.black,
+    marginTop: layout.newPwTitleTop,
   },
-  buttonText: { fontSize: fontSize.large, fontFamily: fontFamily.semibold, color: colors.white },
+  subtitle: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.paragraph,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    marginTop: layout.newPwSubtitleGap,
+    marginLeft: layout.idTitleLeft,
+  },
+  box: {
+    width: layout.resetBoxWidth,
+    height: layout.resetBoxHeight,
+    marginLeft: layout.resetBoxLeft,
+    borderWidth: layout.resetBoxBorder,
+    borderColor: colors.inputOutline,
+    justifyContent: 'center',
+  },
+  firstBox: { marginTop: layout.newPwBoxGap },
+  secondBox: { marginTop: layout.resetBoxSpacing },
+  input: {
+    height: lineHeight.phoneRow,
+    marginLeft: layout.resetTextLeft,
+    padding: 0,
+    borderWidth: 0,
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
+    outlineStyle: 'none',
+  } as any,
+  errorText: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.red, marginTop: spacing.xs },
+  button: {
+    alignSelf: 'flex-end',
+    width: layout.newPwButtonWidth,
+    paddingHorizontal: 0,
+    marginTop: layout.newPwButtonGap,
+  },
 });
