@@ -14,7 +14,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../constants/colors';
-import { fontFamily, radius } from '../constants/typography';
+import { fontFamily, fontSize, radius } from '../constants/typography';
 import { layout } from '../constants/layout';
 
 interface NumericKeypadProps {
@@ -75,7 +75,7 @@ export default function NumericKeypad({
         onPress={() => onKeyPress('del')}
         activeOpacity={0.6}
       >
-        <Ionicons name="backspace-outline" size={24} color={colors.textDark} />
+        <Ionicons name="backspace-outline" size={24} color={colors.keypadDigit} />
       </TouchableOpacity>
     </View>
   );
@@ -93,10 +93,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.button,
+    paddingTop: layout.keypadDigitOffset,
   },
   keyText: {
-    fontSize: 28,
-    fontFamily: fontFamily.medium,
-    color: colors.textDark,
+    fontSize: fontSize.keypad,
+    fontFamily: fontFamily.regular,
+    color: colors.keypadDigit,
   },
 });

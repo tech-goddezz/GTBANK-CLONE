@@ -39,10 +39,10 @@ export default function OTPScreen() {
   // as soon as the 6th digit is typed.
   useEffect(() => {
     if (!isComplete) return;
-    // After the code, always go to the PIN/password entry screen.
+    // After the code, go to the "Enter password" keypad screen (as in the design).
     // The KYC flow (requirements → DOB → BVN etc.) is only for
     // brand-new account opening, triggered separately.
-    router.replace(`/(auth)/login-biometric?phone=${phone}`);
+    router.replace(`/(auth)/login-password?phone=${phone}`);
   }, [isComplete]);
 
   const handleResend = () => {

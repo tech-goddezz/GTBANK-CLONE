@@ -174,6 +174,9 @@ const colors = {
   dotActive: '#F58220',
   dotInactive: '#E3E5E6',
 
+  // Digits on the number keypad (measured from the design's keypad picture).
+  keypadDigit: '#292731',
+
   // "Cancel" and "OK" in the date pickers.
   datePickerAction: '#FB551F',
 

@@ -33,7 +33,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | C5 | Bottom tab bar (Home, Transactions, Transfers, Settings) | Dashboard flow + transfer flow.pdf | `components/TabBar.tsx` | — | ✅ |
 | C6 | Screen header (back arrow, title, subtitle, bell, ≡ icon) | most in-app screens | `components/ScreenHeader.tsx` | — | ✅ |
 | C7 | 6-digit code boxes | Sign in.pdf, Kyc flow.pdf | `components/ui/OTPInput.tsx` | — | ✅ |
-| C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | 🟨 |
+| C8 | Number keypad (1–9, 0) | Sign in.pdf | `components/NumericKeypad.tsx` | — | ✅ |
 | C9 | Bottom sheet (pop-up base) | Menu.pdf, Frame 10837.pdf | `components/ui/BottomSheet.tsx` | — | ✅ |
 | C10 | Blue info banner ("Recipient will be credited shortly") | Dashboard flow + transfer flow.pdf | `components/InfoBanner.tsx` | — | ✅ |
 | C11 | "Welcome! Your number isn't linked" pop-up (rocket) | Frame 16.pdf | `components/WelcomeSheet.tsx`, opened from `app/(auth)/phone.tsx` | — | ✅ |
@@ -75,7 +75,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 |---|---|---|---|---|---|
 | S7 | Input phone number ("Hello!") | Sign in.pdf | `app/(auth)/phone.tsx` | /phone | ✅ |
 | S8 | 6-digit code (from SMS / Tokens) | Sign in.pdf | `app/(auth)/otp.tsx` | /otp?phone=8012345678 | ✅ |
-| S9 | Enter password (number keypad) | Sign in.pdf | `app/(auth)/login-password.tsx` (currently a text box, not a keypad) | /login-password | ⬜ |
+| S9 | Enter password (number keypad) | Sign in.pdf | `app/(auth)/login-password.tsx` | /login-password | ✅ |
 | S10 | Log in with fingerprint | Sign in.pdf | `app/(auth)/login-biometric.tsx` (currently shows a PIN screen) | /login-biometric | ⬜ |
 
 ## 4. Forgot password — `forget password.pdf`

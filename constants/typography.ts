@@ -8,6 +8,7 @@ export const fontSize = {
   display: 32,    // Onboarding headlines — "GT World All fresh and clean"
   skip: 22,       // The orange "Skip" link on the onboarding slides
   needHelp: 23,   // The orange "Need help?" link on the sign-in screens
+  keypad: 32,     // Digits on the number keypad
   heading1: 28,   // Big screen titles — "Hello!", "History"
   heading2: 24,   // Section headings — "Identity Verification", "Wait a moment"
   heading3: 18,   // Sub-headings — card titles, modal titles

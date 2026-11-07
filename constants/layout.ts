@@ -63,6 +63,18 @@ export const layout = {
   codeSubtitleGap: 17,   // Switch → "Enter the 6 digit code…"
   codeBoxesGap: 39,      // Text → code boxes
   codeResendGap: 36,     // Code boxes → "Didn't get the code?"
+  // Enter password / fingerprint screens. Gaps are measured from the design.
+  avatarSize: 80,        // White circle with the person icon
+  avatarBorder: 0.8,     // Its thin black outline
+  avatarIconSize: 16,
+  avatarTop: 36,         // Below the status bar → circle
+  passwordLabelGap: 56,  // Circle → grey "Enter password" block
+  passwordLabelWidth: 200,
+  passwordLabelHeight: 36,
+  passwordKeypadGap: 56, // Grey block → keypad
+  passwordLinksGap: 62,  // Keypad → bottom links
+  passwordLinkLeft: 13,  // "Forget password?" (29 from the screen edge)
+  passwordLink2Left: 180, // "Login with Fingerprint" (196 from the screen edge)
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline
@@ -85,8 +97,9 @@ export const layout = {
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes
   codeBoxGap: 16,      // Space between the code boxes
-  keypadSidePadding: 18.5, // Number keypad: 356 wide on a 393 screen
-  keypadKeyHeight: 89,
+  keypadSidePadding: 12.7, // Number keypad: digit columns centred at 74, 196.5 and 319
+  keypadKeyHeight: 89.6,
+  keypadDigitOffset: 18.7, // Digits sit a little below the middle of each key in the design
 };
 
 // Border radius values from the design. Consistent rounding across the whole app.
