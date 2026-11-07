@@ -161,6 +161,8 @@ const colors = {
   // The 6-digit code boxes: thin outline, and the grey fill of the active box.
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',
+  // Light grey outline of the white input boxes ("Account number" on Reset Password).
+  inputOutline: '#D9D9D9',
   // The design says pure black, but it sits half a pixel off-grid so on screen it
   // shows as a softer grey. The owner chose to match that look (2026-11-07).
   codeBoxActiveBorder: 'rgba(0, 0, 0, 0.5)',

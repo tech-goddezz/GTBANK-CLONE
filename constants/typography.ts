@@ -24,6 +24,7 @@ export const lineHeight = {
   skip: 26,       // 22px "Skip" link
   needHelp: 28,   // 23px "Need help?" link
   compact: 16,    // Tightly spaced 12–14px text, e.g. the sign-in subtitle and small print
+  paragraph: 17,  // 14px multi-line paragraphs, e.g. the Reset Password subtitle
   phoneRow: 20,   // 16px "+234" / "Mobile number" row
   heading1: 34,   // 28px text
   body: 18,       // 14px text

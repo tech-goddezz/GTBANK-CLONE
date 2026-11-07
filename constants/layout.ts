@@ -92,6 +92,18 @@ export const layout = {
   reqRowHeight: 35.6,     // One row in the list box (5 rows + 1px border top and bottom = 180)
   reqRowPadding: 9,       // Text / icon inset inside the box (10 minus the 1px border)
   reqButtonBottom: 101,   // Proceed button → bottom of the screen
+  // Reset Password (forgot password). Gaps are measured from the design.
+  resetSubtitleGap: 11,   // Title → grey subtitle
+  resetBoxGap: 32,        // Subtitle → "Account number" box
+  resetBoxWidth: 363,     // The boxes stick out 1 past the normal margin on each side
+  resetBoxLeft: -1,
+  resetBoxHeight: 48,
+  resetBoxBorder: 2,
+  resetBoxSpacing: 10,    // Between the two boxes
+  resetTextLeft: 7,       // Text inset inside the border (24 from the screen edge)
+  resetPhoneShift: -18,   // Flag / +234 / arrow / number reuse the "Hello!" screen positions, moved left by this
+  resetProceedGap: 42,    // Phone box → Proceed button
+  resetProceedRight: 1,   // The button ends 17 from the screen edge
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline
