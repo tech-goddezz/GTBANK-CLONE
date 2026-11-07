@@ -42,7 +42,7 @@ export default function LoginBiometricScreen() {
         <View style={styles.links}>
           <TouchableOpacity
             style={styles.linkLeft}
-            onPress={() => router.push('/(forgot-password)/requirements')}
+            onPress={() => router.push('/(forgot-password)/reset-password')}
             accessibilityRole="button"
           >
             <Text style={styles.linkOrange}>Forget password?</Text>

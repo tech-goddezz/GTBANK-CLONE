@@ -104,6 +104,12 @@ export const layout = {
   resetPhoneShift: -18,   // Flag / +234 / arrow / number reuse the "Hello!" screen positions, moved left by this
   resetProceedGap: 42,    // Phone box → Proceed button
   resetProceedRight: 1,   // The button ends 17 from the screen edge
+  // 6-digit code (forgot password). Gaps are measured from the design.
+  forgotCodeSubtitleGap: 11,  // Title → grey subtitle
+  forgotCodeSubtitleLeft: 1,  // The subtitle starts 17 from the screen edge
+  forgotCodeBoxesGap: 31,     // Subtitle → code boxes
+  forgotCodeResendGap: 35,    // Code boxes → "Didn't get the code?"
+  forgotCodeProceedGap: 65,   // "Didn't get the code?" → Proceed button
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline
