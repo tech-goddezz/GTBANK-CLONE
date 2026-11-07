@@ -19,6 +19,16 @@ export const layout = {
   headerMenuHeight: 48, // Screen header: the strip with the small menu icon
   splashLogoSize: 155, // GTCO logo in the middle of the splash screen
   onboardingArtHeight: 403,// The floating cubes picture
+  onboardingArtTop: 118,   // Space above the cubes picture
+  onboardingTitleGap: 9,   // Picture → title
+  onboardingControlsGap: 29, // Title → "Next" button; also button top → dots
+  onboardingNextWidth: 139.5, // Grey "Next" button
+  onboardingDotWidth: 10,
+  onboardingDotActiveWidth: 27,
+  onboardingDotHeight: 8,
+  onboardingDotGap: 8,
+  skipTop: 75,             // "Skip" link: distance from the top of the screen
+  skipRight: 28,           // ...and from the right edge
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

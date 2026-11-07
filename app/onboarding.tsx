@@ -3,6 +3,9 @@
 // 5-slide intro carousel. Renders ONE slide at a time based on an index —
 // no horizontal scrolling FlatList, since that combination proved unreliable
 // across web browsers (Safari/Chrome), even though it worked in Expo Go.
+//
+// Layout measured from design/On boarding  flow.pdf (393 x 852 frame):
+// cubes picture edge to edge, title under it, then dots + "Next" button.
 import React, { useState } from 'react';
 import {
   View,
@@ -10,11 +13,12 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import colors from '../constants/colors';
-import { fontSize, fontFamily, spacing } from '../constants/typography';
+import { fontSize, fontFamily, lineHeight, spacing } from '../constants/typography';
+import { layout } from '../constants/layout';
 import CubeIllustration from '../components/CubeIllustration';
+import Button from '../components/Button';
 
 const slides = [
   { id: '1', title: 'GT World\nAll fresh and\nclean' },
@@ -42,100 +46,98 @@ export default function Onboarding() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <View style={styles.container}>
       {!isLastSlide && (
         <TouchableOpacity style={styles.skipButton} onPress={goToAuth} hitSlop={12}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       )}
 
-      <View style={styles.slide}>
+      <View style={styles.art}>
         <CubeIllustration />
-        <Text style={styles.title}>{currentSlide.title}</Text>
-
-        <View style={styles.controlsRow}>
-          <View style={styles.dotsRow}>
-            {slides.map((_, i) => (
-              <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={isLastSlide ? styles.letsStartButton : styles.nextButton}
-            onPress={handleNext}
-            activeOpacity={0.8}
-          >
-            <Text style={isLastSlide ? styles.letsStartButtonLabel : styles.nextButtonLabel}>
-              {isLastSlide ? "Let's start" : 'Next'}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
-    </SafeAreaView>
+
+      <Text style={styles.title}>{currentSlide.title}</Text>
+
+      <View style={styles.controlsRow}>
+        <View style={styles.dotsRow}>
+          {slides.map((_, i) => (
+            <View key={i} style={[styles.dot, i === activeIndex && styles.dotActive]} />
+          ))}
+        </View>
+
+        {isLastSlide ? (
+          <TouchableOpacity style={styles.letsStartButton} onPress={handleNext} activeOpacity={0.8}>
+            <Text style={styles.letsStartButtonLabel}>Let's start</Text>
+          </TouchableOpacity>
+        ) : (
+          <Button
+            label="Next"
+            variant="grey"
+            onPress={handleNext}
+            style={styles.nextButton}
+          />
+        )}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.darkNavy,
+    backgroundColor: colors.white,
   },
   skipButton: {
     position: 'absolute',
-    top: 60,
-    right: spacing.xl,
+    top: layout.skipTop,
+    right: layout.skipRight,
     zIndex: 10,
   },
   skipText: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.medium,
+    fontSize: fontSize.skip,
+    lineHeight: lineHeight.skip,
+    fontFamily: fontFamily.regular,
     color: colors.orange,
   },
-  slide: {
-    flex: 1,
-    paddingTop: 64,
-    paddingHorizontal: spacing.xl,
+  art: {
+    marginTop: layout.onboardingArtTop,
   },
   title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginTop: spacing.xl,
+    fontSize: fontSize.display,
+    lineHeight: lineHeight.display,
+    fontFamily: fontFamily.semibold,
+    color: colors.textDark,
+    marginTop: layout.onboardingTitleGap,
+    paddingHorizontal: layout.screenPadding,
   },
   controlsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginTop: 'auto',
-    marginBottom: spacing.xxxl,
+    marginTop: layout.onboardingControlsGap,
+    paddingHorizontal: layout.screenPadding,
   },
   dotsRow: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: layout.onboardingDotGap,
+    marginTop: layout.onboardingControlsGap,
   },
   dot: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
-    backgroundColor: colors.borderLight,
+    height: layout.onboardingDotHeight,
+    width: layout.onboardingDotWidth,
+    borderRadius: layout.onboardingDotHeight / 2,
+    backgroundColor: colors.dotInactive,
   },
   dotActive: {
-    width: 24,
-    backgroundColor: colors.orange,
+    width: layout.onboardingDotActiveWidth,
+    backgroundColor: colors.dotActive,
   },
   nextButton: {
-    height: 44,
-    paddingHorizontal: spacing.xxl + 20,
-    borderRadius: 3,
-    backgroundColor: colors.orange,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: layout.onboardingNextWidth,
+    paddingHorizontal: 0,
   },
-  nextButtonLabel: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
-  },
+  // "Let's start" on the last slide is restyled at screen S6.
   letsStartButton: {
     height: 44,
     paddingHorizontal: spacing.xxl,

@@ -6,6 +6,7 @@
 
 export const fontSize = {
   display: 32,    // Onboarding headlines — "GT World All fresh and clean"
+  skip: 22,       // The orange "Skip" link on the onboarding slides
   heading1: 28,   // Big screen titles — "Hello!", "History"
   heading2: 24,   // Section headings — "Identity Verification", "Wait a moment"
   heading3: 18,   // Sub-headings — card titles, modal titles
@@ -18,6 +19,7 @@ export const fontSize = {
 // Distance between lines of text, measured from multi-line text in the design.
 export const lineHeight = {
   display: 36,    // 32px text
+  skip: 26,       // 22px "Skip" link
   heading1: 34,   // 28px text
   body: 18,       // 14px text
 };
