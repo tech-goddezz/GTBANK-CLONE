@@ -159,8 +159,10 @@ const colors = {
   codeBoxBorder: 'rgba(0, 0, 0, 0.25)',
   codeBoxActive: '#D9D9D9',
 
-  // Onboarding page dots: the current slide (lighter orange) and the others.
-  dotActive: '#FF9D3A',
+  // Onboarding page dots: the current slide and the others.
+  // (Slide 1 in the design uses a lighter #FF9D3A; the owner chose to use
+  // slides 2–5's deeper orange on every slide for consistency.)
+  dotActive: '#F58220',
   dotInactive: '#E3E5E6',
 
   // "Cancel" and "OK" in the date pickers.
