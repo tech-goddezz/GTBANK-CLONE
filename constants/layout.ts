@@ -29,6 +29,25 @@ export const layout = {
   onboardingDotGap: 8,
   skipTop: 75,             // "Skip" link: distance from the top of the screen
   skipRight: 28,           // ...and from the right edge
+  // Phone number screen ("Hello!"). Gaps are measured from the design.
+  needHelpTop: 18,       // Below the status bar → "Need help?"
+  needHelpRight: 13,     // Extra right margin of "Need help?" (29 from the screen edge)
+  phoneTitleGap: 10,     // "Need help?" → "Hello!"
+  phoneSubtitleGap: 8,   // "Hello!" → subtitle
+  phoneRowGap: 36,       // Subtitle → "+234" row
+  phoneDisclaimerGap: 37, // "+234" row → small print
+  phoneProceedGap: 119,  // Small print → "Proceed" button
+  phoneProceedWidth: 128,
+  flagLeft: 25,          // Nigerian flag, from the left margin
+  flagStripeWidth: 6,
+  flagHeight: 13,
+  flagTop: 3.5,
+  dialCodeLeft: 51,      // "+234"
+  dialChevronLeft: 103,  // Small down arrow after "+234"
+  dialChevronTop: 7,
+  dialChevronWidth: 10,
+  dialChevronHeight: 6,
+  mobileInputLeft: 148,  // "Mobile number"
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline

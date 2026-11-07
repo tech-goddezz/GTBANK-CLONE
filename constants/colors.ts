@@ -127,6 +127,9 @@ const colors = {
   // Green tick icons on the sign-in / KYC / forgot-password screens.
   greenTick: '#14B53A',
 
+  // Green stripes of the small Nigerian flag on the phone number screen.
+  flagGreen: '#14B53A',
+
   // Red for failed transactions, money-out amounts and error messages.
   red: '#CC1800',
   redFaint: '#FEE2E2',

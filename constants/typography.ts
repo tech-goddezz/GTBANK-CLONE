@@ -7,6 +7,7 @@
 export const fontSize = {
   display: 32,    // Onboarding headlines — "GT World All fresh and clean"
   skip: 22,       // The orange "Skip" link on the onboarding slides
+  needHelp: 23,   // The orange "Need help?" link on the sign-in screens
   heading1: 28,   // Big screen titles — "Hello!", "History"
   heading2: 24,   // Section headings — "Identity Verification", "Wait a moment"
   heading3: 18,   // Sub-headings — card titles, modal titles
@@ -20,6 +21,9 @@ export const fontSize = {
 export const lineHeight = {
   display: 36,    // 32px text
   skip: 26,       // 22px "Skip" link
+  needHelp: 28,   // 23px "Need help?" link
+  compact: 16,    // Tightly spaced 12–14px text, e.g. the sign-in subtitle and small print
+  phoneRow: 20,   // 16px "+234" / "Mobile number" row
   heading1: 34,   // 28px text
   body: 18,       // 14px text
 };

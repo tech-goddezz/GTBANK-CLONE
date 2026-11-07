@@ -73,7 +73,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 
 | # | Screen | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| S7 | Input phone number ("Hello!") | Sign in.pdf | `app/(auth)/phone.tsx` | /phone | ⬜ |
+| S7 | Input phone number ("Hello!") | Sign in.pdf | `app/(auth)/phone.tsx` | /phone | ✅ |
 | S8 | 6-digit code (from SMS / Tokens) | Sign in.pdf | `app/(auth)/otp.tsx` | /otp ⚠️ | ⬜ |
 | S9 | Enter password (number keypad) | Sign in.pdf | `app/(auth)/login-password.tsx` (currently a text box, not a keypad) | /login-password | ⬜ |
 | S10 | Log in with fingerprint | Sign in.pdf | `app/(auth)/login-biometric.tsx` (currently shows a PIN screen) | /login-biometric | ⬜ |
