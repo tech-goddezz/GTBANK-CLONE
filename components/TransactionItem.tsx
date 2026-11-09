@@ -55,11 +55,11 @@ export default function TransactionItem({ transaction, variant = 'home' }: Trans
         )}
       </View>
 
-      <View style={styles.details}>
-        <Text style={[styles.merchantName, isHistory && styles.textHistory]} numberOfLines={1}>
+      <View style={[styles.details, !isHistory && styles.detailsHome]}>
+        <Text style={[styles.merchantName, isHistory ? styles.merchantNameHistory : styles.merchantNameHome]} numberOfLines={1}>
           {transaction.merchantName}
         </Text>
-        <Text style={styles.category} numberOfLines={1}>
+        <Text style={[styles.category, styles.categoryHome]} numberOfLines={1}>
           {isHistory
             ? `${transaction.category} • ${formatTime(transaction.date)}`
             : transaction.category}
@@ -67,7 +67,7 @@ export default function TransactionItem({ transaction, variant = 'home' }: Trans
       </View>
 
       <View style={styles.right}>
-        <Text style={[styles.amount, isHistory && styles.textHistory, { color: amountColor }]}>
+        <Text style={[styles.amount, isHistory ? styles.amountHistory : styles.amountHome, { color: amountColor }]}>
           {amountPrefix} {amountText}
         </Text>
         {isHistory && (
@@ -119,9 +119,17 @@ const styles = StyleSheet.create({
     color: colors.textLightDark,
     marginBottom: 2,
   },
-  // The name and amount are bigger on the History screen.
-  textHistory: {
+  // History screen (S33): bigger bold name, bigger amount.
+  merchantNameHistory: {
     fontSize: fontSize.large,
+    lineHeight: 19,
+    fontFamily: fontFamily.bold,
+    marginBottom: layout.historyNameGap,
+  },
+  amountHistory: {
+    fontSize: fontSize.large,
+    lineHeight: 19,
+    marginBottom: layout.historyNameGap,
   },
   category: {
     fontSize: fontSize.body,
@@ -137,8 +145,22 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
 
+  // Home screen (S32): semi-bold name, regular amount, names sit 1px above centre.
+  detailsHome: { paddingBottom: 3 },
+  merchantNameHome: {
+    fontFamily: fontFamily.semibold,
+    lineHeight: 17,
+    marginBottom: 5,
+  },
+  categoryHome: { lineHeight: 17 },
+  amountHome: {
+    fontFamily: fontFamily.regular,
+    marginBottom: 0,
+  },
+
   status: {
     fontSize: fontSize.small,
+    lineHeight: 15,
     fontFamily: fontFamily.medium,
   },
 });

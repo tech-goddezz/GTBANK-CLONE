@@ -74,14 +74,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: 32,
     marginHorizontal: layout.balanceCardSideMargin,
-    marginTop: spacing.lg,
+    marginTop: layout.balanceCardTop,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginRight: 9, // Eye icon sits 29 from the card's right edge
-    marginBottom: 13,
+    marginBottom: layout.balanceLabelGap,
   },
   accountLabel: {
     fontSize: fontSize.small,
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
   },
   balance: {
     fontSize: fontSize.display,
+    lineHeight: 39,
     fontFamily: fontFamily.semibold,
     color: colors.white,
   },

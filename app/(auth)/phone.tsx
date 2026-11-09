@@ -103,7 +103,7 @@ export default function PhoneScreen() {
         onCancel={() => setWelcomeVisible(false)}
         onOpenAccount={() => {
           setWelcomeVisible(false);
-          router.push(`/signup?phone=${phone}`);
+          router.push(`/(auth)/otp?phone=${phone}&mode=signup`);
         }}
       />
     </KeyboardAvoidingView>

@@ -14,13 +14,15 @@ import {
   TextInput,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import colors from "../../constants/colors";
 import {
   fontSize,
   fontFamily,
   spacing,
   radius,
+  lineHeight,
 } from "../../constants/typography";
 import { layout } from "../../constants/layout";
 import Button from "../../components/Button";
@@ -76,6 +78,7 @@ const getFirstWeekday = (month: number, year: number): number => {
 
 export default function DateOfBirthScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const markDateOfBirthDone = useKycStore((state) => state.markDateOfBirthDone);
   const userId = useAuthStore((state) => state.user?.id);
   // Default view starts at a reasonable adult birth year so the user
@@ -202,22 +205,25 @@ export default function DateOfBirthScreen() {
       : "";
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+      showsVerticalScrollIndicator={false}
+    >
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => router.back()}
+        hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Go back"
       >
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
+        <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
       </TouchableOpacity>
 
-      <View style={styles.header}>
-        <Text style={styles.title}>Your date of birth</Text>
-        <Text style={styles.subtitle}>
-          To proceed kindly provide your date of birth
-        </Text>
-      </View>
+      <Text style={styles.title}>Your date of birth</Text>
+      <Text style={styles.subtitle}>
+        To proceed kindly provide your date of birth
+      </Text>
 
       {/* Design shows a single field with a calendar icon, not an inline
           calendar grid sitting on the page — tapping it opens the picker
@@ -228,17 +234,13 @@ export default function DateOfBirthScreen() {
         accessibilityRole="button"
         accessibilityLabel="Select your date of birth"
       >
-        <Text style={displayValue ? styles.dateValue : styles.datePlaceholder}>
-          {displayValue || "Date of birth"}
-        </Text>
-        <Ionicons name="calendar-outline" size={20} color={colors.textGrey} />
+        <Text style={styles.dateText}>{displayValue || "Date of birth"}</Text>
+        <MaterialIcons name="calendar-today" size={layout.backArrowSize} color={colors.black} />
       </TouchableOpacity>
 
       {!!error && <Text style={styles.errorText}>{error}</Text>}
 
-      <View style={styles.buttonArea}>
-        <Button label="Proceed" onPress={handleContinue} />
-      </View>
+      <Button label="Proceed" onPress={handleContinue} style={styles.proceed} />
 
       {/* Date pickers: the calendar (Frame 17.pdf) and, after tapping the
           pencil, a box to type the date (Frame 25.pdf). */}
@@ -414,31 +416,31 @@ export default function DateOfBirthScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy },
+  container: { flex: 1, backgroundColor: colors.white },
   scroll: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.dobButtonBottom,
   },
   backButton: {
-    marginTop: 70,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
+    alignSelf: "flex-start",
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
-
-  header: { marginBottom: spacing.xxl },
   title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginBottom: spacing.sm,
+    fontSize: fontSize.heading2,
+    lineHeight: lineHeight.heading2,
+    fontFamily: fontFamily.medium,
+    color: colors.black,
+    marginTop: layout.idTitleGap,
   },
   subtitle: {
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
-    color: colors.base,
+    color: colors.textGrey,
+    marginTop: layout.dobSubtitleGap,
+    marginLeft: layout.idTitleLeft,
   },
   picker: {
     paddingHorizontal: spacing.sm,
@@ -511,22 +513,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 52,
-    borderWidth: 1.5,
-    borderColor: colors.dark,
-    borderRadius: radius.input,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
+    width: layout.dobBoxWidth,
+    height: layout.dobBoxHeight,
+    marginLeft: layout.dobBoxLeft,
+    marginTop: layout.dobBoxGap,
+    borderWidth: layout.dobBoxBorder,
+    borderColor: colors.black,
+    paddingLeft: layout.dobTextLeft,
+    paddingRight: layout.dobIconRight,
   },
-  dateValue: {
+  dateText: {
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
-    color: colors.orange,
+    color: colors.black,
   },
-  datePlaceholder: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.orange,
+  proceed: {
+    width: layout.phoneProceedWidth,
+    alignSelf: "flex-end",
+    marginRight: layout.dobButtonRight,
+    marginTop: "auto",
   },
   monthRow: {
     flexDirection: "row",
@@ -595,15 +601,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.small,
     fontFamily: fontFamily.regular,
     color: colors.red,
-    marginBottom: spacing.md,
-    textAlign: "center",
-  },
-
-  buttonArea: {
-    marginTop: 370,
-    alignItems: 'flex-end',
-    height: 44,
-    
+    marginTop: spacing.xs,
   },
 
   yearList: {

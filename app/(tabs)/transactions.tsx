@@ -1,8 +1,8 @@
 // app/(tabs)/transactions.tsx
 //
-// The "Transactions" tab — matches the design's "Transactions" frame:
-// two promotional banner cards (GT Loans, GT Fund Managers Money Market
-// Fund) that lead into the products/application flow at (products).
+// The "Transactions" tab (S35 in "Dashboard flow + transfer flow.pdf"):
+// three picture cards (GT Loans, GT Fund Managers Money Market Fund and
+// Dollar Fund) inside a white panel. Each card opens its product page at (products).
 //
 // NOTE: this is a different screen from History (reached via the History
 // button on Home) — confirmed with Litz these are separate screens, not
@@ -12,123 +12,138 @@ import React from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import { cardIcons } from '../../constants/cardIcons';
+import ScreenHeader from '../../components/ScreenHeader';
 
-const BANNERS = [
+const CARDS = [
   {
     id: 'loans',
     title: 'Apply for loans',
-    subtitle: 'Click here to apply for Quick Credit or salary advance.',
-    icon: 'cash-outline' as const,
-    background: colors.orange,
+    subtitle: 'Click here to apply for Quick Credit and salary advance.',
+    picture: require('../../assets/images/card-loans.png'),
+    background: colors.cardLoans,
   },
   {
     id: 'money-mkt',
     title: 'GT Fund Managers Money Market Fund',
     subtitle: 'Our money market is a perfect way to start your investment journey.',
-    icon: 'wallet-outline' as const,
-    background: colors.pink,
+    picture: require('../../assets/images/card-money-market.png'),
+    background: colors.cardMoneyMarket,
+  },
+  {
+    id: 'dollar-fund',
+    title: 'GT Fund Managers Dollar Fund',
+    subtitle: 'Beat the curve and make the most out of your money. Invest in our one dollar fund.',
+    picture: require('../../assets/images/card-dollar-fund.png'),
+    background: colors.cardDollarFund,
   },
 ];
 
 export default function TransactionsScreen() {
   const router = useRouter();
+  const arrow = cardIcons.arrow;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Transactions"
+        subtitle="Review and manage your financial activity"
+        showBack={false}
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
+
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Transactions</Text>
-            <Text style={styles.subtitle}>Review and manage your financial activity</Text>
-          </View>
-          <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={22} color={colors.textDark} />
-          </TouchableOpacity>
-        </View>
+        <View style={styles.panel}>
+          {CARDS.map((card) => (
+            <TouchableOpacity
+              key={card.id}
+              style={[styles.card, { backgroundColor: card.background }]}
+              activeOpacity={0.85}
+              onPress={() => router.push(`/(products)/${card.id}`)}
+            >
+              <Image source={card.picture} style={styles.picture} resizeMode="cover" />
 
-        {BANNERS.map((banner) => (
-          <TouchableOpacity
-            key={banner.id}
-            style={[styles.banner, { backgroundColor: banner.background }]}
-            activeOpacity={0.85}
-            onPress={() => router.push(`/(products)/${banner.id}`)}
-          >
-            <View style={styles.bannerIconCircle}>
-              <Ionicons name={banner.icon} size={22} color={colors.white} />
-            </View>
-            <View style={styles.bannerTextBlock}>
-              <Text style={styles.bannerTitle}>{banner.title}</Text>
-              <Text style={styles.bannerSubtitle}>{banner.subtitle}</Text>
-            </View>
-            <Ionicons name="arrow-forward" size={18} color={colors.white} />
-          </TouchableOpacity>
-        ))}
+              {/* See-through white box with the title, description and arrow */}
+              <View style={styles.textBox}>
+                <View style={styles.textBlock}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>{card.title}</Text>
+                  <Text style={styles.cardText}>{card.subtitle}</Text>
+                </View>
+                <Svg width={arrow.width} height={arrow.height} viewBox={`0 0 ${arrow.width} ${arrow.height}`}>
+                  <Path d={arrow.path} fill={colors.cardArrow} fillRule={arrow.fillRule} />
+                </Svg>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.darkNavy },
-  scroll: { padding: spacing.lg, paddingBottom: spacing.xxxl },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-    paddingTop: spacing.sm,
-  },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-  },
-  subtitle: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.base,
-    marginTop: 2,
-  },
-  banner: {
+  screen: { flex: 1, backgroundColor: colors.pageBackground },
+  scrollContent: { paddingBottom: spacing.xxxl },
+  panel: {
+    backgroundColor: colors.white,
     borderRadius: radius.card,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
+    marginTop: layout.productPanelTop,
+    marginHorizontal: layout.productPanelSide,
+    padding: layout.productPanelPadding,
+    gap: layout.productPanelPadding,
+  },
+  card: {
+    height: layout.productCardHeight,
+    borderRadius: radius.card,
+    overflow: 'hidden',
+  },
+  picture: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
+  textBox: {
+    position: 'absolute',
+    left: layout.productBoxInset,
+    right: layout.productBoxInset,
+    bottom: layout.productBoxBottom,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: layout.productArrowGap,
+    paddingTop: layout.productBoxPaddingTop,
+    paddingBottom: layout.productBoxPaddingBottom,
+    paddingLeft: layout.productBoxPaddingLeft,
+    paddingRight: layout.productBoxPaddingRight,
+    backgroundColor: colors.cardTextBox,
+    borderRadius: radius.productTextBox,
   },
-  bannerIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.pill,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bannerTextBlock: { flex: 1 },
-  bannerTitle: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginBottom: 2,
-  },
-  bannerSubtitle: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.white,
-    opacity: 0.9,
+  textBlock: { flex: 1 },
+  cardTitle: {
+    fontSize: fontSize.cardTitle,
     lineHeight: 18,
+    fontFamily: fontFamily.poppinsMedium,
+    color: colors.black,
+    marginBottom: layout.productTitleGap,
+  },
+  cardText: {
+    fontSize: fontSize.cardText,
+    lineHeight: 16,
+    fontFamily: fontFamily.regular,
+    color: colors.textDark,
   },
 });

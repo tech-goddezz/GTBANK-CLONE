@@ -53,7 +53,7 @@ export default function IncomeVerificationScreen() {
           </Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.replace('/(tabs)/transfer-flow')}
+            onPress={() => router.replace('/(tabs)/transfer-flow/send')}
           >
             <Text style={styles.buttonText}>Back to Transfers</Text>
           </TouchableOpacity>

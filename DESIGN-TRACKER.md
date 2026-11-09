@@ -94,31 +94,31 @@ Many design screens are variations of the same code file (for example the 5 onbo
 
 | # | Screen | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| S18 | Input phone number (same as S7) | Kyc flow.pdf | `app/(auth)/phone.tsx` | /phone | ⬜ |
-| S19 | 6-digit code – from SMS | Kyc flow.pdf | `app/(auth)/otp.tsx` | /otp ⚠️ | ⬜ |
-| S20 | 6-digit code – Tokens tab | Kyc flow.pdf | `app/(auth)/otp.tsx` | /otp ⚠️ | ⬜ |
-| S21 | Open a GTBank account – requirements | Kyc flow.pdf | `app/(auth)/requirements.tsx` | /requirements ⚠️ | ⬜ |
-| S22 | Your date of birth – empty | Kyc flow.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ⬜ |
-| S23 | Your date of birth – second state | Kyc flow.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ⬜ |
-| S24 | Verification number – BVN tab | Kyc flow.pdf | `app/(auth)/bvn-nin.tsx` | /bvn-nin | ⬜ |
-| S25 | Verification number – NIN tab | Kyc flow.pdf | `app/(auth)/bvn-nin.tsx` | /bvn-nin | ⬜ |
-| S26 | Provide address | Kyc flow.pdf | `app/(auth)/address.tsx` | /address | ⬜ |
-| S27 | Identity verification – camera | Kyc flow.pdf | `app/(auth)/identity.tsx` | /identity ⚠️ | ⬜ |
-| S28 | Identity verification – face scan | Kyc flow.pdf | `app/(auth)/identity.tsx` | /identity ⚠️ | ⬜ |
-| S29 | Wait a moment (GTBank Tier 1) | Kyc flow.pdf | `app/(auth)/success.tsx` | /success ⚠️ | ⬜ |
+| S18 | Input phone number (same as S7) | Kyc flow.pdf | `app/(auth)/phone.tsx` | /phone | ✅ |
+| S19 | 6-digit code – from SMS | Kyc flow.pdf | `app/(auth)/otp.tsx` | /otp ⚠️ | ✅ |
+| S20 | 6-digit code – Tokens tab | Kyc flow.pdf | `app/(auth)/otp.tsx` | /otp ⚠️ | ✅ |
+| S21 | Open a GTBank account – requirements | Kyc flow.pdf | `app/(auth)/requirements.tsx` | /requirements ⚠️ | ✅ |
+| S22 | Your date of birth – empty | Kyc flow.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
+| S23 | Your date of birth – second state | Kyc flow.pdf | `app/(auth)/date-of-birth.tsx` | /date-of-birth | ✅ |
+| S24 | Verification number – BVN tab | Kyc flow.pdf | `app/(auth)/bvn-nin.tsx` | /bvn-nin | ✅ |
+| S25 | Verification number – NIN tab | Kyc flow.pdf | `app/(auth)/bvn-nin.tsx` | /bvn-nin | ✅ |
+| S26 | Provide address | Kyc flow.pdf | `app/(auth)/address.tsx` | /address | ✅ |
+| S27 | Identity verification – camera | Kyc flow.pdf | `app/(auth)/identity.tsx` | /identity ⚠️ | ✅ |
+| S28 | Identity verification – face scan | Kyc flow.pdf | `app/(auth)/identity.tsx` | /identity ⚠️ | ✅ |
+| S29 | Wait a moment (GTBank Tier 1) | Kyc flow.pdf | `app/(auth)/success.tsx` | /success ⚠️ | ✅ |
 
 ## 6. Home / Dashboard — `Dashboard flow + transfer flow.pdf`
 
 | # | Screen | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| S30 | Enter password (same as S9) | Dashboard flow + transfer flow.pdf | `app/(auth)/login-password.tsx` | /login-password | ⬜ |
-| S31 | Log in with fingerprint (same as S10) | Dashboard flow + transfer flow.pdf | `app/(auth)/login-biometric.tsx` | /login-biometric | ⬜ |
-| S32 | Home (balance, Send/Pay/Top up/More, recent transactions) | Dashboard flow + transfer flow.pdf | `app/(tabs)/home.tsx` | /home | ⬜ |
-| S33 | History | Dashboard flow + transfer flow.pdf | `app/(tabs)/history.tsx` | /history | ⬜ |
-| S34 | History – searching (keyboard open) | Dashboard flow + transfer flow.pdf | `app/(tabs)/history.tsx` | /history | ⬜ |
-| S35 | Transactions tab (loans / money market cards) | Dashboard flow + transfer flow.pdf | `app/(tabs)/transactions.tsx` | /transactions | ⬜ |
-| S36 | Transfers tab (tracking steps + Query Transfer) | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/index.tsx` (currently a "Select Transfer Type" screen) | /transfer-flow | ⬜ |
-| S37 | Settings tab | Dashboard flow + transfer flow.pdf | `app/(tabs)/settings.tsx` | /settings | ⬜ |
+| S30 | Enter password (same as S9) | Dashboard flow + transfer flow.pdf | `app/(auth)/login-password.tsx` | /login-password | ✅ |
+| S31 | Log in with fingerprint (same as S10) | Dashboard flow + transfer flow.pdf | `app/(auth)/login-biometric.tsx` | /login-biometric | ✅ |
+| S32 | Home (balance, Send/Pay/Top up/More, recent transactions) | Dashboard flow + transfer flow.pdf | `app/(tabs)/home.tsx` | /home | ✅ |
+| S33 | History | Dashboard flow + transfer flow.pdf | `app/(tabs)/history.tsx` | /history | ✅ |
+| S34 | History – searching (keyboard open) | Dashboard flow + transfer flow.pdf | `app/(tabs)/history.tsx` | /history | ✅ |
+| S35 | Transactions tab (loans / money market cards) | Dashboard flow + transfer flow.pdf | `app/(tabs)/transactions.tsx` | /transactions | ✅ |
+| S36 | Transfers tab (tracking steps + Query Transfer) | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/index.tsx` (old send-money page moved to `transfer-flow/send.tsx`) | /transfer-flow | ✅ |
+| S37 | Settings tab | Dashboard flow + transfer flow.pdf | `app/(tabs)/settings.tsx` | /settings | ✅ |
 
 ## 7. Screens inside the home screen — `Screens inside the home screen.pdf`
 

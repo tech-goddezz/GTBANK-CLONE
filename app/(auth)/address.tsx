@@ -1,7 +1,9 @@
 // app/(auth)/address.tsx
 //
-// Residential address entry. State and LGA use inline pickers (not a
-// Modal-based sheet, which proved unreliable on web).
+// "Provide Address" (S26 in Kyc flow.pdf): four plain grey boxes — State,
+// Local Government Area, City, Address. State and LGA open inline pick lists
+// (not a Modal-based sheet, which proved unreliable on web). City and Address
+// are typed. Proceed stays faded until every box is filled.
 import React, { useState } from 'react';
 import {
   View,
@@ -14,10 +16,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, lineHeight, spacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { updateAddress } from '../../services/auth';
@@ -36,6 +41,7 @@ const NIGERIAN_STATES = [
 
 export default function AddressScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     dob: string;
     verificationType: string;
@@ -71,28 +77,53 @@ export default function AddressScreen() {
     );
   };
 
+  // One pick list (used for State and for LGA), shown just under its box.
+  const renderPickList = (items: string[], selected: string, onPick: (item: string) => void) => (
+    <View style={styles.inlinePicker}>
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item}
+        style={styles.pickList}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.pickRow} onPress={() => onPick(item)}>
+            <Text style={[styles.pickRowText, item === selected && styles.pickRowTextActive]}>
+              {item}
+            </Text>
+            {item === selected && (
+              <MaterialIcons name="check" size={layout.addrIconSize + 4} color={colors.orange} />
+            )}
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
+          hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <Ionicons name="arrow-back" size={24} color={colors.textDark} />
+          <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
         </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.title}>Provide Address</Text>
-          <Text style={styles.subtitle}>To proceed, kindly provide your address</Text>
-        </View>
+        <Text style={styles.title}>Provide Address</Text>
+        <Text style={styles.subtitle}>To proceed, Kindly provide your address</Text>
 
+        {/* State */}
         <TouchableOpacity
-          style={styles.dropdownField}
+          style={[styles.box, styles.firstBox]}
           onPress={() => {
             setStateSheetVisible((prev) => !prev);
             setLgaSheetVisible(false);
@@ -100,47 +131,21 @@ export default function AddressScreen() {
           accessibilityRole="button"
           accessibilityLabel="Select your state"
         >
-          <Text style={selectedState ? styles.dropdownValue : styles.dropdownPlaceholder}>
-            {selectedState || 'State'}
-          </Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textGrey} />
+          <Text style={styles.boxText}>{selectedState || 'State'}</Text>
+          <MaterialIcons name="expand-more" size={layout.addrIconSize} color={colors.black} />
         </TouchableOpacity>
 
-        {stateSheetVisible && (
-          <View style={styles.inlinePicker}>
-            <FlatList
-              data={NIGERIAN_STATES}
-              keyExtractor={(item) => item}
-              style={{ maxHeight: 300 }}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.stateRow}
-                  onPress={() => {
-                    setSelectedState(item);
-                    setLga('');
-                    setStateSheetVisible(false);
-                    setError('');
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.stateRowText,
-                      item === selectedState && styles.stateRowTextActive,
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                  {item === selectedState && (
-                    <Ionicons name="checkmark" size={18} color={colors.orange} />
-                  )}
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        )}
+        {stateSheetVisible &&
+          renderPickList(NIGERIAN_STATES, selectedState, (item) => {
+            setSelectedState(item);
+            setLga('');
+            setStateSheetVisible(false);
+            setError('');
+          })}
 
+        {/* Local Government Area */}
         <TouchableOpacity
-          style={styles.dropdownField}
+          style={styles.box}
           onPress={() => {
             if (!selectedState) return;
             setLgaSheetVisible((prev) => !prev);
@@ -149,71 +154,47 @@ export default function AddressScreen() {
           accessibilityRole="button"
           accessibilityLabel="Select your LGA"
         >
-          <Text style={lga ? styles.dropdownValue : styles.dropdownPlaceholder}>
-            {lga || 'Local Government Area'}
-          </Text>
-          <Ionicons name="chevron-down" size={18} color={colors.textGrey} />
+          <Text style={styles.boxText}>{lga || 'Local Government Area'}</Text>
+          <MaterialIcons name="expand-more" size={layout.addrIconSize} color={colors.black} />
         </TouchableOpacity>
 
-        {lgaSheetVisible && (
-          <View style={styles.inlinePicker}>
-            <FlatList
-              data={NIGERIAN_LGAS[selectedState] || []}
-              keyExtractor={(item) => item}
-              style={{ maxHeight: 300 }}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.stateRow}
-                  onPress={() => {
-                    setLga(item);
-                    setLgaSheetVisible(false);
-                    setError('');
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.stateRowText,
-                      item === lga && styles.stateRowTextActive,
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                  {item === lga && (
-                    <Ionicons name="checkmark" size={18} color={colors.orange} />
-                  )}
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        )}
+        {lgaSheetVisible &&
+          renderPickList(NIGERIAN_LGAS[selectedState] || [], lga, (item) => {
+            setLga(item);
+            setLgaSheetVisible(false);
+            setError('');
+          })}
 
-        <TextInput
-          style={[styles.textInput, { borderColor: colors.lighter }]}
-          placeholder="City"
-          value={city}
-          onChangeText={setCity}
-        />
+        {/* City — typed (there is no list of cities) */}
+        <View style={styles.box}>
+          <TextInput
+            style={styles.input}
+            placeholder="City"
+            placeholderTextColor={colors.black}
+            value={city}
+            onChangeText={setCity}
+          />
+        </View>
 
-        <TextInput
-          style={[styles.textInput, styles.multiline, { borderColor: colors.lighter }]}
-          placeholder="Street Address"
-          value={streetAddress}
-          onChangeText={setStreetAddress}
-          multiline
-          numberOfLines={3}
-        />
+        {/* Address — typed */}
+        <View style={styles.box}>
+          <TextInput
+            style={styles.input}
+            placeholder="Address"
+            placeholderTextColor={colors.black}
+            value={streetAddress}
+            onChangeText={setStreetAddress}
+          />
+        </View>
 
         {!!error && <Text style={styles.errorText}>{error}</Text>}
 
-        <View style={styles.buttonArea}>
-          <TouchableOpacity
-            style={[styles.button, !isValid && styles.buttonDisabled]}
-            onPress={handleStart}
-            disabled={!isValid}
-          >
-            <Text style={styles.buttonText}>Proceed</Text>
-          </TouchableOpacity>
-        </View>
+        <Button
+          label="Proceed"
+          onPress={handleStart}
+          disabled={!isValid}
+          style={styles.proceed}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -222,117 +203,99 @@ export default function AddressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.darkNavy,
+    backgroundColor: colors.white,
   },
   scroll: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.addrButtonBottom,
   },
   backButton: {
-    marginTop: 70,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  header: {
-    marginBottom: spacing.xl,
+    alignSelf: 'flex-start',
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
   title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
+    fontSize: fontSize.heading2,
+    lineHeight: lineHeight.heading2,
+    fontFamily: fontFamily.medium,
+    color: colors.black,
+    marginTop: layout.idTitleGap,
   },
   subtitle: {
-    fontSize: fontSize.small,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    marginTop: spacing.sm,
+    marginTop: layout.addrSubtitleGap,
+    marginLeft: layout.idTitleLeft,
   },
-  dropdownField: {
+  box: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 52,
+    height: layout.inputHeight,
+    marginTop: layout.addrBoxSpacing,
     backgroundColor: colors.inputBackground,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.lighter,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+    paddingLeft: layout.addrTextLeft,
+    paddingRight: layout.addrIconRight,
   },
-  dropdownValue: {
+  firstBox: {
+    marginTop: layout.addrBoxGap,
+  },
+  boxText: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  input: {
+    flex: 1,
+    height: lineHeight.body,
+    padding: 0,
+    borderWidth: 0,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
-  },
-  dropdownPlaceholder: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textFaded,
-  },
+    color: colors.black,
+    outlineStyle: 'none',
+  } as any,
   inlinePicker: {
+    marginTop: spacing.xs,
     borderWidth: 1,
-    borderColor: colors.lighter,
-    borderRadius: radius.input,
-    marginBottom: spacing.md,
+    borderColor: colors.inputBackground,
     backgroundColor: colors.white,
   },
-  stateRow: {
+  pickList: {
+    maxHeight: 300,
+  },
+  pickRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: layout.addrTextLeft,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.lighter,
+    borderBottomColor: colors.inputBackground,
   },
-  stateRowText: {
+  pickRowText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.black,
   },
-  stateRowTextActive: {
-    fontFamily: fontFamily.semibold,
+  pickRowTextActive: {
+    fontFamily: fontFamily.medium,
     color: colors.orange,
-  },
-  textInput: {
-    height: 52,
-    backgroundColor: colors.inputBackground,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    paddingHorizontal: spacing.lg,
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textDark,
-    marginBottom: spacing.md,
-  },
-  multiline: {
-    height: 90,
-    textAlignVertical: 'top',
-    paddingTop: spacing.md,
   },
   errorText: {
     fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
     color: colors.red,
-    marginBottom: spacing.md,
+    marginTop: spacing.xs,
   },
-  buttonArea: {
-    marginTop: spacing.lg,
-  },
-  button: {
-    backgroundColor: colors.orange,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    color: colors.white,
-    fontFamily: fontFamily.semibold,
-    fontSize: fontSize.body,
+  proceed: {
+    width: layout.phoneProceedWidth,
+    alignSelf: 'flex-end',
+    marginRight: layout.addrButtonRight,
+    marginTop: 'auto',
   },
 });

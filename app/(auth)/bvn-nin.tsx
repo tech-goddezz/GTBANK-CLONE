@@ -1,13 +1,9 @@
 // app/(auth)/bvn-nin.tsx
-// Verification number entry — user picks BVN or NIN, then enters the
-// 11-digit number. Both are real Nigerian identity verification numbers,
-// so we validate length only (not authenticity — that needs a real backend).
-//
-// Matches the Figma "Your verification number" frame: no back arrow, no
-// "Need help?" link on this screen — just the two tabs, a heading that
-// changes with the active tab, the dial-code instructions, the input, and
-// a compact right-aligned Proceed button (not full-width, unlike most
-// other screens in this flow).
+// "Your verification number" (S24 BVN tab / S25 NIN tab in Kyc flow.pdf).
+// The user picks BVN or NIN with the same switch as the 6-digit code screen,
+// then types the 11-digit number into a plain grey box. We validate length
+// only (not authenticity — that needs a real backend). The "Dial…" help text
+// only shows on the BVN tab, as in the design.
 
 import React, { useState } from 'react';
 import {
@@ -18,34 +14,40 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TextInput,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
-import InputField from '../../components/InputField';
+import { fontSize, fontFamily, lineHeight, spacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { updateBvnNin } from '../../services/auth';
-import { Ionicons } from "@expo/vector-icons";
 
 type VerificationType = 'bvn' | 'nin';
 
-const COPY: Record<VerificationType, { heading: string; instructions: string }> = {
+const TABS: { key: VerificationType; label: string; width: number }[] = [
+  { key: 'bvn', label: 'BVN', width: layout.codeTabSmsWidth },
+  { key: 'nin', label: 'NIN', width: layout.codeTabTokensWidth },
+];
+
+const COPY: Record<VerificationType, { placeholder: string; hint: string | null }> = {
   bvn: {
-    heading: 'Bank verification number (BVN)',
-    instructions:
-      'Dial *565*0# on your mobile number to view your unique 11 digit bank verification number (BVN)',
+    placeholder: 'Bank verification number (BVN)',
+    hint: 'Dial *565*0# on your mobile number to view your unique 11 digit bank verification number ( BVN)',
   },
   nin: {
-    heading: 'National Identification number (NIN)',
-    instructions:
-      'To retrieve your NIN, dial *346# on your mobile number to view your unique 11 digit National Identification number (NIN)',
+    placeholder: 'National Identification number (NIN)',
+    hint: null, // The design shows no help text on the NIN tab
   },
 };
 
 export default function BvnNinScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { dob } = useLocalSearchParams<{ dob: string }>();
   const markBvnNinDone = useKycStore((state) => state.markBvnNinDone);
   const userId = useAuthStore((state) => state.user?.id);
@@ -68,7 +70,6 @@ export default function BvnNinScreen() {
     setNumber(digitsOnly);
     if (error) setError('');
   };
-  
 
   const handleProceed = async () => {
     if (!isValid) {
@@ -76,157 +77,163 @@ export default function BvnNinScreen() {
       return;
     }
     await updateBvnNin(userId ?? '', activeTab, number);
-markBvnNinDone();
-router.push(
-  `/(auth)/address?dob=${dob}&verificationType=${activeTab}&verificationNumber=${number}`
-);
+    markBvnNinDone();
+    router.push(
+      `/(auth)/address?dob=${dob}&verificationType=${activeTab}&verificationNumber=${number}`
+    );
   };
+
+  const hint = COPY[activeTab].hint;
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-
-        <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
+        </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.title}>Your verification{'\n'}number</Text>
-        </View>
+        <Text style={styles.title}>Your verification{'\n'}number</Text>
 
-        {/* Tab toggle: BVN / NIN — two independent pills, not a shared
-            segmented-control bar. Active tab gets a light grey background;
-            inactive tab is transparent. Both use dark text. */}
-        <View style={styles.tabRow}>
-          <TouchableOpacity
-            style={[styles.tab, activeTab === 'bvn' && styles.tabActive]}
-            onPress={() => handleTabChange('bvn')}
-          >
-            <Text style={styles.tabLabel}>BVN</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.tab, activeTab === 'nin' && styles.tabActive]}
-            onPress={() => handleTabChange('nin')}
-          >
-            <Text style={styles.tabLabel}>NIN</Text>
-          </TouchableOpacity>
+        {/* BVN / NIN switch — same look as the code screen's "from SMS / Tokens" */}
+        <View style={styles.tabContainer}>
+          {TABS.map((t) => (
+            <TouchableOpacity
+              key={t.key}
+              style={[styles.tab, { width: t.width }, activeTab === t.key && styles.tabActive]}
+              onPress={() => handleTabChange(t.key)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityState={{ selected: activeTab === t.key }}
+            >
+              <Text style={styles.tabLabel}>{t.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <Text style={styles.subtitle}>This will help you complete the process faster.</Text>
 
-
-        <InputField
-          placeholder="Bank verification number (BVN)"
-          keyboardType="number-pad"
-          value={number}
-          onChangeText={handleChangeNumber}
-          error={error}
-          maxLength={11}
-        />
-
-
-        <Text style={styles.instructions}>{COPY[activeTab].instructions}</Text>
-
-        
-
-        {/* Compact, right-aligned button — matches the design's "Proceed"
-            sizing on this screen (content-width, not full-width). */}
-        <View style={styles.buttonArea}>
-          <Button
-            label="Proceed"
-            onPress={handleProceed}
-            disabled={!isValid}
-            style={styles.compactButton}
+        <View style={styles.box}>
+          <TextInput
+            style={styles.input}
+            placeholder={COPY[activeTab].placeholder}
+            placeholderTextColor={colors.textGrey}
+            keyboardType="number-pad"
+            value={number}
+            onChangeText={handleChangeNumber}
+            maxLength={11}
           />
         </View>
+
+        {!!error && <Text style={styles.errorText}>{error}</Text>}
+
+        {!!hint && <Text style={styles.hint}>{hint}</Text>}
+
+        <Button
+          label="Proceed"
+          onPress={handleProceed}
+          disabled={!isValid}
+          style={styles.proceed}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy },
+  container: { flex: 1, backgroundColor: colors.white },
   scroll: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingTop: 64,
-    paddingBottom: spacing.xxxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.vnButtonBottom,
   },
-  header: { marginBottom: spacing.xl },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginBottom: spacing.sm,
-    lineHeight: 36,
-  },
-
-
   backButton: {
-    marginTop: 10,
-    marginBottom: spacing.xl,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
+    alignSelf: 'flex-start',
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
-
-  subtitle: {
-    fontSize: fontSize.body,
+  title: {
+    fontSize: fontSize.heading2,
+    lineHeight: lineHeight.heading2,
     fontFamily: fontFamily.regular,
-    color: colors.base,
-    lineHeight: 22,
-    marginBottom: spacing.xl,
+    color: colors.black,
+    marginTop: layout.vnTitleGap,
   },
-  tabRow: {
+  tabContainer: {
     flexDirection: 'row',
-    gap: spacing.xl,
-    marginBottom: spacing.xl,
-    marginTop: spacing.sm - 25,
-    alignSelf: 'center',
+    justifyContent: 'space-between',
+    width: layout.contentWidth,
+    height: layout.codeTabsHeight,
+    marginLeft: 1,
+    marginTop: layout.vnTabsGap,
+    paddingHorizontal: layout.codeTabsPadH,
+    paddingVertical: layout.codeTabsPadV,
     backgroundColor: colors.white,
-    padding: 3,
   },
   tab: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.xxxl + 30,
-    borderRadius: radius.button,
+    height: layout.codeTabHeight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabActive: {
-    backgroundColor: colors.pageBackground,
+    backgroundColor: colors.segmentActive,
   },
   tabLabel: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.medium,
-    color: colors.textDark,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
   },
-  fieldHeading: {
-    fontSize: fontSize.heading3,
-    fontFamily: fontFamily.semibold,
-    color: colors.textDark,
-    marginBottom: spacing.sm,
-  },
-  instructions: {
+  subtitle: {
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    lineHeight: 20,
-    marginBottom: spacing.xl,
+    marginTop: layout.vnSubtitleGap,
   },
-  buttonArea: {
-    marginTop: spacing.large + 80,
-    alignItems: 'flex-end',
+  box: {
+    height: layout.inputHeight,
+    marginTop: layout.vnBoxGap,
+    backgroundColor: colors.inputBackground,
+    justifyContent: 'center',
+    paddingHorizontal: layout.vnBoxPadding,
   },
-  compactButton: {
-    paddingHorizontal: spacing.xxl,
-    height: 44,
+  input: {
+    height: lineHeight.body,
+    padding: 0,
+    borderWidth: 0,
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+    outlineStyle: 'none',
+  } as any,
+  errorText: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
+    color: colors.red,
+    marginTop: spacing.xs,
+  },
+  hint: {
+    fontSize: fontSize.small,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    marginTop: layout.vnHintGap,
+  },
+  proceed: {
+    width: layout.phoneProceedWidth,
+    alignSelf: 'flex-end',
+    marginTop: 'auto',
   },
 });

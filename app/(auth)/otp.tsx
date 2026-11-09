@@ -22,7 +22,7 @@ const RESEND_SECONDS = 45;
 export default function OTPScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { phone } = useLocalSearchParams<{ phone: string }>();
+  const { phone, mode } = useLocalSearchParams<{ phone: string; mode?: string }>();
   const [tab, setTab] = useState<'sms' | 'tokens'>('sms');
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
@@ -39,9 +39,13 @@ export default function OTPScreen() {
   // as soon as the 6th digit is typed.
   useEffect(() => {
     if (!isComplete) return;
-    // After the code, go to the "Enter password" keypad screen (as in the design).
-    // The KYC flow (requirements → DOB → BVN etc.) is only for
-    // brand-new account opening, triggered separately.
+    // New accounts (mode=signup, from the Welcome pop-up's "Open Account")
+    // continue to the sign-up steps, as in the KYC design.
+    if (mode === 'signup') {
+      router.replace(`/signup?phone=${phone}`);
+      return;
+    }
+    // Existing customers go to the "Enter password" keypad screen (as in the design).
     router.replace(`/(auth)/login-password?phone=${phone}`);
   }, [isComplete]);
 

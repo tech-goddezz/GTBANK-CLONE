@@ -1,43 +1,40 @@
 // app/(auth)/requirements.tsx
-// Shown right after login. Matches the Figma frame: a single bordered
-// list box holding all 4 requirements (no separate cards, no subtitles,
-// no colored icons) — each row shows an outlined "not done" icon until
-// that step is completed, then a filled green checkmark. Tapping a row
-// jumps into that step. "Get Account" only proceeds once all 4 are done.
+// "Open a GTBank Account" checklist (S21 in Kyc flow.pdf). Same look as the
+// forgot-password checklist (S11): white screen, one thin black box holding
+// the 4 KYC steps, each with a "not done" circle-cross icon (green tick once
+// done). Tapping a row jumps into that step. "Get Account" stays faded until
+// all 4 are done.
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
+  View, Text, StyleSheet, TouchableOpacity, ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, lineHeight, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { fetchProfile, getCurrentUserId } from '../../services/auth';
-import { useEffect, useState } from 'react';
 
 export default function RequirementsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { dateOfBirthDone, bvnNinDone, addressDone, identityDone } = useKycStore();
   const authStoreUserId = useAuthStore((state) => state.user?.id);
   const [userId, setUserId] = useState(authStoreUserId ?? '');
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
-  const resolveUserId = async () => {
-    const realId = await getCurrentUserId();
-    setUserId(realId);
-  };
-  resolveUserId();
-}, []);
-  
-  const [profile, setProfile] = useState<any>(null);
+    const resolveUserId = async () => {
+      const realId = await getCurrentUserId();
+      setUserId(realId);
+    };
+    resolveUserId();
+  }, []);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -53,31 +50,31 @@ export default function RequirementsScreen() {
   // it should go. If the bank ever adds/removes a KYC step, this array is
   // the only thing that needs editing.
   const requirements = [
-  {
-    key: 'dob',
-    title: 'Date of birth',
-    done: dateOfBirthDone || !!profile?.date_of_birth,
-    route: '/(auth)/date-of-birth' as const,
-  },
-  {
-    key: 'bvn',
-    title: 'BVN/NIN',
-    done: bvnNinDone || !!profile?.bvn || !!profile?.nin,
-    route: '/(auth)/bvn-nin' as const,
-  },
-  {
-    key: 'address',
-    title: 'Residential address',
-    done: addressDone || !!profile?.state,
-    route: '/(auth)/address' as const,
-  },
-  {
-    key: 'identity',
-    title: 'Identity verification',
-    done: identityDone || !!profile?.identity_verified,
-    route: '/(auth)/identity' as const,
-  },
-];
+    {
+      key: 'dob',
+      title: 'Date of birth',
+      done: dateOfBirthDone || !!profile?.date_of_birth,
+      route: '/(auth)/date-of-birth' as const,
+    },
+    {
+      key: 'bvn',
+      title: 'BVN/NIN',
+      done: bvnNinDone || !!profile?.bvn || !!profile?.nin,
+      route: '/(auth)/bvn-nin' as const,
+    },
+    {
+      key: 'address',
+      title: 'Residential address',
+      done: addressDone || !!profile?.state,
+      route: '/(auth)/address' as const,
+    },
+    {
+      key: 'identity',
+      title: 'Identity verification',
+      done: identityDone || !!profile?.identity_verified,
+      route: '/(auth)/identity' as const,
+    },
+  ];
 
   const readyCount = requirements.filter((r) => r.done).length;
   const allDone = readyCount === requirements.length;
@@ -90,151 +87,131 @@ export default function RequirementsScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.scroll}
+      contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+      showsVerticalScrollIndicator={false}
     >
-      {/* Back button */}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => router.back()}
+        hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Go back"
       >
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
+        <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
       </TouchableOpacity>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Open a GTBank Account</Text>
-        <Text style={styles.subtitle}>
-          Please verify the list of requirements before proceeding
-        </Text>
-      </View>
+      <Text style={styles.title}>Open a GTBank Account</Text>
+      <Text style={styles.subtitle}>
+        Please verify the list of requirements before proceeding
+      </Text>
 
-      <View style={styles.sectionRow}>
-        <Text style={styles.sectionLabel}>Requirements</Text>
-        <Text style={styles.sectionCounter}>
+      <View style={styles.headingRow}>
+        <Text style={styles.heading}>Requirements</Text>
+        <Text style={styles.ready}>
           {readyCount}/{requirements.length} ready
         </Text>
       </View>
 
-      {/* Single bordered list box — one rectangle holding all 4 rows,
-          per the Figma frame, not separate cards. */}
-      <View style={styles.listBox}>
-        {requirements.map((item, index) => (
+      <View style={styles.list}>
+        {requirements.map((item) => (
           <TouchableOpacity
             key={item.key}
-            style={[
-              styles.listRow,
-              index < requirements.length - 1 && styles.listRowDivider,
-            ]}
+            style={styles.row}
             onPress={() => router.push(item.route)}
             activeOpacity={0.6}
             accessibilityRole="button"
             accessibilityLabel={`${item.title}, ${item.done ? 'completed' : 'not completed'}`}
           >
-            <Text style={styles.listRowText}>{item.title}</Text>
-            <Ionicons
-              name={item.done ? 'checkmark-circle' : 'close-circle-outline'}
-              size={20}
-              color={item.done ? colors.green : colors.textFaded}
+            <Text style={styles.rowLabel}>{item.title}</Text>
+            <MaterialIcons
+              name={item.done ? 'check-circle' : 'highlight-off'}
+              size={layout.backArrowSize}
+              color={item.done ? colors.greenTick : colors.black}
             />
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* CTA — compact, right-aligned; disabled until every step is done */}
-      <View style={styles.buttonArea}>
-        <Button
-          label="Get Account"
-          onPress={handleGetAccount}
-          disabled={!allDone}
-          style={styles.compactButton}
-        />
-      </View>
+      <Button
+        label="Get Account"
+        onPress={handleGetAccount}
+        disabled={!allDone}
+        style={styles.getAccount}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.darkNavy,
-  },
+  container: { flex: 1, backgroundColor: colors.white },
   scroll: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxxl,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.kycButtonBottom,
   },
   backButton: {
-    marginTop: 70,
-    marginBottom: spacing.xxl,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  header: {
-    marginBottom: spacing.xxxl,
+    alignSelf: 'flex-start',
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
   title: {
-    fontSize: 26,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginBottom: spacing.sm,
-    lineHeight: 36,
+    fontSize: fontSize.heading1,
+    lineHeight: lineHeight.heading1,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+    marginTop: layout.codeTitleGap,
   },
   subtitle: {
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
-    color: colors.base,
-    lineHeight: 22,
+    color: colors.textGrey,
+    marginTop: layout.reqSubtitleGap,
+    marginLeft: layout.reqSubtitleLeft,
   },
-  sectionRow: {
+  headingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    alignItems: 'flex-start',
+    marginTop: layout.reqHeadingGap,
   },
-  sectionLabel: {
+  heading: {
     fontSize: fontSize.heading2,
-    fontFamily: fontFamily.semibold,
-    color: colors.orange,
+    lineHeight: layout.reqHeadingLine,
+    fontFamily: fontFamily.poppinsRegular,
+    color: colors.black,
   },
-  sectionCounter: {
+  ready: {
     fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.orange,
+    lineHeight: lineHeight.compact,
+    fontFamily: fontFamily.poppinsMedium,
+    color: colors.black,
+    marginTop: layout.reqReadyTop,
+    marginRight: layout.reqReadyRight,
   },
-  listBox: {
+  list: {
+    marginTop: layout.reqListGap,
     borderWidth: 1,
-    borderColor: colors.dark,
-    backgroundColor: colors.white,
-    borderRadius: 7,
-    overflow: 'hidden',
+    borderColor: colors.black,
+    borderRadius: radius.card,
+    paddingHorizontal: layout.reqRowPadding,
   },
-  listRow: {
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
+    height: layout.reqRowHeight,
   },
-  listRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  listRowText: {
+  rowLabel: {
+    flex: 1,
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
-    color: colors.textDark,
+    color: colors.black,
   },
-  buttonArea: {
-    marginTop: spacing.xxxl + 170,
-    alignItems: 'flex-end',
-  },
-  compactButton: {
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.sm - 5,
-    borderRadius: spacing.xl - 20,
-    height: 44,
+  getAccount: {
+    width: layout.kycButtonWidth,
+    alignSelf: 'flex-end',
+    marginRight: layout.kycButtonRight,
+    marginTop: 'auto',
   },
 });

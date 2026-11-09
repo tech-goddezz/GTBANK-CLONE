@@ -16,6 +16,9 @@ export const fontSize = {
   body: 14,       // Default text — descriptions, list items
   small: 12,      // Supporting text — timestamps, category labels
   tiny: 10,       // The smallest text in the app — fine print
+  cardTitle: 14.5, // Titles on the Transactions tab cards ("Apply for loans")
+  cardText: 12.5,  // Descriptions on the Transactions tab cards
+  stepLabel: 6.7,  // Tiny step names on the Transfers tab ("Funds Sent")
 };
 
 // Distance between lines of text, measured from multi-line text in the design.
@@ -29,6 +32,11 @@ export const lineHeight = {
   heading1: 34,   // 28px text
   heading2: 29,   // 24px text, e.g. "Identity Verification"
   body: 18,       // 14px text
+};
+
+// Extra space between letters, measured from the design.
+export const letterSpacing = {
+  settingsRow: 1.4, // Settings tab rows ("C h a n g e  m P i n" look)
 };
 
 export const fontWeight = {

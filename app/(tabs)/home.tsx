@@ -1,5 +1,5 @@
 // app/(tabs)/home.tsx
-// Dashboard home screen — matches the Figma design exactly.
+// Dashboard home screen (S32 in "Dashboard flow + transfer flow.pdf").
 
 import React from 'react';
 import {
@@ -9,32 +9,39 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Path } from 'react-native-svg';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
-import { useAuthStore } from '../../store/useAuthStore';
-import { useAccountStore } from '../../store/useAccountStore';
+import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import { headerIcons } from '../../constants/headerIcons';
+import { homeIcons } from '../../constants/homeIcons';
 import { useState, useEffect } from 'react';
 import { fetchTransactions, getCurrentUserId, fetchProfile } from '../../services/auth';
 import BalanceCard from '../../components/BalanceCard';
-import TransactionTicker from '../../components/TransactionTicker';
-import AdTicker from '../../components/AdTicker';
-import PromoCarousel from '../../components/PromoCarousel';
 import TransactionItem from '../../components/TransactionItem';
-import profilePhoto from '../../assets/images/profilePhoto.png'; 
+import profilePhoto from '../../assets/images/profilePhoto.png';
 
 const QUICK_ACTIONS = [
-  { id: 'send', label: 'Send', icon: 'paper-plane-outline' },
-  { id: 'pay', label: 'Pay', icon: 'card-outline' },
-  { id: 'topup', label: 'Top up', icon: 'add-circle-outline' },
-  { id: 'more', label: 'More', icon: 'grid-outline' },
-];
+  { id: 'send', label: 'Send' },
+  { id: 'pay', label: 'Pay' },
+  { id: 'topup', label: 'Top up' },
+  { id: 'more', label: 'More' },
+] as const;
+
+function DesignIcon({ icon, color }: { icon: { width: number; height: number; path: string; fillRule: 'nonzero' | 'evenodd' }; color: string }) {
+  return (
+    <Svg width={icon.width} height={icon.height} viewBox={`0 0 ${icon.width} ${icon.height}`}>
+      <Path d={icon.path} fill={color} fillRule={icon.fillRule} />
+    </Svg>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [firstName, setFirstName] = useState('there');
 
 useEffect(() => {
@@ -71,253 +78,226 @@ useEffect(() => {
 
 const recentTransactions = transactions.slice(0, 5);
 
-  
-
   const handleQuickAction = (id: string) => {
-  if (id === 'send') router.push('/(tabs)/transfer-flow/');
+  if (id === 'send') router.push('/(tabs)/transfer-flow/send');
   if (id === 'pay') router.push('/(tabs)/pay');
   if (id === 'topup') router.push('/(tabs)/topup');
   if (id === 'more') router.push('/(tabs)/more');
 };
 
-  
-
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.screen}>
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Top bar: avatar + greeting + notification bell */}
-        <View style={styles.topBar}>
-          <View style={styles.identity}>
-
-            <Image source={profilePhoto} style={styles.avatar} />
-            <View>
-
-
-              <Text style={styles.greeting}>Hi,</Text>
-              <Text style={styles.userName}>{firstName}</Text>
+        {/* White top area: status bar space, photo, greeting, bell, then the menu strip */}
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}>
+          <View style={styles.identityStrip}>
+            <View style={styles.avatarRing}>
+              <Image source={profilePhoto} style={styles.avatar} />
             </View>
-          </View>
-          <TouchableOpacity style={styles.bellButton} onPress={() => router.push('/(tabs)/notifications')}>
-            <Ionicons name="notifications-outline" size={22} color={colors.white} />
-            <View style={styles.bellDot} />
-          </TouchableOpacity>
-        </View>
-
-       {/* Thin divider, then Settings (left) / History (right) below it */}
-        <View style={styles.divider} />
-        <View style={styles.controlsRow}>
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={() => router.push('/(tabs)/settings')}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="settings-outline" size={16} color={colors.white} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.controlButton}
-            onPress={() => router.push('/(tabs)/history')}
-            activeOpacity={0.7}
-          >
-            
-            <Text style={styles.controlLabel}>History</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Balance card */}
-        <BalanceCard />
-<TransactionTicker transactions={transactions} />
-<AdTicker />
-<PromoCarousel />
-
-        {/* Quick actions — sit directly on page background, no card wrapper */}
-        <View style={styles.quickActionsRow}>
-          {QUICK_ACTIONS.map((action) => (
+            <Text style={styles.greeting}>Hi,</Text>
+            <Text style={styles.userName} numberOfLines={1}>{firstName}</Text>
             <TouchableOpacity
-              key={action.id}
-              style={styles.quickAction}
-              onPress={() => handleQuickAction(action.id)}
+              style={styles.bell}
+              onPress={() => router.push('/(tabs)/notifications')}
+              accessibilityRole="button"
+              accessibilityLabel="Notifications"
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <DesignIcon icon={headerIcons.bell} color={colors.textDark} />
+            </TouchableOpacity>
+            <View style={styles.divider} />
+          </View>
+
+          {/* Menu icon (left) and History (right). The design doesn't say what the menu opens. */}
+          <View style={styles.menuStrip}>
+            <View style={styles.menuIcon}>
+              <DesignIcon icon={headerIcons.menu} color={colors.headerMenuIcon} />
+            </View>
+            <TouchableOpacity
+              style={styles.history}
+              onPress={() => router.push('/(tabs)/history')}
               activeOpacity={0.7}
             >
-              <View style={styles.quickActionIcon}>
-                <Ionicons name={action.icon as any} size={22} color={colors.textDark} />
-              </View>
-              <Text style={styles.quickActionLabel}>{action.label}</Text>
+              <Text style={styles.historyLabel}>History</Text>
             </TouchableOpacity>
-          ))}
+          </View>
+        </View>
+
+        <BalanceCard />
+
+        {/* Send / Pay / Top up / More */}
+        <View style={styles.quickActionsRow}>
+          {QUICK_ACTIONS.map((action) => {
+            const icon = homeIcons[action.id];
+            return (
+              <TouchableOpacity
+                key={action.id}
+                style={styles.quickAction}
+                onPress={() => handleQuickAction(action.id)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.quickActionCircle}>
+                  <View style={{ position: 'absolute', left: icon.left, top: icon.top }}>
+                    <DesignIcon icon={icon} color={colors.textLightDark} />
+                  </View>
+                </View>
+                <Text style={styles.quickActionLabel}>{action.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Recent transactions */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/history')}>
-              <Text style={styles.seeAll}>See All</Text>
-            </TouchableOpacity>
-          </View>
-
-          {recentTransactions.length === 0 ? (
-            <Text style={styles.emptyText}>No transactions yet</Text>
-          ) : (
-            <View style={styles.transactionsList}>
-              {recentTransactions.map((t) => (
-                <TransactionItem key={t.id} transaction={t} />
-              ))}
-            </View>
-          )}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Transactions</Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/history')}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
+
+        {recentTransactions.length === 0 ? (
+          <Text style={styles.emptyText}>No transactions yet</Text>
+        ) : (
+          <View style={styles.transactionsList}>
+            {recentTransactions.map((t) => (
+              <TransactionItem key={t.id} transaction={t} />
+            ))}
+          </View>
+        )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  
-  safeArea: { flex: 1, backgroundColor: colors.darkNavy },
+  screen: { flex: 1, backgroundColor: colors.pageBackground },
 
-  scroll: { flex: 1, backgroundColor: colors.darkNavy },
+  scroll: { flex: 1 },
 
-  scrollContent: { paddingBottom: spacing.xxxl, backgroundColor: colors.darkNavy },
-  
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.sm,
-    marginTop: spacing.xxxl + 20,
-  },
-  identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingLeft: spacing.lg, },
-  
-  avatar: { width: 40, height: 40, borderRadius: radius.pill },
-  avatarFallback: {
-    width: 40,
-    height: 40,
+  scrollContent: { paddingBottom: spacing.xxxl },
+
+  header: { backgroundColor: colors.white },
+
+  identityStrip: { height: layout.homeHeaderHeight },
+
+  avatarRing: {
+    position: 'absolute',
+    left: layout.homeAvatarLeft,
+    top: layout.homeAvatarTop,
+    width: layout.homeAvatarRing,
+    height: layout.homeAvatarRing,
     borderRadius: radius.pill,
-    backgroundColor: colors.inputBackground,
     borderWidth: 1,
-    borderColor: colors.borderLight,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: colors.avatarRing,
+    overflow: 'hidden',
   },
+  avatar: { width: '100%', height: '100%' },
+
   greeting: {
-    fontSize: fontSize.small,
+    position: 'absolute',
+    left: layout.homeNameLeft,
+    top: layout.homeGreetingTop,
+    fontSize: fontSize.body,
+    lineHeight: 17,
     fontFamily: fontFamily.regular,
-    color: colors.base,
+    color: colors.textGrey,
   },
   userName: {
-    fontSize: fontSize.heading2,
-    fontFamily: fontFamily.bold,
-    fontWeight: fontWeight.bold,
-    color: colors.white,
-  },
-  bellButton: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-  },
-  bellDot: {
     position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.red,
-    borderWidth: 1.5,
-    borderColor: colors.white,
-  },
-divider: {
-    height: 1,
-    backgroundColor: colors.borderLight,
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.sm,
-  },
-  controlsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xs,
-  },
-  controlButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: spacing.sm,
-  },
-  controlLabel: {
-    fontSize: fontSize.small,
+    left: layout.homeNameLeft,
+    right: layout.homeBellRight + spacing.xxl,
+    top: layout.homeNameTop,
+    fontSize: fontSize.heading2,
+    lineHeight: 29,
     fontFamily: fontFamily.medium,
-    color: colors.white,
+    color: colors.black,
   },
+  bell: {
+    position: 'absolute',
+    right: layout.homeBellRight,
+    top: layout.homeBellTop,
+  },
+  divider: {
+    position: 'absolute',
+    left: layout.homeDividerLeft,
+    top: layout.homeDividerTop,
+    width: layout.homeDividerWidth,
+    height: layout.homeDividerHeight,
+    backgroundColor: colors.borderLight,
+  },
+
+  menuStrip: { height: layout.headerMenuHeight, justifyContent: 'center' },
+  menuIcon: { paddingLeft: layout.homeMenuLeft },
+  history: {
+    position: 'absolute',
+    right: layout.homeHistoryRight,
+    top: layout.homeHistoryTop,
+  },
+  historyLabel: {
+    fontSize: fontSize.body,
+    lineHeight: 17,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+  },
+
   quickActionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.xxl,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.xl,
+    paddingHorizontal: layout.homeActionsSidePadding,
+    marginTop: layout.homeActionsTop,
   },
-
-  quickAction: { alignItems: 'center', gap: spacing.xs },
-
-  quickActionIcon: {
-    width: 52,
-    height: 52,
+  quickAction: { flex: 1, alignItems: 'center' },
+  quickActionCircle: {
+    width: layout.homeActionCircle,
+    height: layout.homeActionCircle,
     borderRadius: radius.pill,
     backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 4,
+    // Soft grey glow all round, as in the design
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
   },
   quickActionLabel: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.white,
+    marginTop: layout.homeActionLabelGap,
+    fontSize: fontSize.body,
+    lineHeight: 17,
+    fontFamily: fontFamily.regular,
+    color: colors.textNavy,
   },
-  section: { marginTop: spacing.xl },
+
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.sm,
+    paddingHorizontal: layout.balanceCardSideMargin,
+    marginTop: layout.homeRecentTop,
   },
   sectionTitle: {
-    fontSize: fontSize.large,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
-    fontWeight: fontWeight.bold,
-    marginBottom: spacing.md, 
+    fontSize: fontSize.heading3,
+    lineHeight: 22,
+    fontFamily: fontFamily.bold,
+    color: colors.textLightDark,
   },
   seeAll: {
     fontSize: fontSize.large,
-    fontFamily: fontFamily.medium,
-    color: colors.orange,
-    fontWeight: fontWeight.medium,
+    lineHeight: 19,
+    fontFamily: fontFamily.regular,
+    color: colors.orangeDark,
   },
   transactionsList: {
-    marginHorizontal: spacing.lg,
-    gap: spacing.sm,
+    marginHorizontal: layout.balanceCardSideMargin,
+    marginTop: layout.homeListTop,
+    gap: layout.homeListGap,
   },
   emptyText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.base,
+    color: colors.textGrey,
     textAlign: 'center',
     padding: spacing.xl,
   },

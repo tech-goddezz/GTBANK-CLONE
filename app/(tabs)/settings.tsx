@@ -1,49 +1,66 @@
 // app/(tabs)/settings.tsx
-// Full settings screen. Biometrics toggle is local UI state (no real
-// biometric API wired in — that needs expo-local-authentication, a
-// separate step). Log Out is fully real: clears useAuthStore and sends
-// the user back to onboarding. Card Management row is real navigation.
-// The remaining rows are visual-only for now — see note below.
+// The Settings tab (S37 in "Dashboard flow + transfer flow.pdf").
+//
+// Log Out is fully real: signs out, clears useAuthStore and sends the user back
+// to onboarding (the design's log-out pop-up, S117, comes later).
+// Reset Transaction Pin and Biometrics don't open anything yet — their screens
+// (S111, S115) haven't been built. The two switches only change how they look.
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, ImageSourcePropType } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily, spacing, radius, letterSpacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import { cardIcons } from '../../constants/cardIcons';
 import { useAuthStore } from '../../store/useAuthStore';
 import { signOutUser } from '../../services/auth';
+import ScreenHeader from '../../components/ScreenHeader';
 
 interface SettingsRowProps {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: ImageSourcePropType;
   label: string;
   onPress?: () => void;
   danger?: boolean;
 }
 
-// One reusable row component instead of repeating the same JSX 8 times —
-// each row is just data (icon + label + what happens on tap).
+// One white row: picture icon, spaced-out label, small arrow.
 function SettingsRow({ icon, label, onPress, danger }: SettingsRowProps) {
+  const arrow = cardIcons.rowArrow;
   return (
     <TouchableOpacity
       style={styles.row}
       onPress={onPress}
+      disabled={!onPress}
+      activeOpacity={0.7}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <View style={styles.rowLeft}>
-        <Ionicons
-          name={icon}
-          size={20}
-          color={danger ? colors.red : colors.white}
-        />
-        <Text style={[styles.rowLabel, danger && styles.rowLabelDanger]}>
-          {label}
-        </Text>
-      </View>
-      {!danger && (
-        <Ionicons name="chevron-forward" size={18} color={colors.textFaded} />
-      )}
+      <Image source={icon} style={styles.rowIcon} />
+      <Text style={[styles.rowLabel, danger && styles.rowLabelDanger]} numberOfLines={1}>
+        {label}
+      </Text>
+      <Svg width={arrow.width} height={arrow.height} viewBox={`0 0 ${arrow.width} ${arrow.height}`}>
+        <Path d={arrow.path} fill={colors.cardArrow} fillRule={arrow.fillRule} />
+      </Svg>
+    </TouchableOpacity>
+  );
+}
+
+// The design's switch: orange with a white knob when on; grey with an outline
+// and a small grey knob when off.
+function DesignSwitch({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <TouchableOpacity
+      style={[styles.switchTrack, value ? styles.switchTrackOn : styles.switchTrackOff]}
+      onPress={() => onChange(!value)}
+      activeOpacity={0.8}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: value }}
+      accessibilityLabel={label}
+    >
+      <View style={value ? styles.switchKnobOn : styles.switchKnobOff} />
     </TouchableOpacity>
   );
 }
@@ -52,11 +69,9 @@ export default function SettingsScreen() {
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
 
-  // Local-only for now — flip visually, doesn't persist or touch a real
-  // device biometric API yet. Wiring the real thing needs
-  // expo-local-authentication, which is a reasonable next step later.
-  const [biometricsEnabled, setBiometricsEnabled] = useState(true);
-  const [showProgress, setShowProgress] = useState(true);
+  // Look-only for now: they flip, but don't save or change anything else.
+  const [privateProfile, setPrivateProfile] = useState(true);
+  const [showProgress, setShowProgress] = useState(false);
 
   const handleLogout = async () => {
   await signOutUser();
@@ -64,131 +79,153 @@ export default function SettingsScreen() {
   router.replace('/onboarding');
 };
 
+  const switches = [
+    { label: 'Private profile', value: privateProfile, onChange: setPrivateProfile },
+    { label: 'Show progress', value: showProgress, onChange: setShowProgress },
+  ];
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Manage your account and preferences</Text>
-      </View>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Settings"
+        subtitle="Review and manage your financial activity."
+        showBack={false}
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
 
-      <View style={styles.section}>
-        <SettingsRow
-          icon="lock-closed-outline"
-          label="Change PIN"
-          onPress={() => router.push('/(settings)/change-mpin')}
-        />
-        <SettingsRow
-          icon="keypad-outline"
-          label="Change Transaction Pin"
-          onPress={() => router.push('/(settings)/change-transaction-pin')}
-        />
-        <SettingsRow
-  icon="flag-outline"
-  label="Report Transaction"
-  onPress={() => router.push('/(tabs)/report-transaction')}
-/>
-        <SettingsRow
-  icon="card-outline"
-  label="Card Management"
-  onPress={() => router.push('/(tabs)/cards')}
-/>
-        <SettingsRow
-  icon="person-circle-outline"
-  label="Account Settings"
-  onPress={() => router.push('/(auth)/personal-info')}
-/>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.row}>
-          <View style={styles.rowLeft}>
-            <Ionicons name="finger-print-outline" size={20} color={colors.textDark} />
-            <Text style={styles.rowLabel}>Biometrics</Text>
-          </View>
-          <Switch
-            value={biometricsEnabled}
-            onValueChange={setBiometricsEnabled}
-            trackColor={{ false: colors.borderLight, true: colors.orange }}
-            thumbColor={colors.white}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.rows}>
+          <SettingsRow
+            icon={require('../../assets/images/settings-mpin.png')}
+            label="Change mPin"
+            onPress={() => router.push('/(settings)/change-mpin')}
+          />
+          <SettingsRow
+            icon={require('../../assets/images/settings-mpin.png')}
+            label="Change Transaction Pin"
+            onPress={() => router.push('/(settings)/change-transaction-pin')}
+          />
+          <SettingsRow icon={require('../../assets/images/settings-reset-pin.png')} label="Reset Transaction Pin" />
+          <SettingsRow
+            icon={require('../../assets/images/settings-card.png')}
+            label="Card Management"
+            onPress={() => router.push('/(tabs)/cards')}
+          />
+          <SettingsRow
+            icon={require('../../assets/images/settings-account.png')}
+            label="Account Settings"
+            onPress={() => router.push('/(auth)/personal-info')}
+          />
+          <SettingsRow icon={require('../../assets/images/settings-biometrics.png')} label="Biometrics" />
+          <SettingsRow
+            icon={require('../../assets/images/settings-logout.png')}
+            label="Log  Out"
+            onPress={handleLogout}
+            danger
           />
         </View>
 
-        <SettingsRow icon="person-outline" label="Your profile" onPress={() => router.push('/(auth)/personal-info')} />
-
-        <View style={styles.row}>
-          <View style={styles.rowLeft}>
-            <Ionicons name="stats-chart-outline" size={20} color={colors.textDark} />
-            <Text style={styles.rowLabel}>Show progress</Text>
-          </View>
-          <Switch
-            value={showProgress}
-            onValueChange={setShowProgress}
-            trackColor={{ false: colors.borderLight, true: colors.orange }}
-            thumbColor={colors.white}
-          />
+        <View style={styles.panel}>
+          {switches.map((s, i) => (
+            <View key={s.label}>
+              <View style={[styles.switchRow, { marginTop: i === 0 ? layout.settingsSwitchFirstTop : layout.settingsSwitchTop }]}>
+                <Text style={styles.switchLabel}>{s.label}</Text>
+                <DesignSwitch value={s.value} onChange={s.onChange} label={s.label} />
+              </View>
+              <View style={styles.panelLine} />
+            </View>
+          ))}
         </View>
-
-        <SettingsRow
-          icon="help-circle-outline"
-          label="Get Help"
-          onPress={() => router.push('/(settings)/get-help')}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <SettingsRow
-          icon="log-out-outline"
-          label="Log Out"
-          onPress={handleLogout}
-          danger
-        />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy },
-  scroll: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
-  header: { marginTop: 56, marginBottom: spacing.xl },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-  },
-  subtitle: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.base,
-    marginTop: spacing.xs,
-  },
-  section: {
-    backgroundColor: colors.navyCard,
-    borderRadius: radius.card,
-    marginBottom: spacing.lg,
-    overflow: 'hidden',
+  screen: { flex: 1, backgroundColor: colors.pageBackground },
+  scrollContent: { paddingBottom: spacing.xxxl },
+
+  rows: {
+    marginTop: layout.settingsListTop,
+    marginHorizontal: layout.settingsRowSide,
+    gap: layout.settingsRowGap,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
-  },
-  rowLeft: {
+    height: layout.settingsRowHeight,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    paddingLeft: layout.settingsIconLeft,
+    paddingRight: layout.settingsArrowRight,
+    backgroundColor: colors.white,
+    // Soft shadow all round, as in the design
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    elevation: 3,
   },
+  rowIcon: { width: layout.settingsIcon, height: layout.settingsIcon },
   rowLabel: {
+    flex: 1,
+    marginLeft: layout.settingsLabelGap,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.white,
+    letterSpacing: letterSpacing.settingsRow,
+    color: colors.black,
   },
-  rowLabelDanger: {
-    color: colors.red,
-    fontFamily: fontFamily.medium,
+  rowLabelDanger: { color: colors.redBright },
+
+  panel: {
+    marginTop: layout.settingsPanelTop,
+    marginHorizontal: layout.settingsPanelSide,
+    backgroundColor: colors.settingsPanel,
+    borderRadius: radius.card,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: layout.settingsPanelPadding,
+  },
+  switchLabel: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.poppinsMedium,
+    color: colors.textCharcoal,
+  },
+  panelLine: {
+    height: layout.settingsLine,
+    marginTop: layout.settingsSwitchLineGap,
+    backgroundColor: colors.settingsLine,
+  },
+
+  switchTrack: {
+    width: layout.switchWidth,
+    height: layout.switchHeight,
+    borderRadius: radius.pill,
+    justifyContent: 'center',
+  },
+  switchTrackOn: {
+    backgroundColor: colors.orange,
+    alignItems: 'flex-end',
+    paddingRight: (layout.switchHeight - layout.switchKnobOn) / 2,
+  },
+  switchTrackOff: {
+    backgroundColor: colors.switchOffTrack,
+    borderWidth: layout.switchOutline,
+    borderColor: colors.switchOffOutline,
+    alignItems: 'flex-start',
+    paddingLeft: (layout.switchHeight - layout.switchKnobOff) / 2 - layout.switchOutline,
+  },
+  switchKnobOn: {
+    width: layout.switchKnobOn,
+    height: layout.switchKnobOn,
+    borderRadius: radius.pill,
+    backgroundColor: colors.white,
+  },
+  switchKnobOff: {
+    width: layout.switchKnobOff,
+    height: layout.switchKnobOff,
+    borderRadius: radius.pill,
+    backgroundColor: colors.switchOffOutline,
   },
 });

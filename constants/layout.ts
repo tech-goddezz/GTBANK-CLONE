@@ -92,6 +92,53 @@ export const layout = {
   reqRowHeight: 35.6,     // One row in the list box (5 rows + 1px border top and bottom = 180)
   reqRowPadding: 9,       // Text / icon inset inside the box (10 minus the 1px border)
   reqButtonBottom: 101,   // Proceed button → bottom of the screen
+  // KYC "Open a GTBank Account" (S21): same as above but a wider button.
+  kycButtonWidth: 160,    // "Get Account" button width
+  kycButtonRight: 12,     // Extra gap on its right (28 from the edge instead of 16)
+  kycButtonBottom: 102,   // "Get Account" button → bottom of the screen
+  // KYC "Your date of birth" (S22). Title uses idTitleGap like Identity Verification.
+  dobSubtitleGap: 18,     // Title → grey subtitle
+  dobBoxGap: 21.5,        // Subtitle → date box
+  dobBoxWidth: 362,       // Thin black outline sits half a pixel outside the 361 box
+  dobBoxHeight: 47,
+  dobBoxLeft: -0.5,
+  dobBoxBorder: 0.5,
+  dobTextLeft: 7.5,       // "Date of birth" starts 24 from the screen edge
+  dobIconRight: 8,        // Calendar icon inset from the box's right edge
+  dobButtonRight: 1,      // Proceed ends 17 from the screen edge
+  dobButtonBottom: 105,   // Proceed → bottom of the screen
+  // KYC "Your verification number" (S24/S25). The BVN/NIN switch reuses the codeTabs* sizes.
+  vnTitleGap: 21,         // Back arrow → title
+  vnTabsGap: 2,           // Title → BVN/NIN switch
+  vnSubtitleGap: 26,      // Switch → grey subtitle
+  vnBoxGap: 22,           // Subtitle → grey number box
+  vnBoxPadding: 16,       // Placeholder / number inset inside the box
+  vnHintGap: 17.5,        // Box → "Dial *565*0#…" help text
+  vnButtonBottom: 116,    // Proceed → bottom of the screen
+  // KYC "Provide Address" (S26). Title uses idTitleGap like "Your date of birth".
+  addrSubtitleGap: 29,    // Title → grey subtitle
+  addrBoxGap: 21,         // Subtitle → "State" box
+  addrBoxSpacing: 16,     // Between the grey boxes
+  addrTextLeft: 10,       // Text inset inside each box
+  addrIconRight: 12,      // Small "v" arrow inset from the box's right edge
+  addrIconSize: 12,
+  addrButtonRight: 1,     // Proceed ends 17 from the screen edge
+  addrButtonBottom: 116,  // Proceed → bottom of the screen
+  // KYC "Wait a moment" (S29). Picture and title reuse the success* values.
+  waitSubtitleGap: 7,     // Title → subtitle
+  waitCardGap: 41,        // Subtitle → tier card
+  waitCardLeft: -4.5,     // The card starts 11.5 from the screen edge
+  waitCardWidth: 370,
+  waitCardHeight: 68,
+  waitCardPadLeft: 16,    // "GTBank Tier 1" starts 27.5 from the screen edge
+  waitCardPadRight: 8,    // Grey picture box → card edge
+  waitChevronGap: 10,     // "show details" → small "v" arrow
+  waitChevronSize: 12,
+  waitBoxWidth: 78,
+  waitBoxHeight: 60,
+  waitBoxRadiusLeft: 6,
+  waitCubeLeft: 6,        // Cube picture inset inside the grey box
+  waitCubeWidth: 66,
   // Reset Password (forgot password). Gaps are measured from the design.
   resetSubtitleGap: 11,   // Title → grey subtitle
   resetBoxGap: 32,        // Subtitle → "Account number" box
@@ -178,6 +225,108 @@ export const layout = {
   debitCardHeight: 181,
   balanceCardHeight: 130,
   balanceCardSideMargin: 18,
+  balanceCardTop: 16,       // Menu strip → balance card
+  balanceLabelGap: 10,      // "Total Balance" → the amount
+  // Home screen (S32). Tops are measured from just below the status bar.
+  homeHeaderHeight: 77,     // White strip with the photo, name and bell
+  homeAvatarRing: 50,       // Photo (48) plus its 1px ring
+  homeAvatarLeft: 44.5,
+  homeAvatarTop: 13,
+  homeNameLeft: 101.5,      // "Hi," / name
+  homeGreetingTop: 13.6,
+  homeNameTop: 33.2,
+  homeBellRight: 47.3,
+  homeBellTop: 30.8,
+  homeDividerLeft: 25.5,    // The line under the name
+  homeDividerWidth: 342,
+  homeDividerTop: 70,
+  homeDividerHeight: 2,
+  homeMenuLeft: 18.3,
+  homeHistoryRight: 18,
+  homeHistoryTop: 10.1,     // From the top of the menu strip
+  homeActionsTop: 32,       // Balance card → Send / Pay circles
+  homeActionsSidePadding: 3.67, // Circles centred at 52, 148.7, 245.3 and 342
+  homeActionCircle: 52,
+  homeActionLabelGap: 9.3,  // Circle → label
+  homeRecentTop: 48.5,      // Labels → "Recent Transactions"
+  homeListTop: 19.2,        // "Recent Transactions" → first card
+  homeListGap: 8,           // Between transaction cards
+  // History screen (S33)
+  historySearchTop: 22,     // Menu strip → search box
+  historySideMargin: 17,
+  historySearchHeight: 42,
+  historySearchGap: 16,     // Search box → filter circle
+  historySearchIconLeft: 13.5, // Plus the box's 1px outline = 14.5
+  historySearchTextGap: 12.5, // Magnifying glass → "Search"
+  historyFirstHeadingTop: 37.3, // Search box → "TODAY"
+  historyHeadingTop: 33.3,  // Last card of a day → next day's heading
+  historyHeadingLeft: 21,
+  historyHeadingGap: 13.7,  // Heading → first card
+  historyNameGap: 8.6,      // Name line → "Subscription • 10:24 AM" line
+  // Transactions tab (S35)
+  productPanelTop: 8,       // Menu strip → white panel
+  productPanelSide: 18,     // Screen edge → white panel
+  productPanelPadding: 8,   // White panel edge → cards, and between cards
+  productCardHeight: 269,
+  productBoxInset: 13,      // Card edge → see-through text box (left and right)
+  productBoxBottom: 8.5,    // Text box → bottom of the card
+  productBoxPaddingTop: 7.1,
+  productBoxPaddingBottom: 7.8,
+  productBoxPaddingLeft: 6,
+  productBoxPaddingRight: 7,
+  productTitleGap: 3.4,     // Title → description
+  productArrowGap: 3,       // Text → arrow
+  // Transfers tab (S36). Gaps are between the bottom of one thing and the top of the next.
+  trackSide: 18,            // Screen edge → text
+  trackIntroTop: 16.4,      // Menu strip → "Be able to know..."
+  trackBannerTop: 24.6,     // Intro → steps banner picture
+  trackBannerLeft: 40.5,
+  trackBannerWidth: 312,
+  trackBannerHeight: 36.3,
+  trackParagraphTop: 23.9,  // Banner → "Track your daily transfers..."
+  trackStripTop: 24.1,      // Paragraph → white steps strip
+  trackStripSide: 16,
+  trackStripHeight: 65.4,
+  trackStepLabelTop: 15.4,  // Strip top → step names
+  trackStepCircleGap: 6.6,  // Step name → coloured circle
+  trackStepCircle: 24,
+  trackStepCentres: [50.6, 131, 212.4, 301.6], // Middle of each step, from the strip's left edge
+  trackStepWidth: 80,
+  trackRobotWidth: 16,
+  trackRobotHeight: 16.4,
+  trackNoteTop: 14.2,       // Strip → "NB: ..."
+  trackNoteLeft: 16,
+  trackMiddleHeight: 141,   // Area holding the ring chart and the two round buttons
+  trackChartLeft: 21,
+  trackChartTop: 34.1,
+  trackButtonLeft: 319,
+  trackButtonTop: 10.1,
+  trackButtonSize: 56,
+  trackButtonGap: 8,
+  trackQueryTop: 17.1,      // "Having issues..." → Query Transfer button
+  trackQuerySide: 15,
+  trackQueryHeight: 48,
+  // Settings tab (S37)
+  settingsListTop: 36,      // Menu strip → first row
+  settingsRowSide: 26,
+  settingsRowHeight: 46,
+  settingsRowGap: 8,
+  settingsIconLeft: 8,
+  settingsIcon: 16,
+  settingsLabelGap: 8,      // Icon → label
+  settingsArrowRight: 9.9,
+  settingsPanelTop: 26,     // Last row → switch panel
+  settingsPanelSide: 18,
+  settingsPanelPadding: 8,  // Panel edge → label / switch
+  settingsSwitchFirstTop: 9, // Panel top → first switch
+  settingsSwitchTop: 23,    // Line → next switch
+  settingsSwitchLineGap: 7, // Switch → line under it
+  settingsLine: 2,
+  switchWidth: 52,
+  switchHeight: 32,
+  switchKnobOn: 24,
+  switchKnobOff: 16,
+  switchOutline: 2,
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes
@@ -193,7 +342,10 @@ export const radius = {
   card: 8,       // White cards
   row: 16,       // Transaction / list rows
   codeBox: 8,    // The 6-digit code boxes
-  balanceCard: 18,
+  balanceCard: 0,  // Square corners in the design
+  searchBox: 4,    // History search box
+  productTextBox: 7, // See-through text box on the Transactions tab cards
+  trackButton: 16,   // Robot and chat buttons on the Transfers tab
   button: 0,     // Buttons have square corners in the design
   buttonLarge: 8, // Except the large "Apply Filters" button
   buttonTrans: 20,

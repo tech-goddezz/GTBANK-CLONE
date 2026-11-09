@@ -46,6 +46,9 @@ const colors = {
   // Labels in the Filter Transactions sheet.
   textLabel: '#404446',
 
+  // "TODAY" / "YESTERDAY" headings on the History screen.
+  textDateHeading: '#45464D',
+
   // Send / Pay / Top up / More labels on the home screen.
   textNavy: '#060F27',
 
@@ -155,6 +158,36 @@ const colors = {
   headerDivider: '#E2E8F0',
   headerMenuIcon: '#757575',
 
+  // Transactions tab cards: background colours, the see-through white text box,
+  // and the small arrow.
+  cardLoans: '#FBC774',
+  cardMoneyMarket: '#F9829E',
+  cardDollarFund: '#D0C358',
+  cardTextBox: 'rgba(255, 255, 255, 0.45)',
+  cardArrow: '#262020',
+
+  // Transfers tab (S36): the step colours (also used in the ring chart), the
+  // grey part of the ring chart, and the orange chat button icon.
+  stepInitial: '#55C3B1',
+  stepSent: '#C35557',
+  stepTransit: '#000000',
+  stepCredited: '#FF6130',
+  chartGrey: '#D9D9D9',
+  chatIcon: '#F24822',
+
+  // Settings tab (S37): the faint panel behind the switches, its thin lines,
+  // and the "off" switch (grey track, darker outline and knob).
+  settingsPanel: 'rgba(248, 246, 246, 0.25)',
+  settingsLine: 'rgba(0, 0, 0, 0.08)',
+  switchOffTrack: '#E6E0E9',
+  switchOffOutline: '#79747E',
+
+  // Light orange outline of the History search box while it's tapped.
+  searchFocusBorder: '#FFD6B3',
+
+  // Thin ring around the profile photo on the home screen.
+  avatarRing: '#E8E8E8',
+
   // The "Copy" link on the Congrats pop-up.
   copyLink: '#9A2E02',
 
@@ -179,6 +212,7 @@ const colors = {
   successRingInner: '#C1C6D4',
   successRingMiddle: '#C8CBD4',
   successRingOuter: '#EEF0F8',
+  tierCard: '#F9F4F4',        // "GTBank Tier 1" card on the Wait a moment screen
 
   // The highlighted option in the "from SMS / Tokens" switch.
   segmentActive: '#F5F5F5',

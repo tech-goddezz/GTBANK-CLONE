@@ -1,331 +1,242 @@
 // app/(auth)/identity.tsx
-// Selfie/identity verification step. SIMULATED capture — no real camera
-// wired in yet (that needs the expo-camera package + device permissions).
-//
-// Matches the Figma "Identity Verification" frames:
-//   1. Intro screen — camera illustration, consent line, "Start" button.
-//   2. Capture screen — circular face frame with a dashed border, a
-//      two-segment progress bar, a single instruction line, "Next" button.
-// From there it hands off to success.tsx ("Wait a moment" processing screen).
-// Both screens share "Need help?" top-right and no back arrow (per design).
+// KYC identity verification (S27 camera / S28 face scan in Kyc flow.pdf).
+// SIMULATED — no real camera yet (that needs expo-camera + permissions).
+// Same look as the approved forgot-password identity screens. "Next" marks
+// identity as done and returns to the requirements checklist.
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing } from '../../constants/typography';
+import { fontSize, fontFamily, lineHeight, spacing } from '../../constants/typography';
+import { layout } from '../../constants/layout';
 import Button from '../../components/Button';
 import { useKycStore } from '../../store/useKycStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { updateIdentityVerified } from '../../services/auth';
-import Svg, { Circle } from 'react-native-svg';
-import ScreenScroll from '../../components/ScreenScroll';
 
-type Step = 'intro' | 'capturing';
+type Step = 'camera' | 'scan';
 
-// The dashed ring color around the face frame — a dark maroon in the
-// design, distinct from the app's usual orange accent.
-const RING_COLOR = '#8B0A0A';
+const RING_CENTER = layout.idRingSize / 2;
 
 export default function IdentityScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{
-    dob: string;
-    verificationType: string;
-    verificationNumber: string;
-    state: string;
-    city: string;
-  }>();
-
-  const [step, setStep] = useState<Step>('intro');
+  const insets = useSafeAreaInsets();
+  const [step, setStep] = useState<Step>('camera');
   const markIdentityDone = useKycStore((state) => state.markIdentityDone);
   const userId = useAuthStore((state) => state.user?.id);
 
+  // Last step in the chain — mark this requirement done and go back to
+  // the requirements screen so the user sees it ticked off.
   const handleContinue = async () => {
-  await updateIdentityVerified(userId ?? '');
-  markIdentityDone();
-  router.replace('/(auth)/requirements');
-};
-    // Last step in the chain — mark this requirement done and go back to
-    // the requirements screen so the user sees all four checked off,
-    // instead of skipping straight to the "Wait a moment" screen.
+    await updateIdentityVerified(userId ?? '');
+    markIdentityDone();
+    router.replace('/(auth)/requirements');
+  };
+
+  // On the face scan screen the back arrow returns to the camera screen.
+  const handleBack = () => (step === 'scan' ? setStep('camera') : router.back());
 
   return (
-    <ScreenScroll>
-      <View style={styles.container}>
-        <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-          </TouchableOpacity>
-        <View style={styles.topRow}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.scroll, { paddingTop: Math.max(insets.top, layout.statusBarHeight) }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBack}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="Go back"
+      >
+        <MaterialIcons name="arrow-back" size={layout.backArrowSize} color={colors.black} />
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.helpLink, { top: Math.max(insets.top, layout.statusBarHeight) + layout.helpLinkTop }]}>
+        <Text style={styles.helpText}>Need help?</Text>
+      </TouchableOpacity>
 
-          <TouchableOpacity>
-            <Text style={styles.needHelp}>Need help?</Text>
-          </TouchableOpacity>
-        </View>
+      <Text style={styles.title}>Identity Verification</Text>
 
-        <View style={styles.header}>
-          <Text style={styles.title}>Identity Verification</Text>
+      {step === 'camera' ? (
+        <>
+          {/* Line breaks copied from the design */}
           <Text style={styles.subtitle}>
-            {step === 'intro'
-              ? 'Now find a well lit spot and take a photo of your face so we know its really you. To proceed, click "Start" or select another method if you are unable to take a photo'
-              : 'Please follow all the instructions given below'}
+            {'Now find a well lit spot and take a photo of your face\nso we know its really you. To proceed, click “Start” or select another method if you are unable to take a\nphoto'}
           </Text>
-        </View>
 
-        {step === 'intro' ? (
-          <>
-            {/* Camera illustration — real asset exported from Figma */}
-            <View style={styles.illustrationWrap}>
-              <Image
-                source={require('../../assets/images/camera-illustration.png')}
-                style={styles.cameraImage}
-                resizeMode="contain"
-              />
-            </View>
+          <Image
+            source={require('../../assets/images/camera-illustration.png')}
+            style={styles.cameraImage}
+            resizeMode="contain"
+          />
 
-            <Text style={styles.consent}>
-              By pressing start, I give my consent to the collection and processing of my personal data
-            </Text>
+          <Text style={styles.consent}>
+            By pressing start, I give my consent to the collection and processing of my personal data
+          </Text>
 
-            <View style={styles.buttonArea}>
-              <Button
-                label="Start"
-                onPress={() => setStep('capturing')}
-                style={styles.compactButton}
-              />
-            </View>
-          </>
-        ) : (
-          <>
+          <Button label="Start" onPress={() => setStep('scan')} style={styles.startButton} />
+        </>
+      ) : (
+        <>
+          <Text style={[styles.subtitle, styles.scanSubtitle]}>
+            Please follow all the instructions given below
+          </Text>
+
+          {/* Coral "recording" icon on the left, close X on the right */}
+          <View style={styles.iconRow}>
+            <Svg width={layout.idRecordSize} height={layout.idRecordSize} viewBox="0 0 14 14" style={styles.recordIcon}>
+              <Circle cx={7} cy={7} r={6.5} stroke={colors.recordIcon} strokeWidth={1} fill="none" />
+              <Rect x={4} y={4} width={6} height={6} rx={1} fill={colors.recordIcon} />
+            </Svg>
             <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setStep('intro')}
+              onPress={() => setStep('camera')}
+              hitSlop={12}
               accessibilityRole="button"
-              accessibilityLabel="Cancel capture"
+              accessibilityLabel="Cancel face scan"
+              style={styles.closeButton}
             >
-              <Ionicons name="close" size={22} color={colors.textDark} />
+              {/* Bold X, shape copied from the design */}
+              <Svg width={layout.idIconSize} height={layout.idIconSize} viewBox="-8 -8 16 16">
+                <Path
+                  d="M1.69 0L4.52 2.82L2.82 4.52L0 1.7L-2.84 4.53L-4.53 2.83L-1.7 0L-4.53 -2.83L-2.84 -4.53L0 -1.7L2.83 -4.52L4.52 -2.82Z"
+                  fill={colors.textDark}
+                />
+              </Svg>
             </TouchableOpacity>
+          </View>
 
-            {/* Small red dot with a lighter ring around it — indicates the
-                camera is "live" during capture */}
-            <View style={styles.activeDotRing}>
-              <View style={styles.activeDotCenter} />
-            </View>
-
-            <View style={styles.frameWrapper}>
-              <View style={styles.dashedRingWrapper}>
-                {/* SVG circle instead of a plain View border — this is the
-                    only way to control dash LENGTH (not just width) in
-                    React Native. strokeDasharray="14 10" means: draw a
-                    14px dash, then leave a 10px gap, repeat. Bump the first
-                    number up for longer dashes, the second for bigger gaps. */}
-                <Svg
-                  width={300}
-                  height={300}
-                  style={StyleSheet.absoluteFill}
-                >
-                  <Circle
-                    cx={150}
-                    cy={150}
-                    r={148}
-                    stroke={RING_COLOR}
-                    strokeWidth={3}
-                    strokeDasharray="40 30"
-                    fill="none"
-                  />
-                </Svg>
-
-                <View style={styles.frame}>
-                  <Image
-                    source={require('../../assets/images/verification-face.png')}
-                    style={styles.faceImage}
-                    resizeMode="cover"
-                  />
-                </View>
-              </View>
-            </View>
-
-            {/* Two-segment progress bar — matches the design's capture
-                progress indicator (mostly filled, small remainder). */}
-            <View style={styles.progressRow}>
-              <View style={styles.progressFilled} />
-              <View style={styles.progressRemaining} />
-            </View>
-
-            <Text style={styles.captureInstruction}>
-              Don&apos;t blink your eyes while on the camera. Camera automatically captures
-            </Text>
-
-            <View style={styles.buttonArea}>
-              <Button
-                label="Next"
-                onPress={handleContinue}
-                style={styles.compactButton}
+          {/* Face photo inside a ring of 12 rounded red dashes */}
+          <View style={styles.ring}>
+            <Svg width={layout.idRingSize} height={layout.idRingSize} style={StyleSheet.absoluteFill}>
+              <Circle
+                cx={RING_CENTER}
+                cy={RING_CENTER}
+                r={layout.idRingRadius}
+                stroke={colors.scanRing}
+                strokeWidth={layout.idRingStroke}
+                strokeLinecap="round"
+                strokeDasharray={`${layout.idRingDash} ${layout.idRingGapLength}`}
+                strokeDashoffset={layout.idRingDash / 2}
+                fill="none"
               />
-            </View>
-          </>
-        )}
-      </View>
-    </ScreenScroll>
+            </Svg>
+            <Image
+              source={require('../../assets/images/verification-face.png')}
+              style={styles.faceImage}
+              resizeMode="cover"
+            />
+          </View>
+
+          <View style={styles.barsRow}>
+            <View style={[styles.bar, styles.barLong]} />
+            <View style={[styles.bar, styles.barShort]} />
+          </View>
+
+          <Text style={styles.instruction}>
+            Don't blink your eyes while on the camera. Camera automatically captures
+          </Text>
+
+          <Button
+            label="Next"
+            onPress={handleContinue}
+            style={styles.nextButton}
+          />
+        </>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
-  topRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: spacing.sm - 50,
-    marginBottom: spacing.lg  + 10,
-  },
-
+  container: { flex: 1, backgroundColor: colors.white },
+  scroll: { flexGrow: 1, paddingHorizontal: layout.screenPadding, paddingBottom: spacing.xxxl },
   backButton: {
-    marginTop: 70,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
+    alignSelf: 'flex-start',
+    marginTop: layout.backArrowTop,
+    marginLeft: layout.backArrowLeft,
   },
-  needHelp: {
-    fontSize: fontSize.body + 3,
-    fontFamily: fontFamily.semibold,
+  helpLink: {
+    position: 'absolute',
+    right: layout.screenPadding + layout.helpLinkRight,
+  },
+  helpText: {
+    fontSize: fontSize.needHelp,
+    lineHeight: lineHeight.needHelp,
+    fontFamily: fontFamily.poppinsRegular,
     color: colors.orange,
-    paddingTop: spacing.sm, 
   },
-
-  header: { marginBottom: spacing.xl },
   title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    marginBottom: spacing.sm,
+    fontSize: fontSize.heading2,
+    lineHeight: lineHeight.heading2,
+    fontFamily: fontFamily.medium,
+    color: colors.black,
+    marginTop: layout.idTitleGap,
+    marginLeft: layout.idTitleLeft,
   },
   subtitle: {
     fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
-    color: colors.base,
-    lineHeight: 22,
-  },
- illustrationWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 300,
-    marginBottom: spacing.xl,
+    color: colors.textGrey,
+    marginTop: layout.idSubtitleGap,
   },
   cameraImage: {
-    width: 400,
-    height: 400,
+    width: layout.idCameraWidth,
+    height: layout.idCameraHeight,
+    marginTop: layout.idCameraGap,
+    marginLeft: layout.idCameraLeft,
   },
   consent: {
     fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.base,
-    lineHeight: 20,
-    marginTop: spacing.sm - 30,
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-
- activeDotRing: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#FFBBB2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
-    marginBottom: spacing.lg,
-    marginTop: spacing.sm - 60,
-  },
-  activeDotCenter: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FF7866',
-  },
-
-  frameWrapper: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
- dashedRingWrapper: {
-    width: 300,
-    height: 300,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  frame: {
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#161616',
-    overflow: 'hidden',
-  },
-  faceImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 130,
-  },
-
-  progressRow: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    marginBottom: spacing.lg,
-  },
-
-
-  progressFilled: {
-    flex: 4,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#FF9D3A',
-  },
-  progressRemaining: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#CC6600',
-  },
-
-
-  captureInstruction: {
-    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
-    lineHeight: 20,
+    marginTop: layout.idConsentGap,
   },
-  buttonArea: {
-    marginTop: 'auto',
-    marginBottom: spacing.xxxl + 70,
-    alignItems: 'flex-end',
+  startButton: { alignSelf: 'flex-end', paddingHorizontal: 0, width: layout.idStartWidth, marginTop: layout.idStartGap },
+  scanSubtitle: { marginTop: layout.idScanSubtitleGap, marginLeft: layout.idTitleLeft },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: layout.idIconSize,
+    marginTop: layout.idIconsGap,
   },
-  compactButton: {
-    paddingHorizontal: spacing.xxxl,
-    height: 44,
+  recordIcon: { marginLeft: layout.idRecordLeft },
+  closeButton: { marginRight: layout.idCloseRight },
+  ring: {
+    width: layout.idRingSize,
+    height: layout.idRingSize,
+    marginTop: layout.idRingGap,
+    marginLeft: layout.idRingLeft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  faceImage: {
+    width: layout.idFaceSize,
+    height: layout.idFaceSize,
+    borderRadius: layout.idFaceSize / 2,
+  },
+  barsRow: {
+    flexDirection: 'row',
+    gap: layout.idBarSpacing,
+    marginTop: layout.idBarsGap,
+    marginLeft: layout.idBarsLeft,
+  },
+  bar: { height: layout.idBarHeight, borderRadius: layout.idBarHeight / 2 },
+  barLong: { width: layout.idBarLong, backgroundColor: colors.scanProgress },
+  barShort: { width: layout.idBarShort, backgroundColor: colors.scanProgressRest },
+  instruction: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+    marginTop: layout.idInstructionGap,
+    marginLeft: layout.idTitleLeft,
+  },
+  nextButton: { alignSelf: 'flex-end', paddingHorizontal: 0, width: layout.idNextWidth, marginTop: layout.idNextGap },
 });
-
-
-// buttonArea: {
-//     marginTop: 'auto',
-//     marginBottom: spacing.xxxl + 70,
-//     alignItems: 'flex-end',
-//   },
-//   compactButton: {
-//     paddingHorizontal: spacing.xxxl,
-//     height: 45,
-//   },

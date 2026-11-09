@@ -20,12 +20,14 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, fontWeight, radius } from '../../constants/typography';
+import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import { historyIcons } from '../../constants/historyIcons';
+import ScreenHeader from '../../components/ScreenHeader';
 import { useEffect } from 'react';
 import { fetchTransactions, getCurrentUserId } from '../../services/auth';
 import { formatDate } from '../../constants/mockData';
@@ -36,12 +38,24 @@ import FilterTransactionsSheet, { TransactionFilters, noFilters } from '../../co
 // date chooser in the design yet, so it doesn't narrow the list.
 const dateRangeDays: Record<string, number> = { '30days': 30, '3months': 91 };
 
+function DesignIcon({ icon, color }: { icon: { width: number; height: number; path: string; fillRule: 'nonzero' | 'evenodd' }; color: string }) {
+  return (
+    <Svg width={icon.width} height={icon.height} viewBox={`0 0 ${icon.width} ${icon.height}`}>
+      <Path d={icon.path} fill={color} fillRule={icon.fillRule} />
+    </Svg>
+  );
+}
+
 export default function HistoryScreen() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<any[]>([]);
 const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<TransactionFilters>(noFilters);
   const [showFilters, setShowFilters] = useState(false);
+  // While the search box is tapped (S34) it gets an orange outline, and the list
+  // stays hidden until the user types something.
+  const [searchFocused, setSearchFocused] = useState(false);
+  const hideList = searchFocused && query.trim() === '';
 
 useEffect(() => {
   const loadTransactions = async () => {
@@ -92,43 +106,37 @@ useEffect(() => {
   }, [filtered]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-           
-          </TouchableOpacity>
-          <View style={styles.headerTitleBlock}>
-            <Text style={styles.title}>History</Text>
-            <Text style={styles.subtitle}>Review and manage your financial activity</Text>
-          </View>
-          <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={22} color={colors.textDark}/>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="History"
+        subtitle="Review and manage your financial activity"
+        showBack={false}
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
 
-        {/* Search bar */}
-        <View style={styles.searchRow}>
-          <View style={styles.searchBar}>
-            <Ionicons name="search" size={18} color={colors.textFaded} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search"
-              placeholderTextColor={colors.textFaded}
-              value={query}
-              onChangeText={setQuery}
-              returnKeyType="search"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setShowFilters(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Filter transactions"
-          >
-            <Ionicons name="options-outline" size={18} color={colors.textDark} />
-          </TouchableOpacity>
+      {/* Search box and round filter button */}
+      <View style={styles.searchRow}>
+        <View style={[styles.searchBar, searchFocused && styles.searchBarFocused]}>
+          <DesignIcon icon={historyIcons.search} color={colors.textDark} />
+          <TextInput
+            style={styles.searchInput}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            placeholder={searchFocused ? '' : 'Search'}
+            placeholderTextColor={colors.textPlaceholder}
+            value={query}
+            onChangeText={setQuery}
+            returnKeyType="search"
+          />
         </View>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => setShowFilters(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Filter transactions"
+        >
+          <DesignIcon icon={historyIcons.filter} color={colors.textDark} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -137,12 +145,12 @@ useEffect(() => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {sections.length === 0 ? (
+        {hideList ? null : sections.length === 0 ? (
           <Text style={styles.emptyText}>No transactions found</Text>
         ) : (
-          sections.map((section) => (
+          sections.map((section, i) => (
             <View key={section.label}>
-              <Text style={styles.dateLabel}>{section.label}</Text>
+              <Text style={[styles.dateLabel, i > 0 && styles.dateLabelLater]}>{section.label}</Text>
               <View style={styles.transactionsList}>
                 {section.items.map((t) => (
                   <TransactionItem key={t.id} transaction={t} variant="history" />
@@ -162,93 +170,70 @@ useEffect(() => {
         }}
         onClose={() => setShowFilters(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.pageBackground },
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-    backgroundColor: colors.pageBackground,
-  },
-
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-
-  headerTitleBlock: { 
-    flex: 1,
-    marginLeft: -10,
-   },
-
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.textDark,
-    marginTop: spacing.xxxl + 10,
-  },
-  subtitle: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-    marginTop: 2,
-  },
+  screen: { flex: 1, backgroundColor: colors.background },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.lg,
+    gap: layout.historySearchGap,
+    marginTop: layout.historySearchTop,
+    marginHorizontal: layout.historySideMargin,
   },
   searchBar: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
-    backgroundColor: colors.white,
-    borderRadius: radius.button,
-    paddingHorizontal: spacing.md,
-    height: 44,
+    gap: layout.historySearchTextGap,
+    height: layout.historySearchHeight,
+    paddingLeft: layout.historySearchIconLeft,
+    backgroundColor: colors.lighter,
+    borderRadius: radius.searchBox,
+    // Invisible until tapped, so the box doesn't change size
     borderWidth: 1,
-    borderColor: colors.borderLight,
+    borderColor: colors.lighter,
   },
-
+  searchBarFocused: { borderColor: colors.searchFocusBorder },
   searchInput: {
     flex: 1,
-    fontSize: fontSize.body,
+    alignSelf: 'stretch',
+    fontSize: fontSize.large,
     fontFamily: fontFamily.regular,
     color: colors.textDark,
-  },
+    outlineStyle: 'none',
+  } as any,
   filterButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.button,
+    width: layout.historySearchHeight,
+    height: layout.historySearchHeight,
+    borderRadius: radius.pill,
     backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
+    // Soft grey glow all round, as in the design
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
   },
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: spacing.xxxl },
   dateLabel: {
-    fontSize: fontSize.tiny ?? 10,
-    fontFamily: fontFamily.medium,
-    color: colors.textFaded,
-    letterSpacing: 0.5,
-    paddingHorizontal: spacing.xl,
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
+    fontSize: fontSize.body,
+    lineHeight: 17,
+    fontFamily: fontFamily.regular,
+    color: colors.textDateHeading,
+    paddingLeft: layout.historyHeadingLeft,
+    marginTop: layout.historyFirstHeadingTop,
+    marginBottom: layout.historyHeadingGap,
   },
+  dateLabelLater: { marginTop: layout.historyHeadingTop },
   transactionsList: {
-    backgroundColor: colors.white,
-    marginHorizontal: spacing.lg,
-    borderRadius: radius.card,
-    overflow: 'hidden',
+    marginHorizontal: layout.historySideMargin,
+    gap: layout.homeListGap,
   },
   emptyText: {
     fontSize: fontSize.body,
