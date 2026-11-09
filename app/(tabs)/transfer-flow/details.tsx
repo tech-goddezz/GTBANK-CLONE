@@ -1,7 +1,7 @@
 // app/(tabs)/transfer-flow/details.tsx
 //
 // Send form (S47 GTBank in "Screens inside the home screen.pdf"; S48 Different
-// Bank uses the same page with a bank box). Reads the bank type from the URL.
+// Bank uses the same page with a bank box styled like a Send row). Reads the bank type from the URL.
 //
 // Labels sit above light grey boxes; the found account name shows as plain text
 // under the destination box. Checks and the next step (confirm) are unchanged.
@@ -21,7 +21,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
 import { layout } from '../../../constants/layout';
@@ -48,6 +48,9 @@ export default function TransferDetailsScreen() {
   const router = useRouter();
   const { bank } = useLocalSearchParams<{ bank: string }>();
   const isGtbank = bank === 'gtbank';
+  // Saved Beneficiaries (S49): the Different Bank form with 'Beneficiary' wording
+  // and the name in its own white box.
+  const isSaved = bank === 'saved';
   const [realBalance, setRealBalance] = useState(0);
   const [myAccountNumber, setMyAccountNumber] = useState('');
 
@@ -129,22 +132,31 @@ export default function TransferDetailsScreen() {
             </>
           ) : (
             <>
-              <Text style={styles.label}>Recipient Bank</Text>
+              <Text style={styles.label}>{isSaved ? 'Beneficiary Bank' : 'Recipient Bank'}</Text>
+              {/* Looks like a picked row on the Send page: grey circle until a bank is chosen */}
               <TouchableOpacity
                 style={[styles.box, styles.bankBox]}
                 onPress={() => setShowBankPicker(true)}
+                accessibilityRole="button"
               >
-                <Text style={[styles.boxText, !selectedBank && styles.hint]}>
+                <View
+                  style={[
+                    styles.bankCircle,
+                    { backgroundColor: selectedBank ? colors.orange : colors.sendCircle },
+                  ]}
+                >
+                  <MaterialIcons name="account-balance" size={layout.sendIcon} color={colors.white} />
+                </View>
+                <Text style={[styles.boxText, styles.bankName, !selectedBank && styles.hint]} numberOfLines={1}>
                   {selectedBank || 'Select bank'}
                 </Text>
-                <Ionicons name="chevron-down" size={16} color={colors.textGrey} />
               </TouchableOpacity>
               {!!errors.bank && <Text style={styles.errorText}>{errors.bank}</Text>}
             </>
           )}
 
           <Text style={[styles.label, styles.nextLabel]}>
-            {isGtbank ? 'Destination Account' : 'Recipient Account'}
+            {isGtbank ? 'Destination Account' : isSaved ? 'Beneficiary Account' : 'Recipient Account'}
           </Text>
           <TextInput
             style={[styles.box, styles.boxText, noOutline]}
@@ -160,7 +172,23 @@ export default function TransferDetailsScreen() {
           />
           {!!errors.account && <Text style={styles.errorText}>{errors.account}</Text>}
 
-          {showName && (
+          {isSaved && (
+            <>
+              <Text style={[styles.label, styles.nextLabel]}>Beneficiary Name</Text>
+              {/* Filled in by the account lookup; can't be typed in */}
+              <View style={[styles.box, styles.nameBox]}>
+                {resolvingName ? (
+                  <Text style={[styles.boxText, styles.hint]}>Verifying account...</Text>
+                ) : (
+                  <Text style={[styles.boxText, !resolvedName && styles.hint]} numberOfLines={1}>
+                    {resolvedName || 'Name appears here'}
+                  </Text>
+                )}
+              </View>
+            </>
+          )}
+
+          {!isSaved && showName && (
             <View style={styles.nameRow}>
               {resolvingName ? (
                 <>
@@ -173,7 +201,7 @@ export default function TransferDetailsScreen() {
             </View>
           )}
 
-          <Text style={[styles.label, showName ? styles.labelAfterName : styles.nextLabel]}>
+          <Text style={[styles.label, showName && !isSaved ? styles.labelAfterName : styles.nextLabel]}>
             {isGtbank ? 'Amount' : 'Amount to Send'}
           </Text>
           <TextInput
@@ -265,11 +293,20 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   boxCentred: { justifyContent: 'center' },
+  nameBox: { justifyContent: 'center', backgroundColor: colors.white },
   bankBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingLeft: layout.sendCircleLeft,
   },
+  bankCircle: {
+    width: layout.sendCircle,
+    height: layout.sendCircle,
+    borderRadius: layout.sendCircle / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bankName: { flex: 1, marginLeft: layout.sendLabelGap },
   boxText: {
     fontSize: fontSize.large,
     fontFamily: fontFamily.regular,

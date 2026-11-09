@@ -4,8 +4,8 @@
 // Home → Send. Five choices: GTBank, Different Bank, Saved Beneficiaries,
 // Fund GT Money Market and e-wallet. The picked row turns orange.
 //
-// GTBank and Different Bank open the send form. The other three only turn
-// orange for now: their forms (S49–S51) haven't been built yet.
+// GTBank, Different Bank and Saved Beneficiaries open the send form. The other
+// two only turn orange for now: their forms (S50–S51) haven't been built yet.
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
@@ -19,7 +19,7 @@ import ScreenHeader from '../../../components/ScreenHeader';
 const OPTIONS = [
   { id: 'gtbank', label: 'GTBank', route: '/(tabs)/transfer-flow/details?bank=gtbank' },
   { id: 'other', label: 'Different Bank', route: '/(tabs)/transfer-flow/details?bank=other' },
-  { id: 'saved', label: 'Saved Beneficiaries', route: null },
+  { id: 'saved', label: 'Saved Beneficiaries', route: '/(tabs)/transfer-flow/details?bank=saved' },
   { id: 'money-market', label: 'Fund GT Money Market', route: null },
   { id: 'e-wallet', label: 'e-wallet', route: null },
 ] as const;
