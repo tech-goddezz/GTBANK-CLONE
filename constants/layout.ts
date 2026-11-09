@@ -366,6 +366,17 @@ export const layout = {
   topupBoxPadding: 16,      // Hint text inset inside a box
   topupChevron: 9,
   topupChevronRight: 18,
+  // Data plans grid (S53)
+  planGridTop: 19,          // Note → grey panel
+  planGridPadding: 8,       // Panel edge → first plan
+  planGridPaddingRight: 5,  // Last column → panel edge
+  planTextWidth: 66,        // Plan names may run a little past their 60px square, as in the design
+  planCellWidth: 60,
+  planCellHeight: 50,
+  planColumnGap: 12,
+  planRowGap: 8,
+  planLineHeight: 11.5,
+  planButtonTop: 25,        // Panel → Proceed
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

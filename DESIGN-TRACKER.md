@@ -139,7 +139,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S50 | Send form – Money market | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S51 | Send form – e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S52 | Top Up – Airtime (filled in) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
-| S53 | Top Up – Data plans grid | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ⬜ |
+| S53 | Top Up – Data plans grid | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
 | S54 | Initiating transfer – GTBank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
 | S55 | Initiating transfer – Zenith Bank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
 | S56 | Initiating transfer – Stanbic IBTC | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |

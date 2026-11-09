@@ -16,6 +16,7 @@ export const fontSize = {
   body: 14,       // Default text — descriptions, list items
   small: 12,      // Supporting text — timestamps, category labels
   tiny: 10,       // The smallest text in the app — fine print
+  plan: 9,        // Data plan names in the Top Up plans grid (S53)
   cardTitle: 14.5, // Titles on the Transactions tab cards ("Apply for loans")
   cardText: 12.5,  // Descriptions on the Transactions tab cards
   stepLabel: 6.7,  // Tiny step names on the Transfers tab ("Funds Sent")
