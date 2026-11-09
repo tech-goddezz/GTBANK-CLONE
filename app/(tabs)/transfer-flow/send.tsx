@@ -1,152 +1,102 @@
 // app/(tabs)/transfer-flow/send.tsx
-// Send-money page (Home → Send). Moved here from the Transfers tab, which now
-// shows the design's transfer-tracking page. Transfer landing — shows the "Quickly Transfer" CTA and option to
-// select GT Bank or Other Banks.
+//
+// Send page (S38–S42 in "Screens inside the home screen.pdf"), opened from
+// Home → Send. Five choices: GTBank, Different Bank, Saved Beneficiaries,
+// Fund GT Money Market and e-wallet. The picked row turns orange.
+//
+// GTBank and Different Bank open the send form. The other three only turn
+// orange for now: their forms (S49–S51) haven't been built yet.
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
-import SelectActionSheet from '../../../components/SelectActionSheet';
+import { fontSize, fontFamily } from '../../../constants/typography';
+import { layout } from '../../../constants/layout';
+import ScreenHeader from '../../../components/ScreenHeader';
 
-export default function TransferLandingScreen() {
+const OPTIONS = [
+  { id: 'gtbank', label: 'GTBank', route: '/(tabs)/transfer-flow/details?bank=gtbank' },
+  { id: 'other', label: 'Different Bank', route: '/(tabs)/transfer-flow/details?bank=other' },
+  { id: 'saved', label: 'Saved Beneficiaries', route: null },
+  { id: 'money-market', label: 'Fund GT Money Market', route: null },
+  { id: 'e-wallet', label: 'e-wallet', route: null },
+] as const;
+
+export default function SendScreen() {
   const router = useRouter();
-  const [showOptions, setShowOptions] = useState(false);
+  // GTBank is picked when the page opens, as in the design (S38).
+  const [picked, setPicked] = useState<string>('gtbank');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Transfers</Text>
-        <Text style={styles.subtitle}>Send money instantly to any account</Text>
-      </View>
-
-      {/* Illustration placeholder */}
-      <View style={styles.illustrationArea}>
-        <View style={styles.illustrationCircle}>
-          <Ionicons name="swap-horizontal" size={64} color={colors.orange} />
-        </View>
-        <Text style={styles.illustrationText}>
-          Transfer funds to GTBank accounts instantly, or to other banks within seconds.
-        </Text>
-      </View>
-
-      <View style={styles.buttonArea}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => setShowOptions(true)}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.primaryButtonText}>Quickly Transfer</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-  style={styles.secondaryButton}
-  onPress={() => router.push('/(tabs)/transfer-flow/income-verification')}
->
-  <Text style={styles.secondaryButtonText}>Apply for more</Text>
-</TouchableOpacity>
-      </View>
-
-      {/* Bank type selector sheet */}
-      <SelectActionSheet
-        visible={showOptions}
-        onCancel={() => setShowOptions(false)}
-        options={[
-          {
-            label: 'GT Bank',
-            onPress: () => {
-              setShowOptions(false);
-              router.push('/(tabs)/transfer-flow/details?bank=gtbank');
-            },
-          },
-          {
-            label: 'Other Banks',
-            onPress: () => {
-              setShowOptions(false);
-              router.push('/(tabs)/transfer-flow/details?bank=other');
-            },
-          },
-        ]}
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Send"
+        subtitle="Make seamless and secure transfers."
+        onBellPress={() => router.push('/(tabs)/notifications')}
       />
-    </SafeAreaView>
+
+      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+        {OPTIONS.map((option) => {
+          const active = picked === option.id;
+          return (
+            <TouchableOpacity
+              key={option.id}
+              style={styles.row}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => {
+                setPicked(option.id);
+                if (option.route) router.push(option.route as any);
+              }}
+            >
+              <View style={[styles.circle, { backgroundColor: active ? colors.orange : colors.sendCircle }]}>
+                <MaterialIcons name="account-balance" size={layout.sendIcon} color={colors.white} />
+              </View>
+              <Text style={[styles.label, { color: active ? colors.orange : colors.black }]}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy },
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.md,
+  screen: { flex: 1, backgroundColor: colors.white },
+  list: {
+    paddingTop: layout.sendListTop,
+    paddingHorizontal: layout.sendRowSide,
+    paddingBottom: layout.tabBarHeight,
+    gap: layout.sendRowGap,
   },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-  },
-  subtitle: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.base,
-    marginTop: spacing.xs,
-  },
-  illustrationArea: {
-    flex: 1,
+  row: {
+    height: layout.sendRowHeight,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xxxl,
+    paddingLeft: layout.sendCircleLeft,
+    backgroundColor: colors.sendRow,
+    // Very soft shadow just below each row, as in the design
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  illustrationCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.orangeFaint,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xl,
-  },
-  illustrationText: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.base,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  buttonArea: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxxl,
-    gap: spacing.md,
-  },
-  primaryButton: {
-    backgroundColor: colors.orange,
-    height: 54,
-    borderRadius: radius.button,
+  circle: {
+    width: layout.sendCircle,
+    height: layout.sendCircle,
+    borderRadius: layout.sendCircle / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primaryButtonText: {
+  label: {
+    marginLeft: layout.sendLabelGap,
     fontSize: fontSize.large,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
-  },
-  secondaryButton: {
-    height: 54,
-    borderRadius: radius.button,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: colors.orange,
-  },
-  secondaryButtonText: {
-    fontSize: fontSize.large,
-    fontFamily: fontFamily.semibold,
-    color: colors.orange,
+    fontFamily: fontFamily.regular,
   },
 });

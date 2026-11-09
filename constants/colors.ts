@@ -182,6 +182,10 @@ const colors = {
   switchOffTrack: '#E6E0E9',
   switchOffOutline: '#79747E',
 
+  // Send page (S38–S42): grey choice rows and the grey circle of a row that isn't picked.
+  sendRow: '#F5F5F5',
+  sendCircle: '#979C9E',
+
   // Light orange outline of the History search box while it's tapped.
   searchFocusBorder: '#FFD6B3',
 

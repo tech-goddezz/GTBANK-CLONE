@@ -327,6 +327,15 @@ export const layout = {
   switchKnobOn: 24,
   switchKnobOff: 16,
   switchOutline: 2,
+  // Send page (S38–S42): the five choice rows
+  sendListTop: 105,         // Menu strip → first row
+  sendRowSide: 16,
+  sendRowHeight: 56,
+  sendRowGap: 8,
+  sendCircleLeft: 11.5,     // Row edge → round icon
+  sendCircle: 40,
+  sendIcon: 16,
+  sendLabelGap: 8,          // Round icon → label
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes
