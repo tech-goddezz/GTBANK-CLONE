@@ -130,6 +130,12 @@ const colors = {
   // Green tick icons on the sign-in / KYC / forgot-password screens.
   greenTick: '#14B53A',
 
+  // Green circle behind the 3D tick on "Funds Sent" (S67).
+  successCircle: '#4CAF50',
+
+  // Small blue "!" icon in the light-blue note boxes (S67–S69).
+  infoIcon: '#1912F4',
+
   // Green stripes of the small Nigerian flag on the phone number screen.
   flagGreen: '#14B53A',
 

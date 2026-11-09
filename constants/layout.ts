@@ -399,6 +399,24 @@ export const layout = {
   confirmRowTextBottom: 12.5, // Text → line under it
   confirmRowLine: 2,
   confirmButtonTop: 12,     // Narration box → Confirm Transfer
+  // Funds Sent (S67)
+  fundsCircleTop: 15,       // Menu strip → green circle
+  fundsCircle: 64,          // Green circle
+  fundsTick: 48,            // 3D tick picture inside the circle
+  fundsPanelTop: 8,         // Green circle → white panel
+  fundsPanelSide: 17.5,     // Screen edge → white panel
+  fundsPanelPadTop: 1,
+  fundsPanelPadBottom: 15,
+  fundsRowHeight: 62,       // One row, including its faint line
+  fundsLabelBottomTwoLine: 13.5, // "To:" / "From:" → line under it
+  fundsValueDrop: -10,      // Two-line figures sit lower than the label
+  fundsFromDrop: -11.3,
+  fundsFromLineHeight: 21,
+  fundsNoteTop: 8,          // White panel → blue note
+  fundsNoteIconLeft: 17.5,  // Note edge → "!" icon
+  fundsNoteIcon: 13,
+  fundsNoteTextGap: 11.5,   // "!" icon → note text
+  fundsButtonTop: 8,        // Blue note → Done
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

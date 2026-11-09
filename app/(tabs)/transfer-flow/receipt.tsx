@@ -20,13 +20,16 @@ export default function ReceiptScreen() {
     accountNumber: string;
     bank: string;
     narration: string;
+    reference?: string;
+    dateTime?: string;
   }>();
 
+  // Reference and date come from "Funds Sent" so both screens show the same ones
   const [reference] = useState(() =>
-    Math.floor(1000000000 + Math.random() * 9000000000).toString()
+    params.reference || Math.floor(1000000000 + Math.random() * 9000000000).toString()
   );
   const [dateTime] = useState(() =>
-    new Date().toLocaleString('en-NG', {
+    params.dateTime || new Date().toLocaleString('en-NG', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
