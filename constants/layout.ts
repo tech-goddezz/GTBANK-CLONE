@@ -444,6 +444,12 @@ export const layout = {
   transitNoteHeight: 40,
   transitButtonTop: 26,     // Blue note → Proceed
   transitButtonWidth: 128,
+  // Credited to Recipient (S69)
+  creditedPanelTop: 25,     // Menu strip → white panel
+  creditedNoteTop: 16,      // White panel → blue note
+  creditedButtonTop: 16,    // Blue note → Done
+  creditedReceiptTop: 14,   // Done → View Receipt (its border sits 1px outside)
+  creditedReceiptHeight: 48,
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

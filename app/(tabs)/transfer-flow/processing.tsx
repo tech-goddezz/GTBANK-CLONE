@@ -3,16 +3,14 @@
 // The three tracking pages after "Confirmed Transfer" (Dashboard flow + transfer
 // flow.pdf). You move between them by tapping a button:
 //   Funds Sent (S67) → Done → In Transit via NIBSS (S68) → Proceed →
-//   Credited to Recipient (S69) → Done → receipt.
-//
-// S67 and S68 match the design. S69 keeps its old look until it is rebuilt.
+//   Credited to Recipient (S69) → Done → Home, or View Receipt → receipt.
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
-import { fontSize, fontFamily, lineHeight, spacing } from '../../../constants/typography';
+import { fontSize, fontFamily, lineHeight } from '../../../constants/typography';
 import { layout } from '../../../constants/layout';
 import ScreenHeader from '../../../components/ScreenHeader';
 import Button from '../../../components/Button';
@@ -115,6 +113,32 @@ export default function ProcessingScreen() {
       `/(tabs)/transfer-flow/receipt?amount=${params.amount}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}&reference=${reference}&dateTime=${encodeURIComponent(dateTime)}`
     );
 
+  // White details panel, shared by Funds Sent (with fee row) and Credited to Recipient (without)
+  const detailsPanel = (showFee: boolean, extraStyle?: object) => (
+    <View style={[styles.panel, extraStyle]}>
+      <Row label="Amount: " value={formatAmount(amountNum)} />
+      <Row label="To:" twoLine>
+        <View style={styles.twoLineValue}>
+          <Text style={styles.toName} numberOfLines={1}>{recipientName}</Text>
+          <Text style={styles.toSub} numberOfLines={1}>
+            {params.bank}  • {params.accountNumber}
+          </Text>
+        </View>
+      </Row>
+      <Row label="From:" twoLine>
+        <View style={styles.fromValue}>
+          <Text style={styles.fromName}>Main Account</Text>
+          <Text style={styles.fromNumber}>{myAccountNumber}</Text>
+        </View>
+      </Row>
+      {showFee && <Row label="Transaction fee:" value={formatAmount(fee)} />}
+      <Row label="Reference Id:" value={reference} />
+      <Row label="Date and Time:">
+        <Text style={styles.rowDate} numberOfLines={1}>{dateTime}</Text>
+      </Row>
+    </View>
+  );
+
   return (
     <View style={styles.screen}>
       <ScreenHeader
@@ -132,28 +156,7 @@ export default function ProcessingScreen() {
             />
           </View>
 
-          <View style={styles.panel}>
-            <Row label="Amount: " value={formatAmount(amountNum)} />
-            <Row label="To:" twoLine>
-              <View style={styles.twoLineValue}>
-                <Text style={styles.toName} numberOfLines={1}>{recipientName}</Text>
-                <Text style={styles.toSub} numberOfLines={1}>
-                  {params.bank}  • {params.accountNumber}
-                </Text>
-              </View>
-            </Row>
-            <Row label="From:" twoLine>
-              <View style={styles.fromValue}>
-                <Text style={styles.fromName}>Main Account</Text>
-                <Text style={styles.fromNumber}>{myAccountNumber}</Text>
-              </View>
-            </Row>
-            <Row label="Transaction fee:" value={formatAmount(fee)} />
-            <Row label="Reference Id:" value={reference} />
-            <Row label="Date and Time:">
-              <Text style={styles.rowDate} numberOfLines={1}>{dateTime}</Text>
-            </Row>
-          </View>
+          {detailsPanel(true, styles.fundsPanelGap)}
 
           <View style={styles.note}>
             <MaterialIcons name="error-outline" size={layout.fundsNoteIcon} color={colors.infoIcon} />
@@ -188,13 +191,17 @@ export default function ProcessingScreen() {
           <Button label="Proceed" onPress={() => setStage('credited')} style={styles.proceed} />
         </ScrollView>
       ) : (
-        // Old look, kept until S69 is rebuilt
-        <View style={styles.oldContent}>
-          <Ionicons name="checkmark-circle" size={72} color={colors.green} />
-          <Text style={styles.oldTitle}>{TITLES[stage]}</Text>
-          <Text style={styles.oldSubtitle}>Transfer completed successfully</Text>
-          <Button label="Done" onPress={goToReceipt} style={styles.oldButton} />
-        </View>
+        <ScrollView contentContainerStyle={styles.creditedScroll} showsVerticalScrollIndicator={false}>
+          {detailsPanel(false)}
+
+          <View style={[styles.note, styles.creditedNote]}>
+            <MaterialIcons name="error-outline" size={layout.fundsNoteIcon} color={colors.infoIcon} />
+            <Text style={styles.noteText} numberOfLines={1}>Thank you for banking with us.</Text>
+          </View>
+
+          <Button label="Done" onPress={() => router.replace('/(tabs)/home')} style={styles.creditedDone} />
+          <Button label="View Receipt" variant="secondary" onPress={goToReceipt} style={styles.viewReceipt} />
+        </ScrollView>
       )}
     </View>
   );
@@ -217,8 +224,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tick: { width: layout.fundsTick, height: layout.fundsTick },
+  fundsPanelGap: { marginTop: layout.fundsPanelTop },
   panel: {
-    marginTop: layout.fundsPanelTop,
     marginHorizontal: layout.fundsPanelSide - layout.screenPadding,
     paddingTop: layout.fundsPanelPadTop,
     paddingBottom: layout.fundsPanelPadBottom,
@@ -401,27 +408,18 @@ const styles = StyleSheet.create({
     width: layout.transitButtonWidth,
     marginTop: layout.transitButtonTop,
   },
-  // Old look for S69 (temporary)
-  oldContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
+  // Credited to Recipient (S69)
+  creditedScroll: {
+    paddingTop: layout.creditedPanelTop,
+    paddingHorizontal: layout.screenPadding,
     paddingBottom: layout.tabBarHeight,
   },
-  oldTitle: {
-    marginTop: spacing.xl,
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.textDark,
-    textAlign: 'center',
+  creditedNote: { marginTop: layout.creditedNoteTop, height: layout.transitNoteHeight },
+  creditedDone: { marginTop: layout.creditedButtonTop },
+  // Orange border sits just outside the normal button width, as in the design
+  viewReceipt: {
+    marginTop: layout.creditedReceiptTop,
+    marginHorizontal: -1,
+    height: layout.creditedReceiptHeight,
   },
-  oldSubtitle: {
-    marginTop: spacing.sm,
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-    textAlign: 'center',
-  },
-  oldButton: { alignSelf: 'stretch', marginTop: spacing.xxxl },
 });
