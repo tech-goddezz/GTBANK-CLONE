@@ -159,7 +159,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S71 | Transfer tracking – still checking | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/checking.tsx` | /transfer-flow/checking | ✅ |
 | S72 | Transfer tracking – failed | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/checking.tsx` | /transfer-flow/checking (tap the orange circle) | ✅ |
 | S73 | Query – querying NIBSS | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/query.tsx` | /transfer-flow/query | ✅ |
-| S74 | Reversal – automatic reversal in progress | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| S74 | Reversal – automatic reversal in progress | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/query.tsx` | /transfer-flow/query (wait 5 seconds) | ✅ |
 | S75 | Notification – 1 unread | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ⬜ |
 | S76 | Notification – failed + reversed | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ⬜ |
 | S77 | Auto-reversal details | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |

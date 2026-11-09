@@ -485,6 +485,10 @@ export const layout = {
   queryIntroLeft: 21,       // Intro text sits further in than the screen margin
   queryPanelTop: 28.1,      // Intro → steps panel
   queryNoteTop: 55,         // Steps panel → blue note
+  // Reversal – Automatic reversal in progress (S74), same page
+  reversalPanelTop: 59.1,   // Intro → steps panel
+  reversalNoteTop: 86,      // Steps panel → blue note
+  reversalDelayMs: 5000,    // Query moves on to Reversal by itself after 5 seconds
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box
