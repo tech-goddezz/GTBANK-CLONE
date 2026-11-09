@@ -162,7 +162,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S74 | Reversal – automatic reversal in progress | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/query.tsx` | /transfer-flow/query (wait 5 seconds) | ✅ |
 | S75 | Notification – 1 unread | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ✅ |
 | S76 | Notification – failed + reversed | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ✅ |
-| S77 | Auto-reversal details | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| S77 | Auto-reversal details | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/reversal-details.tsx` | /transfer-flow/reversal-details | ✅ |
 | S78 | Reversal receipt | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S79 | Select transfers – individual | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S80 | Select transfers – group | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |

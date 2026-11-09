@@ -505,6 +505,11 @@ export const layout = {
   notifStatusTop: 16.2,     // Card top → "Unread"
   notifTimeTop: 2.7,        // "Unread" → time
   notifTextRight: 12,       // Grey line → right column
+  // Auto-reversal (S77)
+  autoIntroTop: 26.4,       // Menu strip → "Reversing 5,000 NGN..."
+  autoPanelTop: 15.1,       // Intro → white panel
+  autoNoteHeight: 46,
+  autoReceiptTop: 15,       // Blue note → View Receipt
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

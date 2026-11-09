@@ -2,11 +2,13 @@
 //
 // "Notification" (S75/S76 in "Dashboard flow + transfer flow.pdf"), opened from
 // the bell on any screen. The app doesn't store real notifications yet, so it
-// shows the design's two sample cards. Tapping a card marks it as Read.
+// shows the design's two sample cards. Tapping a card marks it as Read and opens
+// "Auto-reversal" (transfer-flow/reversal-details.tsx).
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import colors from '../../constants/colors';
 import { fontSize, fontFamily, lineHeight } from '../../constants/typography';
 import { layout } from '../../constants/layout';
@@ -44,10 +46,14 @@ const SAMPLE_NOTIFICATIONS: Notification[] = [
 ];
 
 export default function NotificationsScreen() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
 
-  const markRead = (id: string) =>
+  // Tapping a card marks it as Read and opens the Auto-reversal details (S77)
+  const openNotification = (id: string) => {
     setNotifications((list) => list.map((n) => (n.id === id ? { ...n, unread: false } : n)));
+    router.push('/transfer-flow/reversal-details');
+  };
 
   return (
     <View style={styles.screen}>
@@ -59,7 +65,7 @@ export default function NotificationsScreen() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {notifications.map((n) => (
-          <TouchableOpacity key={n.id} style={styles.card} activeOpacity={0.8} onPress={() => markRead(n.id)}>
+          <TouchableOpacity key={n.id} style={styles.card} activeOpacity={0.8} onPress={() => openNotification(n.id)}>
             <View style={[styles.circle, { backgroundColor: n.circle }]}>
               <MaterialIcons
                 name={n.icon}
