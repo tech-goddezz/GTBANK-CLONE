@@ -163,7 +163,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S75 | Notification – 1 unread | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ✅ |
 | S76 | Notification – failed + reversed | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ✅ |
 | S77 | Auto-reversal details | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/reversal-details.tsx` | /transfer-flow/reversal-details | ✅ |
-| S78 | Reversal receipt | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| S78 | Reversal receipt | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/receipt.tsx` (type=reversal) | /transfer-flow/reversal-details → View Receipt | ✅ |
 | S79 | Select transfers – individual | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S80 | Select transfers – group | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S81 | Complaints – upload transfers | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |

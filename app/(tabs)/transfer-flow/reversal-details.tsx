@@ -4,11 +4,12 @@
 // a card on the Notification page. Shows the details of a reversed transfer.
 // The app has no real reversals yet: the amount is the design's sample 5,000.00,
 // the money goes back to your own account, and the reference and date are made
-// when the page opens. View Receipt does nothing until S78 is built.
+// when the page opens. View Receipt opens the reversal receipt (S78, receipt.tsx).
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import colors from '../../../constants/colors';
 import { fontSize, fontFamily, lineHeight } from '../../../constants/typography';
 import { layout } from '../../../constants/layout';
@@ -29,6 +30,7 @@ function Row({ label, value, twoLine, children }: {
 }
 
 export default function ReversalDetailsScreen() {
+  const router = useRouter();
   const [myName, setMyName] = useState('');
   const [myAccountNumber, setMyAccountNumber] = useState('');
   const [reference] = useState(() => 'TRX' + Math.floor(100000000 + Math.random() * 900000000));
@@ -47,6 +49,12 @@ export default function ReversalDetailsScreen() {
     };
     loadProfile();
   }, []);
+
+  // The receipt shows the same reference and date as this page
+  const openReceipt = () =>
+    router.push(
+      `/transfer-flow/receipt?type=reversal&amount=5000&reference=${reference}&dateTime=${encodeURIComponent(dateTime)}`
+    );
 
   return (
     <View style={styles.screen}>
@@ -82,7 +90,7 @@ export default function ReversalDetailsScreen() {
           <Text style={styles.noteText} numberOfLines={1}>Thank you for banking with us.</Text>
         </View>
 
-        <Button label="View Receipt" variant="secondary" onPress={() => {}} style={styles.viewReceipt} />
+        <Button label="View Receipt" variant="secondary" onPress={openReceipt} style={styles.viewReceipt} />
       </ScrollView>
     </View>
   );

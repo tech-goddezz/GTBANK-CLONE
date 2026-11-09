@@ -3,6 +3,10 @@
 // "Receipts" (S70 in "Dashboard flow + transfer flow.pdf"), opened from View
 // Receipt on "Credited to Recipient". Grey details panel and a Share button.
 // The back arrow goes to Home, so you can't land back on "Initiating Transfer".
+//
+// With ?type=reversal it is the reversal receipt (S78), opened from View Receipt
+// on "Auto-reversal": "Reversed to" is your own account, "From" is NIBSS, and the
+// back arrow returns to Auto-reversal.
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
@@ -39,7 +43,10 @@ export default function ReceiptScreen() {
     narration: string;
     reference?: string;
     dateTime?: string;
+    type?: string;
   }>();
+  const isReversal = params.type === 'reversal';
+  const [myName, setMyName] = useState('');
   const [myAccountNumber, setMyAccountNumber] = useState('');
 
   // Reference and date come from "Funds Sent" so all the screens show the same ones
@@ -52,7 +59,11 @@ export default function ReceiptScreen() {
     const loadProfile = async () => {
       const id = await getCurrentUserId();
       const result = await fetchProfile(id);
-      if (result.success && result.profile) setMyAccountNumber(result.profile.account_number ?? '');
+      if (result.success && result.profile) {
+        const p = result.profile;
+        setMyName([p.first_name, p.last_name].filter(Boolean).join(' '));
+        setMyAccountNumber(p.account_number ?? '');
+      }
     };
     loadProfile();
   }, []);
@@ -61,10 +72,13 @@ export default function ReceiptScreen() {
   const recipientName = params.accountName || params.bank || '';
 
   const handleShare = async () => {
-    const message =
-      `GTBank Transfer Receipt\n\nAmount: ${amountText}\nTo: ${recipientName}\n` +
-      `${params.bank} • ${params.accountNumber}\nFrom: Main Account ${myAccountNumber}\n` +
-      `Reference Id: ${reference}\nDate and Time: ${dateTime}\n\nThank you for banking with us.`;
+    const message = isReversal
+      ? `GTBank Reversal Receipt\n\nAmount: ${amountText}\nReversed to: ${myName}\n` +
+        `GTBank • ${myAccountNumber}\nFrom: NIBSS C/O GTbank.\n` +
+        `Reference Id: ${reference}\nDate and Time: ${dateTime}\n\nThank you for banking with us.`
+      : `GTBank Transfer Receipt\n\nAmount: ${amountText}\nTo: ${recipientName}\n` +
+        `${params.bank} • ${params.accountNumber}\nFrom: Main Account ${myAccountNumber}\n` +
+        `Reference Id: ${reference}\nDate and Time: ${dateTime}\n\nThank you for banking with us.`;
     try {
       await Share.share({ message });
     } catch (error) {
@@ -77,25 +91,25 @@ export default function ReceiptScreen() {
       <ScreenHeader
         title="Receipts"
         subtitle="Review your transfer processes here."
-        onBack={() => router.replace('/(tabs)/home')}
+        onBack={isReversal ? () => router.back() : () => router.replace('/(tabs)/home')}
         onBellPress={() => router.push('/(tabs)/notifications')}
       />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.panel}>
           <Row label="Amount: " value={amountText} />
-          <Row label="To:" twoLine>
+          <Row label={isReversal ? 'Reversed to:' : 'To:'} twoLine>
             <View style={styles.twoLineValue}>
-              <Text style={styles.toName} numberOfLines={1}>{recipientName}</Text>
+              <Text style={styles.toName} numberOfLines={1}>{isReversal ? myName : recipientName}</Text>
               <Text style={styles.toSub} numberOfLines={1}>
-                {params.bank}  • {params.accountNumber}
+                {isReversal ? `GTBank• ${myAccountNumber}` : `${params.bank}  • ${params.accountNumber}`}
               </Text>
             </View>
           </Row>
           <Row label="From:" twoLine>
             <View style={styles.fromValue}>
-              <Text style={styles.fromName}>Main Account</Text>
-              <Text style={styles.fromNumber}>{myAccountNumber}</Text>
+              <Text style={styles.fromName}>{isReversal ? 'NIBSS' : 'Main Account'}</Text>
+              <Text style={styles.fromNumber}>{isReversal ? 'C/O GTbank.' : myAccountNumber}</Text>
             </View>
           </Row>
           <Row label="Reference Id:" value={reference} />
