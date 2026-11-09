@@ -336,6 +336,13 @@ export const layout = {
   sendCircle: 40,
   sendIcon: 16,
   sendLabelGap: 8,          // Round icon → label
+  // Pay page (S43): the bill rows (same side gap and shadow as the Send rows)
+  payListTop: 32,           // Menu strip → first row
+  payRowHeight: 46,
+  payRowGap: 8,
+  payLabelLeft: 35.5,       // Row edge → bill name
+  payFormTop: 24,           // Last row → amount box (not in the design)
+  payFormGap: 16,           // Amount box → Pay button
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

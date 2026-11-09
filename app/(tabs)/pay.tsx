@@ -1,13 +1,33 @@
+// app/(tabs)/pay.tsx
+//
+// Pay page (S43 in "Screens inside the home screen.pdf"), opened from Home → Pay.
+// A list of nine bills; the tapped bill turns orange.
+//
+// The design has no screen for what comes after picking a bill, so (owner's
+// choice) an amount box and a Pay button appear under the list once a bill is
+// picked. Paying still uses the same payBill code as before.
+
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+import { fontSize, fontFamily } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import ScreenHeader from '../../components/ScreenHeader';
+import Button from '../../components/Button';
 import { payBill, getCurrentUserId } from '../../services/auth';
 
-const BILL_TYPES = ['Airtime', 'Electricity', 'Cable TV', 'Internet'];
+const BILLS = [
+  'School Fees Payment',
+  'Generating Teller for Bank Transactions',
+  'Water Bill Payment',
+  'Gas Bill Payment',
+  'Internet Subscription Renewal',
+  'Electricity Bill Payment',
+  'Cable TV Subscription Payment',
+  'Property Tax Payment',
+  'Health Insurance Premium Payment',
+];
 
 export default function PayScreen() {
   const router = useRouter();
@@ -38,121 +58,102 @@ export default function PayScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.textDark} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Pay a Bill</Text>
-        <View style={{ width: 22 }} />
-      </View>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Pay"
+        subtitle="Pay your bills with ease."
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
 
-      <Text style={styles.sectionLabel}>Select bill type</Text>
-      <View style={[styles.billList, { flexDirection: "row", flexWrap: "wrap" }]}>
-        {BILL_TYPES.map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={[styles.billOption, selectedBill === item && styles.billOptionActive]}
-            onPress={() => setSelectedBill(item)}
-          >
-            <Text style={[styles.billText, selectedBill === item && styles.billTextActive]}>{item}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.list}>
+          {BILLS.map((bill) => {
+            const active = selectedBill === bill;
+            return (
+              <TouchableOpacity
+                key={bill}
+                style={styles.row}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                onPress={() => {
+                  setSelectedBill(bill);
+                  setError('');
+                }}
+              >
+                <Text style={[styles.label, active && styles.labelActive]} numberOfLines={1}>
+                  {bill}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
-      <Text style={styles.sectionLabel}>Amount</Text>
-      <View style={styles.inputRow}>
-        <Text style={styles.currencyPrefix}>₦</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="0.00"
-          placeholderTextColor={colors.textFaded}
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="decimal-pad"
-        />
-      </View>
-
-      {!!error && <Text style={styles.error}>{error}</Text>}
-
-      <TouchableOpacity style={styles.payButton} onPress={handlePay} disabled={loading}>
-        <Text style={styles.payButtonText}>{loading ? 'Processing...' : 'Pay Now'}</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        {!!selectedBill && (
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter the Amount"
+              placeholderTextColor={colors.textGrey}
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="decimal-pad"
+            />
+            {!!error && <Text style={styles.error}>{error}</Text>}
+            <Button label="Pay" onPress={handlePay} loading={loading} style={styles.payButton} />
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
+  screen: { flex: 1, backgroundColor: colors.white },
+  content: {
+    paddingTop: layout.payListTop,
+    paddingHorizontal: layout.sendRowSide,
+    paddingBottom: layout.tabBarHeight,
   },
-  backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: {
-    fontSize: fontSize.heading2,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
+  list: { gap: layout.payRowGap },
+  row: {
+    height: layout.payRowHeight,
+    justifyContent: 'center',
+    paddingLeft: layout.payLabelLeft,
+    paddingRight: layout.sendRowSide,
+    backgroundColor: colors.white,
+    // Same very soft shadow as the Send rows
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  sectionLabel: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.base,
-    marginBottom: spacing.sm,
+  label: {
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
   },
-  billList: { marginBottom: spacing.xl },
-  billOption: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: radius.button,
-    marginRight: spacing.sm,
-  },
-  billOptionActive: { backgroundColor: colors.orange, borderColor: colors.orange },
-  billText: { fontFamily: fontFamily.medium, color: colors.white },
-  billTextActive: { color: colors.white },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 6,
-    backgroundColor: colors.navyCard,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  currencyPrefix: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
-    marginRight: spacing.sm,
-  },
+  labelActive: { color: colors.orange },
+  form: { marginTop: layout.payFormTop },
   input: {
-    flex: 1,
-    paddingVertical: spacing.md,
+    height: layout.payRowHeight,
+    backgroundColor: colors.inputBackground,
+    paddingHorizontal: layout.sendRowSide,
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.white,
+    color: colors.black,
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null),
   },
   error: {
     fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
     color: colors.red,
-    marginBottom: spacing.md,
+    marginTop: 8,
   },
-  payButton: {
-    backgroundColor: colors.orange,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  payButtonText: {
-    color: colors.white,
-    fontFamily: fontFamily.semibold,
-    fontSize: fontSize.body,
-  },
+  payButton: { marginTop: layout.payFormGap },
 });
