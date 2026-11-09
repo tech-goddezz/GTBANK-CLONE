@@ -377,6 +377,28 @@ export const layout = {
   planRowGap: 8,
   planLineHeight: 11.5,
   planButtonTop: 25,        // Panel → Proceed
+  // Initiating Transfer (S54–S58)
+  confirmLabelTop: 20.5,    // Menu strip → "From:"
+  confirmSmallLabelLineHeight: 16,
+  confirmLabelGap: 15.5,    // Small label → its box
+  confirmSectionGap: 8.5,   // Box / panel → next small label
+  confirmBoxWidth: 362,
+  confirmBoxPadding: 8,     // Box edge → round icon
+  confirmPersonIcon: 17,    // Person icon in the To box
+  confirmTextGap: 8,        // Round icon → name
+  confirmBalanceRight: 10,
+  confirmNameLineHeight: 19,
+  confirmSubLineHeight: 17,
+  confirmPanelSide: 18,     // Lower section (details, narration, button) side margin
+  confirmPanelTop: 3.5,     // "Transfer details:" → white panel
+  confirmPanelPadTop: 7,
+  confirmPanelPadBottom: 17,
+  confirmRowHeight: 54,
+  confirmRowLineInset: 24,  // Panel edge → faint line
+  confirmRowTextInset: 8,   // Line end → label / figure
+  confirmRowTextBottom: 12.5, // Text → line under it
+  confirmRowLine: 2,
+  confirmButtonTop: 12,     // Narration box → Confirm Transfer
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

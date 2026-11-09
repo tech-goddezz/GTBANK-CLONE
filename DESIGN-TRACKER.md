@@ -140,11 +140,11 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S51 | Send form – e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S52 | Top Up – Airtime (filled in) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
 | S53 | Top Up – Data plans grid | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
-| S54 | Initiating transfer – GTBank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
-| S55 | Initiating transfer – Zenith Bank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
-| S56 | Initiating transfer – Stanbic IBTC | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
-| S57 | Initiating transfer – GT Money Mkt | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
-| S58 | Initiating transfer – GT e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
+| S54 | Initiating transfer – GTBank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
+| S55 | Initiating transfer – Zenith Bank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
+| S56 | Initiating transfer – Stanbic IBTC | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
+| S57 | Initiating transfer – GT Money Mkt | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
+| S58 | Initiating transfer – GT e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
 | S59–S65 | Enter your 4-digit code / Pay with fingerprint (7 near-identical copies, one per transfer type) | Screens inside the home screen.pdf | MISSING | — | 🆕 |
 
 ## 8. Transfer flow — `Dashboard flow + transfer flow.pdf`
