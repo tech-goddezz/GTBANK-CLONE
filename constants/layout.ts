@@ -479,6 +479,12 @@ export const layout = {
   failedBankIcon: 16,
   failedHelpTop: 108.6,     // White card → "Need help?"
   failedHelpRight: 6.5,
+  // Query – Querying NIBSS (S73)
+  queryTitleTop: 35.2,      // Menu strip → "Querying NIBSS.."
+  queryIntroTop: 25.7,      // Title → "Generating your status..."
+  queryIntroLeft: 21,       // Intro text sits further in than the screen margin
+  queryPanelTop: 28.1,      // Intro → steps panel
+  queryNoteTop: 55,         // Steps panel → blue note
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

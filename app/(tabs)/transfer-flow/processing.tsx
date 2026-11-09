@@ -14,22 +14,13 @@ import { fontSize, fontFamily, lineHeight } from '../../../constants/typography'
 import { layout } from '../../../constants/layout';
 import ScreenHeader from '../../../components/ScreenHeader';
 import Button from '../../../components/Button';
+import { TransferStep, TransferStepsPanel, formatTransferDateTime } from '../../../components/TransferSteps';
 import { getCurrentUserId, fetchProfile } from '../../../services/auth';
 
 type Stage = 'sent' | 'transit' | 'credited';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
 const formatAmount = (n: number) =>
   n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-// "May 24,2026. 9:11AM", written the way the design writes it
-const formatDateTime = (d: Date) => {
-  const h = d.getHours() % 12 || 12;
-  const m = String(d.getMinutes()).padStart(2, '0');
-  const ampm = d.getHours() < 12 ? 'AM' : 'PM';
-  return `${MONTHS[d.getMonth()]} ${d.getDate()},${d.getFullYear()}. ${h}:${m}${ampm}`;
-};
 
 const TITLES: Record<Stage, string> = {
   sent: 'Funds Sent',
@@ -48,42 +39,6 @@ function Row({ label, value, twoLine, children }: {
   );
 }
 
-type StepState = 'done' | 'current' | 'pending';
-
-// One step in the S68 progress panel: circle, two lines of text, faint line under
-function Step({ state, title, sub, last }: { state: StepState; title: string; sub: string; last?: boolean }) {
-  return (
-    <View style={[styles.step, !last && styles.stepGap]}>
-      <View style={styles.dotColumn}>
-        <View
-          style={[
-            styles.dot,
-            state === 'done' && styles.dotDone,
-            state === 'current' && styles.dotCurrent,
-            state === 'pending' && styles.dotPending,
-          ]}
-        >
-          {state === 'done' ? (
-            <Image
-              source={require('../../../assets/images/transfer-success-tick.png')}
-              style={styles.dotTick}
-            />
-          ) : (
-            <View style={[styles.dotInner, state === 'current' && styles.dotInnerCurrent]} />
-          )}
-        </View>
-        {!last && <View style={styles.connector} />}
-      </View>
-      <View style={styles.stepText}>
-        <Text style={[styles.stepTitle, state !== 'pending' && styles.stepTitleBold]} numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={styles.stepSub} numberOfLines={1}>{sub}</Text>
-      </View>
-    </View>
-  );
-}
-
 export default function ProcessingScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
@@ -93,7 +48,7 @@ export default function ProcessingScreen() {
   const [myAccountNumber, setMyAccountNumber] = useState('');
   // Made once here and passed to the receipt, so both show the same ones
   const [reference] = useState(() => 'TRX' + Math.floor(100000000 + Math.random() * 900000000));
-  const [dateTime] = useState(() => formatDateTime(new Date()));
+  const [dateTime] = useState(() => formatTransferDateTime(new Date()));
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -177,11 +132,11 @@ export default function ProcessingScreen() {
             <Text style={styles.helpText}>Need help?</Text>
           </TouchableOpacity>
 
-          <View style={styles.stepsPanel}>
-            <Step state="done" title="Funds Sent" sub={dateTime} />
-            <Step state="current" title="In Transit via NIBSS" sub="Processing...." />
-            <Step state="pending" title="Credited to Recipient" sub="Pending..." last />
-          </View>
+          <TransferStepsPanel style={styles.stepsPanel}>
+            <TransferStep state="done" title="Funds Sent" sub={dateTime} />
+            <TransferStep state="current" title="In Transit via NIBSS" sub="Processing...." />
+            <TransferStep state="pending" title="Credited to Recipient" sub="Pending..." last />
+          </TransferStepsPanel>
 
           <View style={[styles.note, styles.transitNote]}>
             <MaterialIcons name="error-outline" size={layout.fundsNoteIcon} color={colors.infoIcon} />
@@ -336,72 +291,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.orange,
   },
-  stepsPanel: {
-    marginTop: layout.transitPanelTop,
-    paddingTop: layout.transitPanelPadTop,
-    paddingBottom: layout.transitPanelPadBottom,
-    paddingHorizontal: layout.transitPanelSide,
-    backgroundColor: colors.white,
-    // Same very soft shadow as the Funds Sent panel
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 17,
-    elevation: 3,
-  },
-  step: { flexDirection: 'row' },
-  stepGap: { marginBottom: layout.transitStepGap },
-  dotColumn: { width: layout.transitDot, marginRight: layout.transitDotTextGap },
-  dot: {
-    marginTop: layout.transitDotTop,
-    width: layout.transitDot,
-    height: layout.transitDot,
-    borderRadius: layout.transitDot / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dotDone: { backgroundColor: colors.orange },
-  dotCurrent: { backgroundColor: colors.stepCurrent },
-  dotPending: { backgroundColor: colors.stepPending },
-  dotTick: { width: layout.transitDotTick, height: layout.transitDotTick },
-  dotInner: {
-    width: layout.transitDotInner,
-    height: layout.transitDotInner,
-    borderRadius: layout.transitDotInner / 2,
-    backgroundColor: colors.white,
-  },
-  dotInnerCurrent: {
-    position: 'absolute',
-    top: layout.transitDotInnerOffset,
-    left: layout.transitDotInnerOffset,
-  },
-  connector: {
-    position: 'absolute',
-    top: layout.transitConnectorTop,
-    left: (layout.transitDot - layout.transitConnectorWidth) / 2,
-    width: layout.transitConnectorWidth,
-    height: layout.transitConnectorHeight,
-    backgroundColor: colors.amber,
-  },
-  stepText: {
-    flex: 1,
-    height: layout.transitStepTextHeight,
-    borderBottomWidth: layout.confirmRowLine,
-    borderBottomColor: colors.stepDivider,
-  },
-  stepTitle: {
-    fontSize: fontSize.body,
-    lineHeight: layout.transitStepLineHeight,
-    fontFamily: fontFamily.regular,
-    color: colors.textCharcoal,
-  },
-  stepTitleBold: { fontFamily: fontFamily.bold },
-  stepSub: {
-    fontSize: fontSize.body,
-    lineHeight: layout.transitStepLineHeight,
-    fontFamily: fontFamily.regular,
-    color: colors.textCharcoal,
-  },
+  stepsPanel: { marginTop: layout.transitPanelTop },
   transitNote: { marginTop: layout.transitNoteTop, height: layout.transitNoteHeight },
   proceed: {
     alignSelf: 'flex-end',
