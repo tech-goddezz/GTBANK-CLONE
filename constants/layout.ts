@@ -343,6 +343,20 @@ export const layout = {
   payLabelLeft: 35.5,       // Row edge → bill name
   payFormTop: 24,           // Last row → amount box (not in the design)
   payFormGap: 16,           // Amount box → Pay button
+  moreLabelLineHeight: 24,  // More page (S46): line spacing when a name wraps (ATM row)
+  // Top Up page (S44/S45): AIRTIME | DATA switch, note, boxes, Proceed
+  topupTabsTop: 24,         // Menu strip → switch
+  topupTabsWidth: 362,
+  topupTabsHeight: 52,
+  topupTabsPad: 8,          // Switch edge → highlighted option
+  topupTabAirtimeWidth: 178,
+  topupTabDataWidth: 160,
+  topupNoteTop: 20,         // Switch → "Top Up your account..."
+  topupBoxesTop: 41,        // Note → first box
+  topupBoxGap: 16,          // Between boxes, and last box → Proceed
+  topupBoxPadding: 16,      // Hint text inset inside a box
+  topupChevron: 9,
+  topupChevronRight: 18,
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

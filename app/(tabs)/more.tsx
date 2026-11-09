@@ -1,45 +1,92 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../constants/typography';
+// app/(tabs)/more.tsx
+//
+// More page (S46 in "Screens inside the home screen.pdf"), opened from Home → More.
+// Nine services in white rows, built the same way as the Pay page rows. The
+// tapped row turns orange; none of these services have screens yet, so tapping
+// does nothing else for now.
 
-const MORE_OPTIONS = [
-  { id: 'cards', label: 'Cards', icon: 'card-outline', route: '/(tabs)/cards' },
-  { id: 'settings', label: 'Settings', icon: 'settings-outline', route: '/(tabs)/settings' },
-  { id: 'history', label: 'Transaction History', icon: 'time-outline', route: '/(tabs)/history' },
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import colors from '../../constants/colors';
+import { fontSize, fontFamily } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import ScreenHeader from '../../components/ScreenHeader';
+
+const SERVICES = [
+  'Domestic Fund Transfer',
+  'International Wire Transfer',
+  'Foreign Currency Exchange',
+  'SWIFT Payment Processing',
+  'Automated Teller Machine (ATM) Withdrawal',
+  'Mobile Check Deposit',
+  'Bank Statement Request',
+  'Loan Repayment',
+  'Standing Order Setup',
 ];
 
 export default function MoreScreen() {
   const router = useRouter();
+  const [picked, setPicked] = useState('');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-      </TouchableOpacity>
-
-      <Text style={styles.title}>More Options</Text>
-
-      <FlatList
-        data={MORE_OPTIONS}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.optionRow} onPress={() => router.push(item.route as any)}>
-            <Ionicons name={item.icon as any} size={22} color={colors.textDark} />
-            <Text style={styles.optionText}>{item.label}</Text>
-          </TouchableOpacity>
-        )}
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="More"
+        subtitle="Explore new financial horizons."
+        onBellPress={() => router.push('/(tabs)/notifications')}
       />
-    </SafeAreaView>
+
+      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+        {SERVICES.map((service) => {
+          const active = picked === service;
+          return (
+            <TouchableOpacity
+              key={service}
+              style={styles.row}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              onPress={() => setPicked(service)}
+            >
+              {/* Long names (the ATM one) wrap onto two lines inside the row, as in the design */}
+              <Text style={[styles.label, active && styles.labelActive]} numberOfLines={2}>
+                {service}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
-  backButton: { marginTop: 70, marginBottom: spacing.xl, width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginBottom: spacing.xl },
-  optionRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.borderLight },
-  optionText: { fontSize: fontSize.body, fontFamily: fontFamily.medium, color: colors.textDark },
+  screen: { flex: 1, backgroundColor: colors.white },
+  list: {
+    paddingTop: layout.payListTop,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.tabBarHeight,
+    gap: layout.payRowGap,
+  },
+  row: {
+    height: layout.payRowHeight,
+    justifyContent: 'center',
+    paddingLeft: layout.payLabelLeft,
+    paddingRight: layout.screenPadding,
+    backgroundColor: colors.white,
+    // Same very soft shadow as the Send and Pay rows
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  label: {
+    fontSize: fontSize.large,
+    lineHeight: layout.moreLabelLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  labelActive: { color: colors.orange },
 });

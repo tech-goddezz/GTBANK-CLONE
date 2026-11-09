@@ -130,9 +130,9 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S41 | Send – choose Fund GT Money Market | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/send.tsx` | /transfer-flow/send | ✅ |
 | S42 | Send – choose e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/send.tsx` | /transfer-flow/send | ✅ |
 | S43 | Pay (bill list) | Screens inside the home screen.pdf | `app/(tabs)/pay.tsx` | /pay | ✅ |
-| S44 | Top Up – Airtime (empty) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ⬜ |
-| S45 | Top Up – Data (empty) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ⬜ |
-| S46 | More (list of services) | Screens inside the home screen.pdf | `app/(tabs)/more.tsx` | /more | ⬜ |
+| S44 | Top Up – Airtime (empty) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
+| S45 | Top Up – Data (empty) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ✅ |
+| S46 | More (list of services) | Screens inside the home screen.pdf | `app/(tabs)/more.tsx` | /more | ✅ |
 | S47 | Send form – GTBank (own accounts) | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ⬜ |
 | S48 | Send form – Different bank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ⬜ |
 | S49 | Send form – Saved beneficiary | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ⬜ |

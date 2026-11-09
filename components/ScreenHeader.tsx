@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   titleBlock: {
     paddingTop: spacing.xs,
     paddingLeft: 22,
-    paddingRight: 56,
+    paddingRight: 44, // Room up to just before the bell (some subtitles run close to it)
   },
   titleBlockWithBack: {
     paddingLeft: 41,

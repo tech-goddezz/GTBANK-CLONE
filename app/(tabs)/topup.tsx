@@ -1,21 +1,51 @@
+// app/(tabs)/topup.tsx
+//
+// Top Up page (S44 Airtime / S45 Data in "Screens inside the home screen.pdf"),
+// opened from Home → Top up. AIRTIME | DATA switch, then grey boxes and Proceed.
+//
+// - Network provider opens the "Select action" pop-up with the four networks
+//   (the design doesn't show this list).
+// - Airtime Proceed still does what the old "Top Up" button did: it adds the
+//   amount to the balance (owner's choice; the money code is unchanged).
+// - Data Proceed does nothing yet: the data plans grid (S53) comes later.
+
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../constants/colors';
-import { fontSize, fontFamily, spacing } from '../../constants/typography';
+import { fontSize, fontFamily, lineHeight } from '../../constants/typography';
+import { layout } from '../../constants/layout';
+import ScreenHeader from '../../components/ScreenHeader';
+import Button from '../../components/Button';
+import SelectActionSheet from '../../components/SelectActionSheet';
 import { topUpBalance, getCurrentUserId } from '../../services/auth';
 
-const QUICK_AMOUNTS = [1000, 5000, 10000, 20000];
+type TopUpTab = 'airtime' | 'data';
+
+const TABS = [
+  { key: 'airtime', label: 'AIRTIME', width: layout.topupTabAirtimeWidth },
+  { key: 'data', label: 'DATA', width: layout.topupTabDataWidth },
+] as const;
+
+const NETWORKS = ['MTN', 'Airtel', 'Glo', '9mobile'];
+
+// Stops Chrome drawing its orange focus ring around the boxes.
+const noOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null;
 
 export default function TopUpScreen() {
   const router = useRouter();
+  const [tab, setTab] = useState<TopUpTab>('airtime');
+  const [network, setNetwork] = useState('');
+  const [showNetworks, setShowNetworks] = useState(false);
+  const [phone, setPhone] = useState('');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleTopUp = async () => {
+  const handleProceed = async () => {
+    // Data plans (S53) aren't built yet.
+    if (tab === 'data') return;
     if (!amount || parseFloat(amount) <= 0) {
       setError('Enter a valid amount');
       return;
@@ -33,126 +63,148 @@ export default function TopUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.textDark} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Top Up Wallet</Text>
-        <View style={{ width: 22 }} />
-      </View>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Top Up"
+        subtitle="Recharge your airtime and data in a few taps."
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
 
-      <Text style={styles.sectionLabel}>Amount</Text>
-      <View style={styles.inputRow}>
-        <Text style={styles.currencyPrefix}>₦</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="0.00"
-          placeholderTextColor={colors.base}
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="decimal-pad"
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.tabs}>
+          {TABS.map((t) => (
+            <TouchableOpacity
+              key={t.key}
+              style={[styles.tab, { width: t.width }, tab === t.key && styles.tabActive]}
+              onPress={() => {
+                setTab(t.key);
+                setError('');
+              }}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: tab === t.key }}
+            >
+              <Text style={styles.tabLabel}>{t.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <View style={styles.quickRow}>
-        {QUICK_AMOUNTS.map((amt) => (
+        <Text style={styles.note}>Top Up your account as soon as possible.</Text>
+
+        <View style={styles.boxes}>
           <TouchableOpacity
-            key={amt}
-            style={styles.quickChip}
-            onPress={() => setAmount(amt.toString())}
+            style={[styles.box, styles.selectBox]}
+            onPress={() => setShowNetworks(true)}
+            accessibilityRole="button"
           >
-            <Text style={styles.quickChipText}>₦{amt.toLocaleString()}</Text>
+            <Text style={[styles.boxText, !network && styles.hint]}>
+              {network || 'Enter Network Provider'}
+            </Text>
+            <MaterialIcons name="expand-more" size={layout.topupChevron} color={colors.black} />
           </TouchableOpacity>
-        ))}
-      </View>
 
-      {!!error && <Text style={styles.error}>{error}</Text>}
+          <TextInput
+            style={[styles.box, styles.boxText, noOutline]}
+            placeholder="Enter Your Phone number"
+            placeholderTextColor={colors.textGrey}
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
 
-      <TouchableOpacity style={styles.button} onPress={handleTopUp} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Processing...' : 'Top Up'}</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+          {tab === 'airtime' && (
+            <TextInput
+              style={[styles.box, styles.boxText, noOutline]}
+              placeholder="Enter the Amount"
+              placeholderTextColor={colors.textGrey}
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="decimal-pad"
+            />
+          )}
+
+          <Button label="Proceed" onPress={handleProceed} loading={loading} />
+          {!!error && <Text style={styles.error}>{error}</Text>}
+        </View>
+      </ScrollView>
+
+      <SelectActionSheet
+        visible={showNetworks}
+        title="Select network"
+        onCancel={() => setShowNetworks(false)}
+        options={NETWORKS.map((n) => ({
+          label: n,
+          onPress: () => {
+            setNetwork(n);
+            setShowNetworks(false);
+          },
+        }))}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.darkNavy, paddingHorizontal: spacing.xl },
-  header: {
+  screen: { flex: 1, backgroundColor: colors.white },
+  content: {
+    paddingTop: layout.topupTabsTop,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.tabBarHeight,
+  },
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: layout.topupTabsWidth,
+    height: layout.topupTabsHeight,
+    padding: layout.topupTabsPad,
+    backgroundColor: colors.white,
+  },
+  tab: {
+    height: layout.codeTabHeight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabActive: { backgroundColor: colors.segmentActive },
+  tabLabel: {
+    fontSize: fontSize.body,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
+  },
+  note: {
+    marginTop: layout.topupNoteTop,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+  },
+  boxes: {
+    marginTop: layout.topupBoxesTop,
+    gap: layout.topupBoxGap,
+  },
+  box: {
+    height: layout.inputHeight,
+    backgroundColor: colors.inputBackground,
+    paddingHorizontal: layout.topupBoxPadding,
+  },
+  selectBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingRight: layout.topupChevronRight,
   },
-  backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: {
-    fontSize: fontSize.heading2,
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-  },
-  sectionLabel: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.base,
-    marginBottom: spacing.sm,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 6,
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  currencyPrefix: {
-    fontSize: fontSize.body,
-    fontFamily: fontFamily.semibold,
-    color: colors.white,
-    marginRight: spacing.sm,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: spacing.md,
+  boxText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.white,
+    color: colors.black,
   },
-  quickRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  quickChip: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 20,
-    backgroundColor: colors.navyCard,
-  },
-  quickChipText: {
-    fontFamily: fontFamily.medium,
-    color: colors.white,
-    fontSize: fontSize.small,
-  },
+  hint: { color: colors.textGrey },
   error: {
+    marginTop: -8,
     fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
     color: colors.red,
-    marginBottom: spacing.md,
-  },
-  button: {
-    backgroundColor: colors.orange,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  buttonText: {
-    color: colors.white,
-    fontFamily: fontFamily.semibold,
-    fontSize: fontSize.body,
   },
 });
