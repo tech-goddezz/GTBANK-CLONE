@@ -63,7 +63,7 @@ export default function PayPinScreen() {
 
     if (result.success) {
       router.replace(
-        `/(tabs)/transfer-flow/processing?amount=${amountNum}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}`
+        `/(tabs)/transfer-flow/confirm?confirmed=1&amount=${amountNum}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}`
       );
     } else {
       setError(result.message || 'Transfer failed. Please try again.');

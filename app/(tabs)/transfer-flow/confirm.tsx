@@ -6,7 +6,9 @@
 // Confirm Transfer.
 //
 // Confirm Transfer opens "Enter your 4 digit code" (pin.tsx, S59–S65), which
-// checks your PIN and then sends the money.
+// checks your PIN and then sends the money. After that, pin.tsx comes back here
+// with ?confirmed=1: the "Confirmed Transfer" screen (S66 in "Dashboard flow +
+// transfer flow.pdf"), whose Next button opens "Funds Sent" (processing.tsx).
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
@@ -34,7 +36,7 @@ export default function ConfirmTransferScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     accountNumber: string; accountName: string;
-    bank: string; amount: string; narration: string;
+    bank: string; amount: string; narration: string; confirmed?: string;
   }>();
   const [myAccountNumber, setMyAccountNumber] = useState('');
   const [balance, setBalance] = useState<number | null>(null);
@@ -61,16 +63,23 @@ export default function ConfirmTransferScreen() {
   // Wallet forms have no account holder's name: show the bank name instead.
   const recipientName = params.accountName || params.bank || '';
 
+  // After the PIN is accepted and the money is sent, this same screen is shown
+  // again as "Confirmed Transfer" (S66), with a Next button to "Funds Sent".
+  const confirmed = params.confirmed === '1';
+  const query = `amount=${amountNum}&accountName=${params.accountName ?? ''}&accountNumber=${params.accountNumber ?? ''}&bank=${params.bank ?? ''}&narration=${params.narration ?? ''}`;
+
   const handleConfirm = () => {
-    router.push(
-      `/(tabs)/transfer-flow/pin?amount=${amountNum}&accountName=${params.accountName ?? ''}&accountNumber=${params.accountNumber ?? ''}&bank=${params.bank ?? ''}&narration=${params.narration ?? ''}`
-    );
+    if (confirmed) {
+      router.replace(`/(tabs)/transfer-flow/processing?${query}`);
+    } else {
+      router.push(`/(tabs)/transfer-flow/pin?${query}`);
+    }
   };
 
   return (
     <View style={styles.screen}>
       <ScreenHeader
-        title="Initiating  Transfer"
+        title={confirmed ? 'Confirmed Transfer' : 'Initiating  Transfer'}
         subtitle="Review your transfer processes here."
         onBellPress={() => router.push('/(tabs)/notifications')}
       />
@@ -124,7 +133,7 @@ export default function ConfirmTransferScreen() {
           </View>
 
           <Button
-            label="Confirm Transfer"
+            label={confirmed ? 'Next' : 'Confirm Transfer'}
             onPress={handleConfirm}
             style={styles.button}
           />

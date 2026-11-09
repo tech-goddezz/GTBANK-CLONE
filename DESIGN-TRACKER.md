@@ -151,7 +151,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 
 | # | Screen | Design file | Code file | Web address | Status |
 |---|---|---|---|---|---|
-| S66 | Confirmed transfer | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ⬜ |
+| S66 | Confirmed transfer | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/confirm.tsx` (`?confirmed=1`) | /transfer-flow/confirm?confirmed=1 | ✅ |
 | S67 | Funds sent | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/processing.tsx` | /transfer-flow/processing | ⬜ |
 | S68 | In transit via NIBSS | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/processing.tsx` | /transfer-flow/processing | ⬜ |
 | S69 | Credited to recipient | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/processing.tsx` | /transfer-flow/processing | ⬜ |
