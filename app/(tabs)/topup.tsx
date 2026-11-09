@@ -198,7 +198,8 @@ const styles = StyleSheet.create({
   boxText: {
     fontSize: fontSize.body,
     fontFamily: fontFamily.regular,
-    color: colors.black,
+    // Typed and picked text stays grey, as in the filled-in design (S52)
+    color: colors.textGrey,
   },
   hint: { color: colors.textGrey },
   error: {
