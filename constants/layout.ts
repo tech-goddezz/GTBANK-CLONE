@@ -450,6 +450,12 @@ export const layout = {
   creditedButtonTop: 16,    // Blue note → Done
   creditedReceiptTop: 14,   // Done → View Receipt (its border sits 1px outside)
   creditedReceiptHeight: 48,
+  // Receipts (S70)
+  receiptPanelTop: 26,      // Menu strip → grey panel
+  receiptShareTop: 55,      // Grey panel → Share button
+  receiptShareIcon: 16,
+  receiptShareIconLeft: 32.3, // Button edge → share icon
+  receiptShareTextShift: 23,  // "Share" sits a little right of centre, as in the design
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

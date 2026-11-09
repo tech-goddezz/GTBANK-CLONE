@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Share,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// app/(tabs)/transfer-flow/receipt.tsx
+//
+// "Receipts" (S70 in "Dashboard flow + transfer flow.pdf"), opened from View
+// Receipt on "Credited to Recipient". Grey details panel and a Share button.
+// The back arrow goes to Home, so you can't land back on "Initiating Transfer".
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
-import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
+import { fontSize, fontFamily, lineHeight } from '../../../constants/typography';
+import { layout } from '../../../constants/layout';
+import ScreenHeader from '../../../components/ScreenHeader';
+import Button from '../../../components/Button';
+import { getCurrentUserId, fetchProfile } from '../../../services/auth';
+
+const formatAmount = (n: number) =>
+  n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function Row({ label, value, twoLine, children }: {
+  label: string; value?: string; twoLine?: boolean; children?: React.ReactNode;
+}) {
+  return (
+    <View style={styles.row}>
+      <Text style={[styles.rowLabel, twoLine && styles.rowLabelTwoLine]}>{label}</Text>
+      {children ?? <Text style={styles.rowValue} numberOfLines={1}>{value}</Text>}
+    </View>
+  );
+}
 
 export default function ReceiptScreen() {
   const router = useRouter();
@@ -23,191 +40,170 @@ export default function ReceiptScreen() {
     reference?: string;
     dateTime?: string;
   }>();
+  const [myAccountNumber, setMyAccountNumber] = useState('');
 
-  // Reference and date come from "Funds Sent" so both screens show the same ones
+  // Reference and date come from "Funds Sent" so all the screens show the same ones
   const [reference] = useState(() =>
-    params.reference || Math.floor(1000000000 + Math.random() * 9000000000).toString()
+    params.reference || 'TRX' + Math.floor(100000000 + Math.random() * 900000000)
   );
-  const [dateTime] = useState(() =>
-    params.dateTime || new Date().toLocaleString('en-NG', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  );
+  const [dateTime] = useState(() => params.dateTime || new Date().toLocaleString('en-NG'));
 
-  const buildReceiptMessage = () => {
-    return `GTBank Transfer Receipt\n\nAmount: ₦${params.amount}\nTo: ${params.accountName}\nFrom: Savings Account\nBank: ${params.bank}\nAccount: ${params.accountNumber}\nReference ID: ${reference}\nDate and Time: ${dateTime}\n\nThank you for banking with us.`;
-  };
+  useEffect(() => {
+    const loadProfile = async () => {
+      const id = await getCurrentUserId();
+      const result = await fetchProfile(id);
+      if (result.success && result.profile) setMyAccountNumber(result.profile.account_number ?? '');
+    };
+    loadProfile();
+  }, []);
+
+  const amountText = formatAmount(parseFloat(params.amount ?? '0') || 0);
+  const recipientName = params.accountName || params.bank || '';
 
   const handleShare = async () => {
+    const message =
+      `GTBank Transfer Receipt\n\nAmount: ${amountText}\nTo: ${recipientName}\n` +
+      `${params.bank} • ${params.accountNumber}\nFrom: Main Account ${myAccountNumber}\n` +
+      `Reference Id: ${reference}\nDate and Time: ${dateTime}\n\nThank you for banking with us.`;
     try {
-      await Share.share({ message: buildReceiptMessage() });
+      await Share.share({ message });
     } catch (error) {
       console.log('Share failed:', error);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom'] as any}>
-      <Text style={styles.title}>Receipts</Text>
-      <Text style={styles.subtitle}>Review your transfer process here.</Text>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Receipts"
+        subtitle="Review your transfer processes here."
+        onBack={() => router.replace('/(tabs)/home')}
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
 
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Amount</Text>
-          <Text style={styles.rowValue}>₦{params.amount}</Text>
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <View style={styles.panel}>
+          <Row label="Amount: " value={amountText} />
+          <Row label="To:" twoLine>
+            <View style={styles.twoLineValue}>
+              <Text style={styles.toName} numberOfLines={1}>{recipientName}</Text>
+              <Text style={styles.toSub} numberOfLines={1}>
+                {params.bank}  • {params.accountNumber}
+              </Text>
+            </View>
+          </Row>
+          <Row label="From:" twoLine>
+            <View style={styles.fromValue}>
+              <Text style={styles.fromName}>Main Account</Text>
+              <Text style={styles.fromNumber}>{myAccountNumber}</Text>
+            </View>
+          </Row>
+          <Row label="Reference Id:" value={reference} />
+          <Row label="Date and Time:">
+            <Text style={styles.rowDate} numberOfLines={1}>{dateTime}</Text>
+          </Row>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>To</Text>
-          <Text style={styles.rowValue}>{params.accountName}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>From</Text>
-          <Text style={styles.rowValue}>Savings Account</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Bank</Text>
-          <Text style={styles.rowValue}>{params.bank}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Account</Text>
-          <Text style={styles.rowValue}>{params.accountNumber}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Reference Id</Text>
-          <Text style={styles.rowValue}>{reference}</Text>
-        </View>
-        <View style={[styles.row, styles.rowLast]}>
-          <Text style={styles.rowLabel}>Date and Time</Text>
-          <Text style={styles.rowValue}>{dateTime}</Text>
-        </View>
-      </View>
 
-      <View style={styles.thankYouBox}>
-        <Text style={styles.thankYouText}>Thank you for banking with us.</Text>
-      </View>
-
-      <View style={styles.buttonsRow}>
-        <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <Ionicons name="share-outline" size={20} color={colors.orange} />
-          <Text style={styles.shareText}>Share</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.viewReceiptButton} onPress={handleShare}>
-          <Text style={styles.viewReceiptText}>View Receipt</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.doneButton}
-        onPress={() => router.replace('/(tabs)/home')}
-      >
-        <Text style={styles.doneButtonText}>Done</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <View style={styles.shareWrap}>
+          <Button
+            label="Share"
+            variant="secondary"
+            onPress={handleShare}
+            style={styles.share}
+            textStyle={styles.shareText}
+          />
+          <View style={styles.shareIcon} pointerEvents="none">
+            <MaterialIcons name="share" size={layout.receiptShareIcon} color={colors.chatIcon} />
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, paddingHorizontal: spacing.xl },
-  title: {
-    fontSize: fontSize.heading1,
-    fontFamily: fontFamily.bold,
-    color: colors.textDark,
-    marginTop: spacing.xxxl,
+  screen: { flex: 1, backgroundColor: colors.white },
+  scroll: {
+    paddingTop: layout.receiptPanelTop,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.tabBarHeight,
   },
-  subtitle: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.textGrey,
-    marginTop: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: radius.card,
-    overflow: 'hidden',
+  panel: {
+    paddingTop: layout.fundsPanelPadTop,
+    paddingBottom: layout.fundsPanelPadBottom,
+    paddingHorizontal: layout.confirmRowLineInset,
+    backgroundColor: colors.inputBackground,
+    // Same very soft shadow as the other transfer panels
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 17,
+    elevation: 3,
   },
   row: {
+    height: layout.fundsRowHeight,
     flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    paddingHorizontal: layout.confirmRowTextInset,
+    paddingBottom: layout.confirmRowTextBottom,
+    borderBottomWidth: layout.confirmRowLine,
+    borderBottomColor: colors.settingsLine,
   },
-  rowLast: { borderBottomWidth: 0 },
   rowLabel: {
-    fontSize: fontSize.small,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textCharcoal,
+  },
+  rowLabelTwoLine: {
+    marginBottom: layout.fundsLabelBottomTwoLine - layout.confirmRowTextBottom,
+  },
+  rowValue: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.bold,
+    color: colors.black,
+  },
+  rowDate: {
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.semibold,
+    color: colors.textCharcoal,
+  },
+  twoLineValue: { alignItems: 'flex-end', marginBottom: layout.fundsValueDrop, flexShrink: 1 },
+  toName: {
+    fontSize: fontSize.large,
+    lineHeight: layout.confirmNameLineHeight,
+    fontFamily: fontFamily.semibold,
+    color: colors.textLightDark,
+  },
+  toSub: {
+    fontSize: fontSize.body,
+    lineHeight: layout.confirmSubLineHeight,
     fontFamily: fontFamily.regular,
     color: colors.textGrey,
   },
-  rowValue: {
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.medium,
-    color: colors.textDark,
-  },
-  thankYouBox: {
-    backgroundColor: '#FEECE3',
-    borderRadius: radius.card,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    marginTop: spacing.xl,
-  },
-  thankYouText: {
-    color: colors.orange,
-    fontFamily: fontFamily.medium,
-    fontSize: fontSize.small,
-  },
-  buttonsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
-  shareButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.orange,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-  },
-  shareText: {
-    color: colors.orange,
-    fontFamily: fontFamily.semibold,
+  fromValue: { alignItems: 'flex-end', marginBottom: layout.fundsFromDrop },
+  fromName: {
     fontSize: fontSize.body,
+    lineHeight: layout.fundsFromLineHeight,
+    fontFamily: fontFamily.bold,
+    color: colors.black,
   },
-  viewReceiptButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-  },
-  viewReceiptText: {
-    color: colors.textDark,
-    fontFamily: fontFamily.semibold,
+  fromNumber: {
     fontSize: fontSize.body,
+    lineHeight: layout.fundsFromLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.black,
   },
-  doneButton: {
-    backgroundColor: colors.orange,
-    borderRadius: 6,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  doneButtonText: {
-    color: colors.white,
-    fontFamily: fontFamily.semibold,
-    fontSize: fontSize.body,
+  // Orange border sits just outside the normal button width, as in the design
+  shareWrap: { marginTop: layout.receiptShareTop, marginHorizontal: -1 },
+  share: { height: layout.creditedReceiptHeight },
+  shareText: { marginLeft: layout.receiptShareTextShift },
+  shareIcon: {
+    position: 'absolute',
+    left: layout.receiptShareIconLeft,
+    top: (layout.creditedReceiptHeight - layout.receiptShareIcon) / 2,
   },
 });
