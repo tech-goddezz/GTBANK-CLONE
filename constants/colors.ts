@@ -136,6 +136,11 @@ const colors = {
   // Small blue "!" icon in the light-blue note boxes (S67–S69).
   infoIcon: '#1912F4',
 
+  // Transfer progress steps on "In Transit via NIBSS" (S68).
+  stepCurrent: '#957FD4',   // Purple circle: the step happening now
+  stepPending: '#E4E5EA',   // Grey circle: steps not reached yet
+  stepDivider: '#F4F4F4',   // Faint line under each step
+
   // Green stripes of the small Nigerian flag on the phone number screen.
   flagGreen: '#14B53A',
 

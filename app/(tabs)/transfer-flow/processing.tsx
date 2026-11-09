@@ -5,10 +5,10 @@
 //   Funds Sent (S67) → Done → In Transit via NIBSS (S68) → Proceed →
 //   Credited to Recipient (S69) → Done → receipt.
 //
-// S67 matches the design. S68 and S69 keep their old look until they are rebuilt.
+// S67 and S68 match the design. S69 keeps its old look until it is rebuilt.
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
@@ -46,6 +46,42 @@ function Row({ label, value, twoLine, children }: {
     <View style={styles.row}>
       <Text style={[styles.rowLabel, twoLine && styles.rowLabelTwoLine]}>{label}</Text>
       {children ?? <Text style={styles.rowValue} numberOfLines={1}>{value}</Text>}
+    </View>
+  );
+}
+
+type StepState = 'done' | 'current' | 'pending';
+
+// One step in the S68 progress panel: circle, two lines of text, faint line under
+function Step({ state, title, sub, last }: { state: StepState; title: string; sub: string; last?: boolean }) {
+  return (
+    <View style={[styles.step, !last && styles.stepGap]}>
+      <View style={styles.dotColumn}>
+        <View
+          style={[
+            styles.dot,
+            state === 'done' && styles.dotDone,
+            state === 'current' && styles.dotCurrent,
+            state === 'pending' && styles.dotPending,
+          ]}
+        >
+          {state === 'done' ? (
+            <Image
+              source={require('../../../assets/images/transfer-success-tick.png')}
+              style={styles.dotTick}
+            />
+          ) : (
+            <View style={[styles.dotInner, state === 'current' && styles.dotInnerCurrent]} />
+          )}
+        </View>
+        {!last && <View style={styles.connector} />}
+      </View>
+      <View style={styles.stepText}>
+        <Text style={[styles.stepTitle, state !== 'pending' && styles.stepTitleBold]} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={styles.stepSub} numberOfLines={1}>{sub}</Text>
+      </View>
     </View>
   );
 }
@@ -126,23 +162,38 @@ export default function ProcessingScreen() {
 
           <Button label="Done" onPress={() => setStage('transit')} style={styles.button} />
         </ScrollView>
+      ) : stage === 'transit' ? (
+        <ScrollView contentContainerStyle={styles.transitScroll} showsVerticalScrollIndicator={false}>
+          <Text style={styles.intro}>{'Your transfer is being processed securely by\nNIBSS'}</Text>
+
+          <TouchableOpacity
+            style={styles.helpLink}
+            onPress={() => router.push('/(settings)/get-help')}
+            accessibilityRole="link"
+          >
+            <Text style={styles.helpText}>Need help?</Text>
+          </TouchableOpacity>
+
+          <View style={styles.stepsPanel}>
+            <Step state="done" title="Funds Sent" sub={dateTime} />
+            <Step state="current" title="In Transit via NIBSS" sub="Processing...." />
+            <Step state="pending" title="Credited to Recipient" sub="Pending..." last />
+          </View>
+
+          <View style={[styles.note, styles.transitNote]}>
+            <MaterialIcons name="error-outline" size={layout.fundsNoteIcon} color={colors.infoIcon} />
+            <Text style={styles.noteText} numberOfLines={1}>This takes few seconds.</Text>
+          </View>
+
+          <Button label="Proceed" onPress={() => setStage('credited')} style={styles.proceed} />
+        </ScrollView>
       ) : (
-        // Old look, kept until S68 and S69 are rebuilt
+        // Old look, kept until S69 is rebuilt
         <View style={styles.oldContent}>
-          <Ionicons
-            name={stage === 'transit' ? 'swap-horizontal' : 'checkmark-circle'}
-            size={72}
-            color={stage === 'transit' ? colors.orange : colors.green}
-          />
+          <Ionicons name="checkmark-circle" size={72} color={colors.green} />
           <Text style={styles.oldTitle}>{TITLES[stage]}</Text>
-          <Text style={styles.oldSubtitle}>
-            {stage === 'transit' ? 'This takes a few seconds...' : 'Transfer completed successfully'}
-          </Text>
-          <Button
-            label={stage === 'transit' ? 'Proceed' : 'Done'}
-            onPress={stage === 'transit' ? () => setStage('credited') : goToReceipt}
-            style={styles.oldButton}
-          />
+          <Text style={styles.oldSubtitle}>Transfer completed successfully</Text>
+          <Button label="Done" onPress={goToReceipt} style={styles.oldButton} />
         </View>
       )}
     </View>
@@ -254,7 +305,103 @@ const styles = StyleSheet.create({
     color: colors.textLightDark,
   },
   button: { marginTop: layout.fundsButtonTop },
-  // Old look for S68 / S69 (temporary)
+  // In Transit via NIBSS (S68)
+  transitScroll: {
+    paddingTop: layout.transitIntroTop,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.tabBarHeight,
+  },
+  intro: {
+    marginLeft: layout.transitIntroLeft,
+    fontSize: fontSize.body,
+    lineHeight: lineHeight.body,
+    fontFamily: fontFamily.regular,
+    color: colors.textGrey,
+  },
+  helpLink: {
+    alignSelf: 'flex-end',
+    marginTop: layout.transitHelpTop,
+    marginRight: layout.transitHelpRight,
+  },
+  helpText: {
+    fontSize: layout.transitHelpSize,
+    lineHeight: layout.transitHelpLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.orange,
+  },
+  stepsPanel: {
+    marginTop: layout.transitPanelTop,
+    paddingTop: layout.transitPanelPadTop,
+    paddingBottom: layout.transitPanelPadBottom,
+    paddingHorizontal: layout.transitPanelSide,
+    backgroundColor: colors.white,
+    // Same very soft shadow as the Funds Sent panel
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 17,
+    elevation: 3,
+  },
+  step: { flexDirection: 'row' },
+  stepGap: { marginBottom: layout.transitStepGap },
+  dotColumn: { width: layout.transitDot, marginRight: layout.transitDotTextGap },
+  dot: {
+    marginTop: layout.transitDotTop,
+    width: layout.transitDot,
+    height: layout.transitDot,
+    borderRadius: layout.transitDot / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dotDone: { backgroundColor: colors.orange },
+  dotCurrent: { backgroundColor: colors.stepCurrent },
+  dotPending: { backgroundColor: colors.stepPending },
+  dotTick: { width: layout.transitDotTick, height: layout.transitDotTick },
+  dotInner: {
+    width: layout.transitDotInner,
+    height: layout.transitDotInner,
+    borderRadius: layout.transitDotInner / 2,
+    backgroundColor: colors.white,
+  },
+  dotInnerCurrent: {
+    position: 'absolute',
+    top: layout.transitDotInnerOffset,
+    left: layout.transitDotInnerOffset,
+  },
+  connector: {
+    position: 'absolute',
+    top: layout.transitConnectorTop,
+    left: (layout.transitDot - layout.transitConnectorWidth) / 2,
+    width: layout.transitConnectorWidth,
+    height: layout.transitConnectorHeight,
+    backgroundColor: colors.amber,
+  },
+  stepText: {
+    flex: 1,
+    height: layout.transitStepTextHeight,
+    borderBottomWidth: layout.confirmRowLine,
+    borderBottomColor: colors.stepDivider,
+  },
+  stepTitle: {
+    fontSize: fontSize.body,
+    lineHeight: layout.transitStepLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.textCharcoal,
+  },
+  stepTitleBold: { fontFamily: fontFamily.bold },
+  stepSub: {
+    fontSize: fontSize.body,
+    lineHeight: layout.transitStepLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.textCharcoal,
+  },
+  transitNote: { marginTop: layout.transitNoteTop, height: layout.transitNoteHeight },
+  proceed: {
+    alignSelf: 'flex-end',
+    width: layout.transitButtonWidth,
+    marginTop: layout.transitButtonTop,
+  },
+  // Old look for S69 (temporary)
   oldContent: {
     flex: 1,
     alignItems: 'center',

@@ -417,6 +417,33 @@ export const layout = {
   fundsNoteIcon: 13,
   fundsNoteTextGap: 11.5,   // "!" icon → note text
   fundsButtonTop: 8,        // Blue note → Done
+  // In Transit via NIBSS (S68)
+  transitIntroTop: 24.5,    // Menu strip → "Your transfer is being processed..."
+  transitIntroLeft: 2,      // Intro text sits 2px further in than the screen margin
+  transitHelpTop: 22,       // Intro → "Need help?"
+  transitHelpRight: 5.5,    // "Need help?" sits a little in from the right margin
+  transitHelpSize: 23,
+  transitHelpLineHeight: 28,
+  transitPanelTop: 47.5,    // "Need help?" → steps panel
+  transitPanelPadTop: 23,
+  transitPanelPadBottom: 21,
+  transitPanelSide: 32,     // Panel edge → step circles / end of the faint lines
+  transitStepGap: 28,       // One step → the next
+  transitStepTextHeight: 34, // Two lines of step text, faint line at the bottom
+  transitStepLineHeight: 17,
+  transitDot: 20,
+  transitDotTop: 6,         // Step text top → its circle
+  transitDotTick: 16,       // 3D tick inside the orange circle
+  transitDotInner: 6,       // Small white dot inside the purple / grey circle
+  transitDotInnerOffset: 3, // Purple circle: white dot sits near the top-left
+  transitDotTextGap: 8,     // Circle → step text
+  transitConnectorTop: 29,  // Step text top → thin orange line
+  transitConnectorHeight: 34,
+  transitConnectorWidth: 0.5,
+  transitNoteTop: 88,       // Steps panel → blue note
+  transitNoteHeight: 40,
+  transitButtonTop: 26,     // Blue note → Proceed
+  transitButtonWidth: 128,
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box
