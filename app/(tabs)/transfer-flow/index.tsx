@@ -7,8 +7,9 @@
 // The old send-money page that used to live here is now transfer-flow/send.tsx
 // (Home → Send opens it).
 //
-// Check Status, Query Transfer, the robot and the chat button don't do anything
-// yet: their screens haven't been built (S71–S83 and the GTBOT chat).
+// Check Status opens "Still checking" (S71, checking.tsx). Query Transfer, the
+// robot and the chat button don't do anything yet: their screens haven't been
+// built (S72–S83 and the GTBOT chat).
 
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
@@ -118,7 +119,7 @@ export default function TransfersScreen() {
         </View>
 
         <Text style={[styles.body, styles.issues]}>
-          Having issues with  a transfer? <Text style={styles.checkStatus}>Check Status</Text> or Query the transfer process to reverse it automatically.
+          Having issues with  a transfer? <Text style={styles.checkStatus} onPress={() => router.push('/transfer-flow/checking')}>Check Status</Text> or Query the transfer process to reverse it automatically.
         </Text>
 
         <TouchableOpacity style={styles.queryButton} activeOpacity={0.7}>

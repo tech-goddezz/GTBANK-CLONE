@@ -456,6 +456,17 @@ export const layout = {
   receiptShareIcon: 16,
   receiptShareIconLeft: 32.3, // Button edge → share icon
   receiptShareTextShift: 23,  // "Share" sits a little right of centre, as in the design
+  // Transfer Tracking – Still checking (S71)
+  checkCircleTop: 24,       // Menu strip → orange circle
+  checkCircle: 40,
+  checkStopSquare: 16,      // White square inside the orange circle
+  checkTitleTop: 10,        // Orange circle → "Still Checking ...."
+  checkTitleLineHeight: 20,
+  checkGap: 24,             // Space between most of the lines of text
+  checkTimerTop: 26.3,      // "5 minutes" → "0:00"
+  checkNoteIconLeft: 28.6,  // Note edge → "i" icon
+  checkHelpTop: 119.4,      // "0:00" → "Need help?"
+  checkHelpRight: 9.5,      // "Need help?" sits a little in from the right margin
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box
