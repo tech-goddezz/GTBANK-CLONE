@@ -1,14 +1,19 @@
 // app/(tabs)/transfer-flow/details.tsx
-// Account number + amount entry. Reads bank type from URL param.
+//
+// Send form (S47 GTBank in "Screens inside the home screen.pdf"; S48 Different
+// Bank uses the same page with a bank box). Reads the bank type from the URL.
+//
+// Labels sit above light grey boxes; the found account name shows as plain text
+// under the destination box. Checks and the next step (confirm) are unchanged.
 
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   FlatList,
   Modal,
   KeyboardAvoidingView,
@@ -19,8 +24,9 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import colors from '../../../constants/colors';
 import { fontSize, fontFamily, spacing, radius } from '../../../constants/typography';
-import InputField from '../../../components/InputField';
-import { useAccountStore } from '../../../store/useAccountStore';
+import { layout } from '../../../constants/layout';
+import ScreenHeader from '../../../components/ScreenHeader';
+import Button from '../../../components/Button';
 
 import { fetchProfile, getCurrentUserId, lookupAccountName } from '../../../services/auth';
 
@@ -35,25 +41,30 @@ const BANKS = [
   'Unity Bank', 'VFD Microfinance Bank', 'Wema Bank', 'Zenith Bank',
 ];
 
+// Stops Chrome drawing its orange focus ring around the boxes.
+const noOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null;
+
 export default function TransferDetailsScreen() {
   const router = useRouter();
   const { bank } = useLocalSearchParams<{ bank: string }>();
-  const { account } = useAccountStore();
-const [realBalance, setRealBalance] = useState(0);
+  const isGtbank = bank === 'gtbank';
+  const [realBalance, setRealBalance] = useState(0);
+  const [myAccountNumber, setMyAccountNumber] = useState('');
 
-useEffect(() => {
-  const loadBalance = async () => {
-    const id = await getCurrentUserId();
-    const result = await fetchProfile(id);
-    if (result.success && result.profile) {
-      setRealBalance(result.profile.balance ?? 0);
-    }
-  };
-  loadBalance();
-}, []);
+  useEffect(() => {
+    const loadProfile = async () => {
+      const id = await getCurrentUserId();
+      const result = await fetchProfile(id);
+      if (result.success && result.profile) {
+        setRealBalance(result.profile.balance ?? 0);
+        setMyAccountNumber(result.profile.account_number ?? '');
+      }
+    };
+    loadProfile();
+  }, []);
 
   const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank] = useState(bank === 'gtbank' ? 'GTBank' : '');
+  const [selectedBank, setSelectedBank] = useState(isGtbank ? 'GTBank' : '');
   const [amount, setAmount] = useState('');
   const [narration, setNarration] = useState('');
   const [showBankPicker, setShowBankPicker] = useState(false);
@@ -61,19 +72,19 @@ useEffect(() => {
   const [resolvedName, setResolvedName] = useState('');
   const [resolvingName, setResolvingName] = useState(false);
 
-useEffect(() => {
-  const resolveAccountName = async () => {
-    if (accountNumber.length === 10) {
-      setResolvingName(true);
-      const result = await lookupAccountName(accountNumber);
-      setResolvedName(result.success ? result.name : '');
-      setResolvingName(false);
-    } else {
-      setResolvedName('');
-    }
-  };
-  resolveAccountName();
-}, [accountNumber]);
+  useEffect(() => {
+    const resolveAccountName = async () => {
+      if (accountNumber.length === 10) {
+        setResolvingName(true);
+        const result = await lookupAccountName(accountNumber);
+        setResolvedName(result.success ? result.name : '');
+        setResolvingName(false);
+      } else {
+        setResolvedName('');
+      }
+    };
+    resolveAccountName();
+  }, [accountNumber]);
 
   const handleContinue = () => {
     const newErrors: Record<string, string> = {};
@@ -89,25 +100,56 @@ useEffect(() => {
     );
   };
 
+  const showName = resolvingName || resolvedName !== '';
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.screen}>
+      <ScreenHeader
+        title="Send"
+        subtitle="Make seamless and secure transfers."
+        onBellPress={() => router.push('/(tabs)/notifications')}
+      />
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color={colors.textDark} />
-          </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {isGtbank ? (
+            <>
+              <Text style={styles.label}>Main Account</Text>
+              {/* Your own account: shown, not editable */}
+              <View style={[styles.box, styles.boxCentred]}>
+                <Text style={styles.boxText}>{myAccountNumber}</Text>
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>Recipient Bank</Text>
+              <TouchableOpacity
+                style={[styles.box, styles.bankBox]}
+                onPress={() => setShowBankPicker(true)}
+              >
+                <Text style={[styles.boxText, !selectedBank && styles.hint]}>
+                  {selectedBank || 'Select bank'}
+                </Text>
+                <Ionicons name="chevron-down" size={16} color={colors.textGrey} />
+              </TouchableOpacity>
+              {!!errors.bank && <Text style={styles.errorText}>{errors.bank}</Text>}
+            </>
+          )}
 
-          <Text style={styles.title}>
-            {bank === 'gtbank' ? 'GT Bank Transfer' : 'Other Banks Transfer'}
+          <Text style={[styles.label, styles.nextLabel]}>
+            {isGtbank ? 'Destination Account' : 'Recipient Account'}
           </Text>
-          <Text style={styles.subtitle}>Enter recipient details</Text>
-
-          <InputField
-            label="Account Number"
-            placeholder="Enter 10-digit account number"
+          <TextInput
+            style={[styles.box, styles.boxText, noOutline]}
+            placeholder="Enter account number"
+            placeholderTextColor={colors.textGrey}
             value={accountNumber}
             onChangeText={(t) => {
               setAccountNumber(t.replace(/[^0-9]/g, '').slice(0, 10));
@@ -115,64 +157,48 @@ useEffect(() => {
             }}
             keyboardType="number-pad"
             maxLength={10}
-            error={errors.account}
           />
+          {!!errors.account && <Text style={styles.errorText}>{errors.account}</Text>}
 
-                    {resolvingName && (
-            <View style={styles.resolvedBadge}>
-              <ActivityIndicator size="small" color={colors.orange} />
-              <Text style={styles.resolvedText}>Verifying account...</Text>
-            </View>
-          )}
-          {!resolvingName && resolvedName !== '' && (
-            <View style={styles.resolvedBadge}>
-              <Ionicons name="checkmark-circle" size={16} color={colors.green} />
-              <Text style={styles.resolvedText}>{resolvedName}</Text>
-            </View>
-          )}
-
-          {bank !== 'gtbank' && (
-            <View style={styles.bankFieldWrapper}>
-              <Text style={styles.fieldLabel}>Bank</Text>
-              <TouchableOpacity
-                style={[styles.bankSelector, !!errors.bank && { borderColor: colors.red }]}
-                onPress={() => setShowBankPicker(true)}
-              >
-                <Text style={selectedBank ? styles.bankValue : styles.bankPlaceholder}>
-                  {selectedBank || 'Select bank'}
-                </Text>
-                <Ionicons name="chevron-down" size={18} color={colors.textGrey} />
-              </TouchableOpacity>
-              {!!errors.bank && <Text style={styles.errorText}>{errors.bank}</Text>}
+          {showName && (
+            <View style={styles.nameRow}>
+              {resolvingName ? (
+                <>
+                  <ActivityIndicator size="small" color={colors.orange} />
+                  <Text style={[styles.name, styles.verifying]}>Verifying account...</Text>
+                </>
+              ) : (
+                <Text style={styles.name}>{resolvedName}</Text>
+              )}
             </View>
           )}
 
-          <InputField
-            label="Amount (₦)"
-            placeholder="0.00"
+          <Text style={[styles.label, showName ? styles.labelAfterName : styles.nextLabel]}>
+            {isGtbank ? 'Amount' : 'Amount to Send'}
+          </Text>
+          <TextInput
+            style={[styles.box, styles.boxText, noOutline]}
+            placeholder="Enter the Amount"
+            placeholderTextColor={colors.textGrey}
             value={amount}
             onChangeText={(t) => {
               setAmount(t.replace(/[^0-9.]/g, ''));
               if (errors.amount) setErrors((e) => ({ ...e, amount: '' }));
             }}
             keyboardType="decimal-pad"
-            error={errors.amount}
           />
+          {!!errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
 
-          <Text style={styles.balanceHint}>
-           Available balance: ₦{realBalance.toLocaleString()}
-          </Text>
-
-          <InputField
-            label="Narration (optional)"
+          <Text style={[styles.label, styles.nextLabel]}>Narration</Text>
+          <TextInput
+            style={[styles.box, styles.boxText, noOutline]}
             placeholder="What's this for?"
+            placeholderTextColor={colors.textGrey}
             value={narration}
             onChangeText={setNarration}
           />
 
-          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-            <Text style={styles.continueText}>Continue</Text>
-          </TouchableOpacity>
+          <Button label="Proceed" onPress={handleContinue} style={styles.button} />
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -191,7 +217,11 @@ useEffect(() => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.bankOption}
-                  onPress={() => { setSelectedBank(item); setShowBankPicker(false); }}
+                  onPress={() => {
+                    setSelectedBank(item);
+                    setShowBankPicker(false);
+                    if (errors.bank) setErrors((e) => ({ ...e, bank: '' }));
+                  }}
                 >
                   <Text style={styles.bankOptionText}>{item}</Text>
                   {selectedBank === item && <Ionicons name="checkmark" size={18} color={colors.orange} />}
@@ -202,38 +232,75 @@ useEffect(() => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
-  scroll: { flexGrow: 1, paddingHorizontal: spacing.xl, paddingBottom: spacing.xxxl },
-  backButton: { marginTop: spacing.xl, marginBottom: spacing.lg, width: 40, height: 40, justifyContent: 'center' },
-  title: { fontSize: fontSize.heading1, fontFamily: fontFamily.bold, color: colors.textDark, marginBottom: spacing.xs },
-  subtitle: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textGrey, marginBottom: spacing.xl },
-  resolvedBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.xs,
-    backgroundColor: colors.greenFaint, paddingHorizontal: spacing.md, paddingVertical: spacing.xs,
-    borderRadius: radius.pill, alignSelf: 'flex-start', marginTop: -spacing.md, marginBottom: spacing.lg,
+  screen: { flex: 1, backgroundColor: colors.white },
+  scroll: {
+    flexGrow: 1,
+    paddingTop: layout.formTop,
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: layout.tabBarHeight,
   },
-  resolvedText: { fontSize: fontSize.small, fontFamily: fontFamily.semibold, color: colors.green },
-  bankFieldWrapper: { marginBottom: spacing.lg },
-  fieldLabel: { fontSize: fontSize.small, fontFamily: fontFamily.medium, color: colors.textGrey, marginBottom: spacing.xs },
-  bankSelector: {
-    height: 52, backgroundColor: colors.inputBackground, borderRadius: radius.input,
-    borderWidth: 1.5, borderColor: colors.borderLight, paddingHorizontal: spacing.lg,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  label: {
+    fontSize: fontSize.large,
+    lineHeight: layout.formLabelLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.textNearBlack,
+    marginBottom: layout.formLabelGap,
   },
-  bankValue: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textDark },
-  bankPlaceholder: { fontSize: fontSize.body, fontFamily: fontFamily.regular, color: colors.textFaded },
-  errorText: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.red, marginTop: spacing.xs },
-  balanceHint: { fontSize: fontSize.small, fontFamily: fontFamily.regular, color: colors.textGrey, marginTop: -spacing.md, marginBottom: spacing.lg },
-  continueButton: {
-    backgroundColor: colors.orange, height: 54, borderRadius: radius.button,
-    alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl,
+  nextLabel: { marginTop: layout.formFieldGap },
+  labelAfterName: { marginTop: layout.formNameBottom },
+  box: {
+    height: layout.inputHeight,
+    backgroundColor: colors.inputBackground,
+    paddingHorizontal: layout.formTextInset,
+    // Same very soft shadow as the Send rows
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  continueText: { fontSize: fontSize.large, fontFamily: fontFamily.semibold, color: colors.white },
+  boxCentred: { justifyContent: 'center' },
+  bankBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  boxText: {
+    fontSize: fontSize.large,
+    fontFamily: fontFamily.regular,
+    color: colors.textNearBlack,
+  },
+  hint: { color: colors.textGrey },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: layout.formNameTop,
+    paddingLeft: layout.formTextInset,
+  },
+  name: {
+    fontSize: fontSize.large,
+    lineHeight: layout.formLabelLineHeight,
+    fontFamily: fontFamily.regular,
+    color: colors.textNearBlack,
+    // Very faint shadow under the name, as in the design
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 4,
+  },
+  verifying: { color: colors.textGrey },
+  errorText: {
+    fontSize: fontSize.small,
+    fontFamily: fontFamily.regular,
+    color: colors.red,
+    marginTop: spacing.xs,
+  },
+  button: { marginTop: layout.formButtonTop },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalSheet: { backgroundColor: colors.white, borderTopLeftRadius: radius.card, borderTopRightRadius: radius.card, maxHeight: '70%', paddingBottom: spacing.xxxl },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.borderLight },

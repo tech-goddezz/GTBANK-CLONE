@@ -344,6 +344,15 @@ export const layout = {
   payFormTop: 24,           // Last row → amount box (not in the design)
   payFormGap: 16,           // Amount box → Pay button
   moreLabelLineHeight: 24,  // More page (S46): line spacing when a name wraps (ATM row)
+  // Send forms (S47–S51): label above each grey box
+  formTop: 29.5,            // Menu strip → first label
+  formLabelLineHeight: 24,
+  formLabelGap: 7.5,        // Label → box
+  formFieldGap: 16,         // Box → next label
+  formTextInset: 17.5,      // Text inside a box
+  formNameTop: 18.5,        // Destination box → account name
+  formNameBottom: 27.5,     // Account name → next label
+  formButtonTop: 24,        // Last box → Proceed
   // Top Up page (S44/S45): AIRTIME | DATA switch, note, boxes, Proceed
   topupTabsTop: 24,         // Menu strip → switch
   topupTabsWidth: 362,
