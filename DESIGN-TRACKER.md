@@ -88,7 +88,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S14 | Identity verification – camera | forget password.pdf | `app/(forgot-password)/identity.tsx` | /reset-password → numbers → Proceed → any 6 digits → Proceed (/identity opens the sign-up one ⚠️) | ✅ |
 | S15 | Identity verification – face scan | forget password.pdf | `app/(forgot-password)/identity.tsx` | S14 → tap Start | ✅ |
 | S16 | Create new password | forget password.pdf | `app/(forgot-password)/new-password.tsx` | /new-password | ✅ |
-| S17 | Password updated! | forget password.pdf | `app/(forgot-password)/success.tsx` | /success ⚠️ | ⬜ |
+| S17 | Password updated! | forget password.pdf | `app/(forgot-password)/success.tsx` | /new-password → same 6+ character password twice → Reset Password (/success opens the PIN one ⚠️). Sign In → /phone | ✅ |
 
 ## 5. KYC (open an account) — `Kyc flow.pdf`
 

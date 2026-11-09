@@ -173,6 +173,13 @@ const colors = {
   // shows as a softer grey. The owner chose to match that look (2026-11-07).
   codeBoxActiveBorder: 'rgba(0, 0, 0, 0.5)',
 
+  // "Password Updated!" tick picture: grey disc, dark tick, and three rings (inner → outer).
+  successDisc: '#D9DCE3',
+  successTick: '#626672',
+  successRingInner: '#C1C6D4',
+  successRingMiddle: '#C8CBD4',
+  successRingOuter: '#EEF0F8',
+
   // The highlighted option in the "from SMS / Tokens" switch.
   segmentActive: '#F5F5F5',
 

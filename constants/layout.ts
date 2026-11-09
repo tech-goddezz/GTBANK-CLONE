@@ -152,6 +152,14 @@ export const layout = {
   newPwBoxGap: 33.5,        // Subtitle → "New Password" box (boxes reuse the reset* sizes)
   newPwButtonGap: 48,       // "Confirm Password" box → Reset Password button
   newPwButtonWidth: 187,
+  // Password Updated! (forgot password). The tick picture is cut off at the top
+  // (just below the status bar) and on the left edge.
+  successPicTop: 56,         // From the top of the screen
+  successPicWidth: 207,
+  successPicHeight: 216,
+  successTitleTop: 335,      // From the top of the screen to the title
+  successSubtitleGap: 16,    // Title → subtitle
+  successButtonBottom: 106,  // Sign In button → bottom of the screen
   transactionRowHeight: 72,
   optionRowHeight: 56,   // One choice in the "Select action" pop-up
   radioSize: 26,         // Round choice button, including its 1px outline
