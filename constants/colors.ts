@@ -144,6 +144,10 @@ const colors = {
   // Light grey "0:00" timer on "Transfer Tracking – Still checking" (S71).
   timerGrey: '#A7AAAC',
 
+  // Red "Transfer failed" warning box on S72.
+  failedBox: '#F7F3FE',     // Very pale purple-white inside
+  failedBorder: '#E81414',  // Thin red border
+
   // Green stripes of the small Nigerian flag on the phone number screen.
   flagGreen: '#14B53A',
 

@@ -467,6 +467,18 @@ export const layout = {
   checkNoteIconLeft: 28.6,  // Note edge → "i" icon
   checkHelpTop: 119.4,      // "0:00" → "Need help?"
   checkHelpRight: 9.5,      // "Need help?" sits a little in from the right margin
+  // Transfer failed (S72), same page
+  failedBoxTop: 43,         // Menu strip → red warning box
+  failedBoxHeight: 64,
+  failedBoxIconLeft: 17.6,  // Box edge → "!" icon
+  failedTextLineHeight: 24,
+  failedCardTop: 25.8,      // "0:00" → white "money is safe" card
+  failedCardHeight: 56,
+  failedCardPad: 16,        // Card edge → orange circle
+  failedCardTextGap: 8,     // Orange circle → card text
+  failedBankIcon: 16,
+  failedHelpTop: 108.6,     // White card → "Need help?"
+  failedHelpRight: 6.5,
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

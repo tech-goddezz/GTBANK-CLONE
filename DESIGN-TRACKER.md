@@ -157,7 +157,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S69 | Credited to recipient | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/processing.tsx` | /transfer-flow/processing | ✅ |
 | S70 | Receipt | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/receipt.tsx` | /transfer-flow/receipt | ✅ |
 | S71 | Transfer tracking – still checking | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/checking.tsx` | /transfer-flow/checking | ✅ |
-| S72 | Transfer tracking – failed | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| S72 | Transfer tracking – failed | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/checking.tsx` | /transfer-flow/checking (tap the orange circle) | ✅ |
 | S73 | Query – querying NIBSS | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S74 | Reversal – automatic reversal in progress | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S75 | Notification – 1 unread | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ⬜ |
