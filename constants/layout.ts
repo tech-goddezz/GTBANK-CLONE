@@ -489,6 +489,22 @@ export const layout = {
   reversalPanelTop: 59.1,   // Intro → steps panel
   reversalNoteTop: 86,      // Steps panel → blue note
   reversalDelayMs: 5000,    // Query moves on to Reversal by itself after 5 seconds
+  // Notification (S75/S76)
+  headerBadge: 18,          // Orange number circle on the bell
+  headerBadgeLeft: -10.9,   // Bell → badge (it sits up and to the left)
+  headerBadgeTop: -9.3,
+  notifListTop: 16,         // Menu strip → first card
+  notifCardHeight: 72,
+  notifCardGap: 8,
+  notifCardPadLeft: 21.5,   // Card edge → circle
+  notifCardPadRight: 23,    // "Unread" / time → card edge
+  notifCircle: 40,
+  notifTextGap: 12,         // Circle → title
+  notifTitleTop: 14.2,
+  notifBodyTop: 7.7,        // Title → grey line
+  notifStatusTop: 16.2,     // Card top → "Unread"
+  notifTimeTop: 2.7,        // "Unread" → time
+  notifTextRight: 12,       // Grey line → right column
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box

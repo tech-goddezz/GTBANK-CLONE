@@ -24,6 +24,8 @@ interface ScreenHeaderProps {
   onBellPress?: () => void;
   // Replaces the bell, e.g. the + on Complaints.
   right?: React.ReactNode;
+  // Small orange number on the bell (only the Notification page uses it).
+  bellBadge?: number;
 }
 
 function HeaderIcon({ icon, color }: { icon: keyof typeof headerIcons; color: string }) {
@@ -42,6 +44,7 @@ export default function ScreenHeader({
   onBack,
   onBellPress,
   right,
+  bellBadge,
 }: ScreenHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -76,6 +79,11 @@ export default function ScreenHeader({
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <HeaderIcon icon="bell" color={colors.textDark} />
+              {!!bellBadge && (
+                <View style={styles.badge} pointerEvents="none">
+                  <Text style={styles.badgeText}>{bellBadge}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -128,6 +136,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 22,
     top: 25,
+  },
+  badge: {
+    position: 'absolute',
+    left: layout.headerBadgeLeft,
+    top: layout.headerBadgeTop,
+    width: layout.headerBadge,
+    height: layout.headerBadge,
+    borderRadius: layout.headerBadge / 2,
+    backgroundColor: colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontSize: fontSize.small,
+    lineHeight: layout.headerBadge,
+    fontFamily: fontFamily.medium,
+    color: colors.white,
   },
   menuStrip: {
     height: layout.headerMenuHeight,

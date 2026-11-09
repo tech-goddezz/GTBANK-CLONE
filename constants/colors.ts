@@ -148,6 +148,9 @@ const colors = {
   failedBox: '#F7F3FE',     // Very pale purple-white inside
   failedBorder: '#E81414',  // Thin red border
 
+  // Dark-red circle behind the "!" on the "Transfer Failed" notification (S75/S76).
+  notifFailedCircle: '#8C0019',
+
   // Green stripes of the small Nigerian flag on the phone number screen.
   flagGreen: '#14B53A',
 
