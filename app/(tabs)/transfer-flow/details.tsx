@@ -51,6 +51,14 @@ export default function TransferDetailsScreen() {
   // Saved Beneficiaries (S49): the Different Bank form with 'Beneficiary' wording
   // and the name in its own white box.
   const isSaved = bank === 'saved';
+  // Fund GT Money Market (S50): from your own account to a market wallet number.
+  const isMarket = bank === 'money-market';
+  // e-wallet (S51): from your own account to a savings wallet number.
+  const isWallet = bank === 'e-wallet';
+  // Forms that start with your own account number instead of a bank box
+  const showsOwnAccount = isGtbank || isMarket || isWallet;
+  // Wallet forms show no account holder's name
+  const isWalletForm = isMarket || isWallet;
   const [realBalance, setRealBalance] = useState(0);
   const [myAccountNumber, setMyAccountNumber] = useState('');
 
@@ -67,7 +75,9 @@ export default function TransferDetailsScreen() {
   }, []);
 
   const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank] = useState(isGtbank ? 'GTBank' : '');
+  const [selectedBank, setSelectedBank] = useState(
+    isGtbank ? 'GTBank' : isMarket ? 'GT Money Market' : isWallet ? 'GT e-wallet' : ''
+  );
   const [amount, setAmount] = useState('');
   const [narration, setNarration] = useState('');
   const [showBankPicker, setShowBankPicker] = useState(false);
@@ -122,9 +132,9 @@ export default function TransferDetailsScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {isGtbank ? (
+          {showsOwnAccount ? (
             <>
-              <Text style={styles.label}>Main Account</Text>
+              <Text style={styles.label}>{isMarket ? 'Checking Account' : isWallet ? 'E-Wallet Account' : 'Main Account'}</Text>
               {/* Your own account: shown, not editable */}
               <View style={[styles.box, styles.boxCentred]}>
                 <Text style={styles.boxText}>{myAccountNumber}</Text>
@@ -156,11 +166,19 @@ export default function TransferDetailsScreen() {
           )}
 
           <Text style={[styles.label, styles.nextLabel]}>
-            {isGtbank ? 'Destination Account' : isSaved ? 'Beneficiary Account' : 'Recipient Account'}
+            {isGtbank
+              ? 'Destination Account'
+              : isMarket
+                ? 'Market Wallet'
+                : isWallet
+                  ? 'Savings Wallet'
+                : isSaved
+                  ? 'Beneficiary Account'
+                  : 'Recipient Account'}
           </Text>
           <TextInput
             style={[styles.box, styles.boxText, noOutline]}
-            placeholder="Enter account number"
+            placeholder={isWalletForm ? 'Enter wallet number' : 'Enter account number'}
             placeholderTextColor={colors.textGrey}
             value={accountNumber}
             onChangeText={(t) => {
@@ -188,7 +206,7 @@ export default function TransferDetailsScreen() {
             </>
           )}
 
-          {!isSaved && showName && (
+          {!isSaved && !isWalletForm && showName && (
             <View style={styles.nameRow}>
               {resolvingName ? (
                 <>
@@ -201,8 +219,8 @@ export default function TransferDetailsScreen() {
             </View>
           )}
 
-          <Text style={[styles.label, showName && !isSaved ? styles.labelAfterName : styles.nextLabel]}>
-            {isGtbank ? 'Amount' : 'Amount to Send'}
+          <Text style={[styles.label, showName && !isSaved && !isWalletForm ? styles.labelAfterName : styles.nextLabel]}>
+            {showsOwnAccount ? 'Amount' : 'Amount to Send'}
           </Text>
           <TextInput
             style={[styles.box, styles.boxText, noOutline]}

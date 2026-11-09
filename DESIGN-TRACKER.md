@@ -136,7 +136,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S47 | Send form – GTBank (own accounts) | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S48 | Send form – Different bank | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S49 | Send form – Saved beneficiary | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
-| S50 | Send form – Money market | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ⬜ |
+| S50 | Send form – Money market | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ✅ |
 | S51 | Send form – e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/details.tsx` | /transfer-flow/details | ⬜ |
 | S52 | Top Up – Airtime (filled in) | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ⬜ |
 | S53 | Top Up – Data plans grid | Screens inside the home screen.pdf | `app/(tabs)/topup.tsx` | /topup | ⬜ |
