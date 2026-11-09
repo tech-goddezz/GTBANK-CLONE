@@ -5,8 +5,8 @@
 // balance), To box (recipient), Amount / fee / Total panel, narration, and
 // Confirm Transfer.
 //
-// Confirm Transfer sends the money exactly as before. The design's "Enter your
-// 4-digit code" step (S59–S65) will slot in here once it's built.
+// Confirm Transfer opens "Enter your 4 digit code" (pin.tsx, S59–S65), which
+// checks your PIN and then sends the money.
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
@@ -17,7 +17,7 @@ import { fontSize, fontFamily, lineHeight } from '../../../constants/typography'
 import { layout } from '../../../constants/layout';
 import ScreenHeader from '../../../components/ScreenHeader';
 import Button from '../../../components/Button';
-import { sendMoney, getCurrentUserId, fetchProfile } from '../../../services/auth';
+import { getCurrentUserId, fetchProfile } from '../../../services/auth';
 
 const formatAmount = (n: number) => n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -36,8 +36,6 @@ export default function ConfirmTransferScreen() {
     accountNumber: string; accountName: string;
     bank: string; amount: string; narration: string;
   }>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [myAccountNumber, setMyAccountNumber] = useState('');
   const [balance, setBalance] = useState<number | null>(null);
   // Time shown next to your account number, as in the design
@@ -63,20 +61,10 @@ export default function ConfirmTransferScreen() {
   // Wallet forms have no account holder's name: show the bank name instead.
   const recipientName = params.accountName || params.bank || '';
 
-  const handleConfirm = async () => {
-    setError('');
-    setLoading(true);
-    const senderId = await getCurrentUserId();
-    const result = await sendMoney(senderId, params.accountNumber ?? '', amountNum, params.narration ?? '');
-    setLoading(false);
-
-    if (result.success) {
-      router.replace(
-        `/(tabs)/transfer-flow/processing?amount=${amountNum}&accountName=${params.accountName}&accountNumber=${params.accountNumber}&bank=${params.bank}&narration=${params.narration}`
-      );
-    } else {
-      setError(result.message || 'Transfer failed. Please try again.');
-    }
+  const handleConfirm = () => {
+    router.push(
+      `/(tabs)/transfer-flow/pin?amount=${amountNum}&accountName=${params.accountName ?? ''}&accountNumber=${params.accountNumber ?? ''}&bank=${params.bank ?? ''}&narration=${params.narration ?? ''}`
+    );
   };
 
   return (
@@ -138,10 +126,8 @@ export default function ConfirmTransferScreen() {
           <Button
             label="Confirm Transfer"
             onPress={handleConfirm}
-            loading={loading}
             style={styles.button}
           />
-          {!!error && <Text style={styles.error}>{error}</Text>}
         </View>
       </ScrollView>
     </View>
@@ -260,10 +246,4 @@ const styles = StyleSheet.create({
     color: colors.textLightDark,
   },
   button: { marginTop: layout.confirmButtonTop },
-  error: {
-    marginTop: 8,
-    fontSize: fontSize.small,
-    fontFamily: fontFamily.regular,
-    color: colors.red,
-  },
 });

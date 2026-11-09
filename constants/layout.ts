@@ -399,6 +399,21 @@ export const layout = {
   confirmRowTextBottom: 12.5, // Text → line under it
   confirmRowLine: 2,
   confirmButtonTop: 12,     // Narration box → Confirm Transfer
+  // Enter your 4 digit code (S59–S65)
+  payPinTitleTop: 86.8,     // Status bar → title
+  payPinBoxTop: 114,        // Subtitle → code box
+  payPinButtonTop: 16,      // Code box → Pay
+  payPinNoteTop: 52,        // Pay → "Or use your fingerprint..."
+  payPinNoteGap: 10,        // Between the two grey lines
+  payPinLinkTop: 22.3,      // Grey lines → "Pay with Fingerprint instead"
+  payPinLinkLineHeight: 24,
+  payPinRingTop: 29.3,      // Link → dashed ring
+  payPinRing: 120,          // Dashed ring size
+  payPinRingRadius: 58.5,
+  payPinRingStroke: 2.5,
+  payPinRingDash: 24,
+  payPinRingGap: 21.95,
+  payPinPicture: 122.7,     // Fingerprint picture, centred on the ring
   tabBarHeight: 110,  // Bottom tab bar, including the space at the bottom of the phone
   tabBarSidePadding: 8.5,
   codeBoxSize: 46.4,   // The 6-digit code boxes

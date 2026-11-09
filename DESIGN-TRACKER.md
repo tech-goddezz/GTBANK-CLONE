@@ -145,7 +145,7 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S56 | Initiating transfer – Stanbic IBTC | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
 | S57 | Initiating transfer – GT Money Mkt | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
 | S58 | Initiating transfer – GT e-wallet | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/confirm.tsx` | /transfer-flow/confirm | ✅ |
-| S59–S65 | Enter your 4-digit code / Pay with fingerprint (7 near-identical copies, one per transfer type) | Screens inside the home screen.pdf | MISSING | — | 🆕 |
+| S59–S65 | Enter your 4-digit code / Pay with fingerprint (7 near-identical copies, one per transfer type) | Screens inside the home screen.pdf | `app/(tabs)/transfer-flow/pin.tsx` | /transfer-flow/pin | ✅ |
 
 ## 8. Transfer flow — `Dashboard flow + transfer flow.pdf`
 

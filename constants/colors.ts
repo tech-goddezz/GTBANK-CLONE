@@ -192,6 +192,9 @@ const colors = {
   // Thin ring around the profile photo on the home screen.
   avatarRing: '#E8E8E8',
 
+  // Dashed ring around the fingerprint on the 4-digit code screen (S59–S65).
+  fingerprintRing: '#F77963',
+
   // The "Copy" link on the Congrats pop-up.
   copyLink: '#9A2E02',
 
