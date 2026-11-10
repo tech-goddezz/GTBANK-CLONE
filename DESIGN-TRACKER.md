@@ -164,10 +164,10 @@ Many design screens are variations of the same code file (for example the 5 onbo
 | S76 | Notification – failed + reversed | Dashboard flow + transfer flow.pdf | `app/(tabs)/notifications.tsx` | /notifications | ✅ |
 | S77 | Auto-reversal details | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/reversal-details.tsx` | /transfer-flow/reversal-details | ✅ |
 | S78 | Reversal receipt | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/receipt.tsx` (type=reversal) | /transfer-flow/reversal-details → View Receipt | ✅ |
-| S79 | Select transfers – individual | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
-| S80 | Select transfers – group | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
-| S81 | Complaints – upload transfers | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
-| S82 | Complaints – empty | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
+| S79 | Select transfers – individual | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/select.tsx` | /transfer-flow/select | ✅ |
+| S80 | Select transfers – group | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/select.tsx` | /transfer-flow/select (tap Group transfers) | ✅ |
+| S81 | Complaints – upload transfers | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/complaints.tsx` | /transfer-flow/complaints | ⬜ |
+| S82 | Complaints – empty | Dashboard flow + transfer flow.pdf | `app/(tabs)/transfer-flow/complaints.tsx` (empty=1) | /transfer-flow/complaints?empty=1 | ⬜ |
 | S83 | Complaints – tracking complaint form | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 | S84 | Chat with GTBOT | Dashboard flow + transfer flow.pdf | MISSING | — | 🆕 |
 

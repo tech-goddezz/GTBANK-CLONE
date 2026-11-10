@@ -510,6 +510,44 @@ export const layout = {
   autoPanelTop: 15.1,       // Intro → white panel
   autoNoteHeight: 46,
   autoReceiptTop: 15,       // Blue note → View Receipt
+  // Select Transfers (S79/S80)
+  selectHeaderSearchGap: 10.35, // Search icon → grid icon
+  selectHeaderGridGap: 16.33,   // Grid icon → three dots
+  selectHeaderRightShift: 4.3,  // Three dots sit a little left of where the bell is
+  selectPillTop: 24,        // Menu strip → tab switch
+  selectPillSide: 16.8,
+  selectPillHeight: 64,
+  selectPillPad: 8,
+  selectTabHeight: 48,
+  selectTabIndividual: 179, // Width of the "Individual transfers" tab
+  selectTabGroup: 156,      // Width of the "Group transfers" tab
+  selectTabGap: 8,
+  selectTabCirclePad: 4,    // Tab edge → circle
+  selectTabTextGap: 4.5,    // Circle → tab label
+  selectCircle: 40,
+  selectRowsTop: 43,        // Tab switch → first row
+  selectRowSide: 17,
+  selectRowHeight: 46,
+  selectRowGap: 8,
+  selectRowPadLeft: 16,     // Row edge → circle
+  selectRowTextGap: 8,      // Circle → row label
+  // Complaints (S81/S82)
+  complaintPlusTop: 1.34,      // The + sits a little lower than the bell
+  complaintPlusRight: 0.36,    // ...and a little left of it
+  complaintIntroTop: 17.9,     // Menu strip → "Upload screenshots..."
+  complaintIntroSide: 16,
+  complaintRowsTop: 18.2,      // Intro text → first row
+  complaintRowLeft: 17,
+  complaintRowRight: 16,
+  complaintRowHeight: 46,
+  complaintRowGap: 8,
+  complaintRowPadLeft: 16,     // Row edge → circle
+  complaintRowTextGap: 8,      // Circle → "Upload transfers"
+  complaintRowPadRight: 17.5,  // Download arrow → row edge
+  complaintButtonsTop: 61,     // Last row → Complaint Form
+  complaintButtonSide: 17,
+  complaintCallTop: 12,        // Complaint Form → Call a Representative (border 1px outside)
+  complaintCallHeight: 48,
   // Enter your 4 digit code (S59–S65)
   payPinTitleTop: 86.8,     // Status bar → title
   payPinBoxTop: 114,        // Subtitle → code box
